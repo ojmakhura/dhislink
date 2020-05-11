@@ -73,12 +73,15 @@ public class DDPController {
     private DhisLink dhisLink;
 
     @GetMapping(value = "/getdhisuser")
+    @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public CurrentUser getDhisUser() {
         return dhisLink.getCurrentUser();
     }
 
     @GetMapping(value = "/events", produces = "application/json")
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
     public List<Event> getEvents() {
 
     	Map<String, String> params = new HashMap<>();
@@ -137,6 +140,7 @@ public class DDPController {
      */
     @GetMapping(value = "/onespecimen/{barcode}")
     @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
     public String getOneSpecimen(@PathVariable(name = "barcode") String barcode) {
     	
     	SpecimenVO specimen = dhisLink.getOneSpecimen(barcode);    	
@@ -150,7 +154,10 @@ public class DDPController {
      */
     @GetMapping(value = "/newspecimen", produces = "application/json")
     @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
     public List<SpecimenVO> getSpecimen() {
+    	
+    	int pageSize = 50;
         Map<String, String> params = new HashMap<>();
         params.put("program", program);
         params.put("programStage", programStage);
@@ -161,11 +168,11 @@ public class DDPController {
         if(last != null) {
         	params.put("startDate", last.getCreated().toString().replace(' ', 'T'));
         } else {
-        	params.put("startDate", "2020-01-01");
+        	params.put("startDate", "2020-05-08");
         }
         
         params.put("order", "eventDate:asc");
-        params.put("pageSize", "20");
+        params.put("pageSize", "" + pageSize);
         
         BigInteger numPulled = new BigInteger("0");
 		int page = 1;
@@ -173,13 +180,19 @@ public class DDPController {
 		List<SpecimenVO> specimen = new ArrayList<>();
 		List<SpecimenVO> tmp = dhisLink.getSpecimen(params);
 
-		while (tmp != null && tmp.size() > 0) {
+		while (dhisLink.getNumPulled() != 0) {
 			logger.info("Page " + page + " has " + tmp.size() + " events.");
 			specimen.addAll(tmp);
-			break;
-			//numPulled.add(new BigInteger(tmp.size() + ""));
-			//page++;
-            //tmp = dhisLink.getSpecimen(params);
+			
+			numPulled.add(new BigInteger(tmp.size() + ""));
+			logger.info("================ Got " + numPulled.toString());
+			if(numPulled.intValue() > 10) {
+				break;
+			}
+			
+			page++;
+            tmp = dhisLink.getSpecimen(params);
+    		params.put("page", "" + page);
 		}
 				
 		return specimen;
@@ -187,6 +200,7 @@ public class DDPController {
 
     @GetMapping(value = "/program", produces = "application/json")
     @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
     public Program getProgram() {
 
         return dhisLink.getProgram(program);
@@ -194,12 +208,15 @@ public class DDPController {
 
     @GetMapping(value = "/trackedentityinstance")
     @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
     public TrackedEntityInstance getTrackedEntityInstance() {
         TrackedEntityInstance instance = dhisLink.getTrackedEntityInstance("Arv8sb0gLDR", "hGCed18kx7t");
         return instance;
     }
 
     @GetMapping(value = "/getredcapdata", produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
     public List<RedcapDataVO> getRedcapData() {
     	
     	RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();

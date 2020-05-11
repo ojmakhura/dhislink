@@ -106,8 +106,14 @@ public class DhisLink implements Serializable {
 	@Autowired
 	private RedcapDataService redcapDataService;
 	
+	private int numPulled = 0;
+	
 	public DhisLink() {
 
+	}
+	
+	public int getNumPulled() {
+		return this.numPulled;
 	}
 
 	@Bean
@@ -679,7 +685,7 @@ public class DhisLink implements Serializable {
 		/**
 		 * If the results have already been produced, no need to pull the data
 		 */
-		if (values.get(env.getProperty("lab.reults")) != null) {
+		if (values.get(env.getProperty("lab.results")) != null) {
 			return null;
 		}
 
@@ -786,9 +792,11 @@ public class DhisLink implements Serializable {
 	public List<SpecimenVO> getSpecimen(Map<String, String> parameters) {
 
 		List<Event> events = this.getEvents(parameters);
+		this.numPulled = events.size();
 		List<SpecimenVO> specimen = new ArrayList<>();
 
 		for (Event event : events) {
+			
 			SpecimenVO s = eventToSpecimen(event);
 
 			if (s == null || s.getSpecimenBarcode() == null || s.getSpecimenBarcode().trim().length() == 0) {
@@ -879,8 +887,7 @@ public class DhisLink implements Serializable {
 		RedcapDataVO tmp = new RedcapDataVO();
 		
 		if(specimen.getPatient() != null) {
-			
-			
+						
 			if (!StringUtils.isBlank(specimen.getPatient().getFirstName())) {
 				tmp = new RedcapDataVO();
 				tmp.setProjectId(labReportPID);
@@ -1193,7 +1200,20 @@ public class DhisLink implements Serializable {
 		}
 				
 		if (!StringUtils.isBlank(specimen.getResults())) {
-			fields.add(new DDPObjectField("specimen_results", specimen.getResults(), null));
+			
+			String results = "";
+			
+			if(specimen.getResults().equals("1")) {
+				results = "POSITIVE";
+			} else if(specimen.getResults().equals("2")) {
+				results = "NEGATIVE";
+			} else if(specimen.getResults().equals("3")) {
+				results = "INCONCLUSIVE";
+			}else if(specimen.getResults().equals("4")) {
+				results = "PENDING";
+			}
+			
+			fields.add(new DDPObjectField("specimen_results", results, null));
 		}
 
 		if (!StringUtils.isBlank(specimen.getSpecimenType())) {
