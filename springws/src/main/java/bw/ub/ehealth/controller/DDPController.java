@@ -168,10 +168,11 @@ public class DDPController {
         if(last != null) {
         	params.put("startDate", last.getCreated().toString().replace(' ', 'T'));
         } else {
-        	params.put("startDate", "2020-05-08");
+        	params.put("startDate", "2020-05-10");
         }
         
         params.put("order", "eventDate:asc");
+        params.put("trackedEntityInstance", "Sg78qJZCXAm");
         params.put("pageSize", "" + pageSize);
         
         BigInteger numPulled = new BigInteger("0");

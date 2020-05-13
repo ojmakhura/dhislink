@@ -85,6 +85,22 @@ public class SpecimenDaoImpl
         	target.setResultsAuthorisedDate(source.getResultsAuthorisedDate());
         }
         
+        if(source.getTestAssayDatetime() != null) {
+        	target.setTestAssayDatetime(source.getTestAssayDatetime());
+        }
+        
+        if(source.getTestDetectionDatetime() != null) {
+        	target.setTestDetectionDatetime(source.getTestDetectionDatetime());
+        }
+        
+        if(source.getTestExtractionDatetime() != null) {
+        	target.setTestExtractionDatetime(source.getTestExtractionDatetime());
+        }
+        
+        if(source.getTestTporDatetime() != null) {
+        	target.setTestTporDatetime(source.getTestTporDatetime());
+        }
+        
         target.setCreated(source.getCreated());
         target.setLastUpdated(source.getLastUpdated());
     }
@@ -174,6 +190,23 @@ public class SpecimenDaoImpl
         if(source.getResultsAuthorisedDate() != null) {
         	target.setResultsAuthorisedDate(source.getResultsAuthorisedDate());
         }
+        
+        if(source.getTestAssayDatetime() != null) {
+        	target.setTestAssayDatetime(source.getTestAssayDatetime());
+        }
+        
+        if(source.getTestDetectionDatetime() != null) {
+        	target.setTestDetectionDatetime(source.getTestDetectionDatetime());
+        }
+        
+        if(source.getTestExtractionDatetime() != null) {
+        	target.setTestExtractionDatetime(source.getTestExtractionDatetime());
+        }
+        
+        if(source.getTestTporDatetime() != null) {
+        	target.setTestTporDatetime(source.getTestTporDatetime());
+        }
+        
         
         target.setCreated(source.getCreated());
         target.setLastUpdated(source.getLastUpdated());

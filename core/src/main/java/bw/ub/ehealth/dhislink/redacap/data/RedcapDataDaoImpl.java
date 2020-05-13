@@ -58,7 +58,12 @@ public class RedcapDataDaoImpl
     			where.append(" and ");
     		}
     		
-    		where.append("fieldName = :fieldName");
+    		if(searchCriteria.getFieldName().endsWith("%") || searchCriteria.getFieldName().startsWith("%")) {
+    			where.append("fieldName like :fieldName");
+    		} else {
+    		
+    			where.append("fieldName = :fieldName");
+    		}
     	}
     	
     	if(searchCriteria.getRecord() != null) {
