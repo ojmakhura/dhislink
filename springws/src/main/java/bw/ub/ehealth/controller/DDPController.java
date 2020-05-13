@@ -246,10 +246,10 @@ public class DDPController {
      * 
      * @return
      */
-    @GetMapping(value = "/dhisresultssynch", produces = "application/json") 
+    @GetMapping(value = "/updateredcapdata", produces = "application/json") 
     @ResponseBody
     @ResponseStatus(value = HttpStatus.OK)
-    public String updateRe() {
+    public String updateRedcapData() {
     	
     	return dhisLink.getDhisPayload(specimenService.findUnsynchedSpecimen());
     }

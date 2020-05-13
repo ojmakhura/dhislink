@@ -14,6 +14,7 @@ begin
 	declare report_max_event smallint(4);
 	declare test_ext_personnel varchar(100);
 	declare test_ext_batchsize varchar(100);
+	declare test_ext_batch_id varchar(100);
 	declare test_ext_datetime varchar(100);
 	declare test_ext_instrument varchar(100);
 	declare extraction_lab varchar(100);
@@ -59,6 +60,13 @@ begin
 			and event_id = new.event_id
 			and record = new.record
 			and field_name = 'test_ext_batchsize';
+            
+		select value into test_ext_batch_id
+		from redcap_data
+		where project_id = new.project_id
+			and event_id = new.event_id
+			and record = new.record
+			and field_name = 'test_ext_batch_id';
 		
 		select value into test_ext_datetime
 		from redcap_data
@@ -101,6 +109,7 @@ begin
                 TEST_EXTRACTION_BATCHSIZE = test_ext_batchsize,
                 TEST_EXTRACTION_INSTRUMENT = test_ext_instrument,
                 EXTRACTION_BATCH_POSITION = pos,
+                TEST_EXTRACTION_BATCH_ID = test_ext_batch_id,
                 EXTRACTION_LAB = extraction_lab
 			where specimen_barcode = c_value;
 			
@@ -126,6 +135,7 @@ begin
 	declare report_max_event smallint(4);
 	declare test_ext_personnel varchar(100);
 	declare test_ext_batchsize varchar(100);
+	declare test_ext_batch_id varchar(100);
 	declare test_ext_datetime varchar(100);
 	declare test_ext_instrument varchar(100);
 	declare extraction_lab varchar(100);
@@ -171,6 +181,13 @@ begin
 			and event_id = new.event_id
 			and record = new.record
 			and field_name = 'test_ext_batchsize';
+            
+		select value into test_ext_batch_id
+		from redcap_data
+		where project_id = new.project_id
+			and event_id = new.event_id
+			and record = new.record
+			and field_name = 'test_ext_batch_id';
 		
 		select value into test_ext_datetime
 		from redcap_data
@@ -205,7 +222,7 @@ begin
 				and event_id = new.event_id
 				and record = new.record
 				and field_name = concat('test_ext_instrument', pos);
-                            
+                
             -- Update the staging area
             update redcap_ddp_specimen
             set TEST_EXTRACTION_PERSONNEL = test_ext_personnel,
@@ -213,6 +230,7 @@ begin
                 TEST_EXTRACTION_BATCHSIZE = test_ext_batchsize,
                 TEST_EXTRACTION_INSTRUMENT = test_ext_instrument,
                 EXTRACTION_BATCH_POSITION = pos,
+                TEST_EXTRACTION_BATCH_ID = test_ext_batch_id,
                 EXTRACTION_LAB = extraction_lab
 			where specimen_barcode = c_value;
 			

@@ -839,6 +839,7 @@ public class DhisLink implements Serializable {
 						
 					// We should set the information for the lab report project
 					for(RedcapDataVO r : getSpecimenRedcapData(s)) {
+						logger.info(r.toString());
 						r = redcapDataService.saveRedcapData(r);
 					}
 					
@@ -1013,12 +1014,20 @@ public class DhisLink implements Serializable {
 			tmp.setValue(specimen.getCovidLabReportComplete());
 			data.add(tmp);
 		}
-				
+		logger.info(data.toString());
 		return data;
 		
 	}
 	
-	public void updateLabReport(SpecimenVO specimen) {
+	public void updateLabReport(Collection<SpecimenVO> specimen) {
+		
+		for(SpecimenVO sp : specimen) {
+			doUpdateLabReport(sp);
+		}
+		
+	}
+	
+	private void doUpdateLabReport(SpecimenVO specimen) {
 		Long eventId = redcapDataService.findMaxEvent(labReportPID);
 		RedcapDataVO tmp = new RedcapDataVO();
 		tmp.setProjectId(labReportPID);
@@ -1755,8 +1764,6 @@ public class DhisLink implements Serializable {
 		builder.append("\"events\" : [\n");
 		
 		for(SpecimenVO sp : specimen) {
-			
-			updateLabReport(sp);
 			
 			StringBuilder bd = new StringBuilder();
 			bd.append(dhis2Url);
