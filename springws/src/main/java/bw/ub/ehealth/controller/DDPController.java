@@ -233,10 +233,23 @@ public class DDPController {
      * 
      * @return
      */
-    @GetMapping(value = "/sendresults", produces = "application/json") 
+    @GetMapping(value = "/dhisresultssynch", produces = "application/json") 
     @ResponseBody
     @ResponseStatus(value = HttpStatus.OK)
     public String sendDhisResults() {
+    	
+    	return dhisLink.getDhisPayload(specimenService.findUnsynchedSpecimen());
+    }
+    
+    /**
+     * 
+     * 
+     * @return
+     */
+    @GetMapping(value = "/dhisresultssynch", produces = "application/json") 
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.OK)
+    public String updateRe() {
     	
     	return dhisLink.getDhisPayload(specimenService.findUnsynchedSpecimen());
     }

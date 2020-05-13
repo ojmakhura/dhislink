@@ -1167,6 +1167,14 @@ public class DhisLink implements Serializable {
 			redcapDataService.saveRedcapData(tmp);
 		}
 		
+		if(!StringUtils.isBlank(specimen.getTestAssayPosition())) {
+
+			tmp.setFieldName("test_assay_result");
+			tmp.setValue(specimen.getTestAssayPosition());
+						
+			redcapDataService.saveRedcapData(tmp);
+		}
+		
 		if(!StringUtils.isBlank(specimen.getSpecimenBarcode())) {
 
 			tmp.setFieldName("test_det_barcode");
