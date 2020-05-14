@@ -1,0 +1,450 @@
+[ {
+  "field" : "specimen_barcode",
+  "label" : "Record ID",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "1"
+},{
+  "field" : "lab_rec_id",
+  "label" : "Lab reception database record ID (hidden)",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "date_specimen_collected",
+  "label" : "Specimen Collection Date and Time",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "batch_number",
+  "label" : "Batch number (SB)",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "date_dispatched",
+  "label" : "Date dispatched (SB)",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "time_dispatched",
+  "label" : "Time dispatched",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "receiving_lab",
+  "label" : "Receiving lab:",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Receiving",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "receiving_personnel",
+  "label" : "Receiving - personnel name:",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Receiving",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "received_datetime",
+  "label" : "Received - date/time:",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Receiving",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "receiving_condition_code",
+  "label" : "Receiving condition code",
+  "description" : "A uniqie barcode specific to each specimen",
+  "temporal" : "0",
+  "category" : "Receiving",
+  "subcategory" : null,
+  "identifier" : "0"
+}, {
+  "field" : "patient_surname",
+  "label" : "Patient's Surname",
+  "description" : "Patient's Surname",
+  "temporal" : "0",
+  "category" : "Demographics",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "patient_first_name",
+  "label" : "Patient's First name",
+  "description" : "Patient's First name",
+  "temporal" : "0",
+  "category" : "Demographics",
+  "subcategory" : null,
+  "identifier" : "0"
+}, {
+  "field" : "national_id",
+  "label" : "Omang/Passport identifier:",
+  "description" : "Unique ID for each patient",
+  "temporal" : "0",
+  "category" : "Demographics",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "gis_lat",
+  "label" : "GIS Latitude",
+  "description" : "GIS Latitude",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+}, {
+  "field" : "gis_long",
+  "label" : "GIS Longitude",
+  "description" : "GIS Longitude",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "birth_date",
+  "label" : "Date of birth (dd/mm/yyyy",
+  "description" : "Date of birth",
+  "temporal" : "0",
+  "category" : "Demographics",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "sex",
+  "label" : "Sex",
+  "description" : "Sex or gender",
+  "temporal" : "0",
+  "category" : "Demographics",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_tpor_barcode",
+  "label" : "TPOR scan of specimen barcode",
+  "description" : "TPOR scan of specimen barcode",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_tpor_id",
+  "label" : "TPOR REDCap generated ID",
+  "description" : "TPOR REDCap generated ID",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "tpor_batch_pos",
+  "label" : "Order scanned in at point of reception (administrative only)",
+  "description" : "Order scanned in at point of reception (administrative only)",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_tpor_batch_id",
+  "label" : "Reference ID number for batch scanned in at Testing POR",
+  "description" : "Reference ID number for batch scanned in at Testing POR",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "tpor_lab",
+  "label" : "Testing - point of reception lab",
+  "description" : "Testing - point of reception lab",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_tpor_personnel",
+  "label" : "Testing - POR - personnel name (REDCap username):",
+  "description" : "Testing - POR - personnel name (REDCap username):",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_tpor_datetime",
+  "label" : "Testing - POR - date and time",
+  "description" : "Testing - POR - date and time",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_tpor_batchsize",
+  "label" : "Testing - POR - total number in batch specimen received in:",
+  "description" : "Testing - POR - total number in batch specimen received in:",
+  "temporal" : "0",
+  "category" : "Testing - point of reception",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_barcode",
+  "label" : "Extraction scan of specimen barcode",
+  "description" : "Extraction scan of specimen barcode",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_id",
+  "label" : "Extraction REDCap generated ID",
+  "description" : "Extraction REDCap generated ID",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_batch_id",
+  "label" : "Testing Extraction dataset Batch ID (autonumber and hidden)",
+  "description" : "Testing Extraction dataset Batch ID (autonumber and hidden)",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "ext_batch_pos",
+  "label" : "Position of specimen in the extraction machine",
+  "description" : "Position of specimen in the extraction machine",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "extraction_lab",
+  "label" : "Extraction lab:",
+  "description" : "Extraction lab",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_personnel",
+  "label" : "Extraction - personnel name (REDCap username):",
+  "description" : "Extraction - personnel name (REDCap username)",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_datetime",
+  "label" : "Extraction - date and time",
+  "description" : "Extraction - date and time",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_instrument",
+  "label" : "Instrument used",
+  "description" : "Instrument used",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_instrument_other",
+  "label" : ">>>Other instrument - specify",
+  "description" : "Other instrument - specify",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_ext_batchsize",
+  "label" : "Extraction batchsize (max 24):",
+  "description" : "Extraction batchsize (max 24)",
+  "temporal" : "0",
+  "category" : "Extraction by Batch",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_barcode",
+  "label" : "Detection scan of specimen barcode",
+  "description" : "Detection scan of specimen barcode",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_id",
+  "label" : "Detection REDCap generated ID",
+  "description" : "Detection REDCap generated ID",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "det_batch_pos",
+  "label" : "Position of specimen in the detection machine",
+  "description" : "Position of specimen in the detection machine",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_batch_id",
+  "label" : "Detection dataset Batch ID (autonumber and hidden)",
+  "description" : "Detection dataset Batch ID (autonumber and hidden)",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "detection_lab",
+  "label" : "Detection lab:",
+  "description" : "Detection lab:",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_personnel",
+  "label" : "Detection - personnel name (REDCap username):",
+  "description" : "Detection - personnel name (REDCap username):",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_datetime",
+  "label" : "Detection - date and time",
+  "description" : "Detection - date and time",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_instrument",
+  "label" : "Instrument used ",
+  "description" : "Instrument used",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_instrument_other",
+  "label" : ">>>Other instrument - specify",
+  "description" : "Other instrument - specify",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_det_batchsize",
+  "label" : "Detection batchsize (max 24):",
+  "description" : "Detection batchsize (max 24)",
+  "temporal" : "0",
+  "category" : "Testing Detection",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_assay_batch_id",
+  "label" : "Assay dataset Batch ID (autonumber and hidden)",
+  "description" : "Assay dataset Batch ID (autonumber and hidden)",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_assay_personnel",
+  "label" : "Assay - personnel name (REDCap username)",
+  "description" : "Assay - personnel name (REDCap username)",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_assay_datetime",
+  "label" : "Assay - date and time",
+  "description" : "Assay - date and time",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_assay_batchsize",
+  "label" : "Assay - batch size (max 96)",
+  "description" : "Assay - batch size (max 96)",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_assay_result",
+  "label" : "Assay result",
+  "description" : "Assay result",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_assay_result_why",
+  "label" : ">>>>>if no result, reason why:",
+  "description" : "if no result, reason why",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_verify_batch_id",
+  "label" : "Verified dataset Batch ID (autonumber and hidden)",
+  "description" : "Verified dataset Batch ID (autonumber and hidden)",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_verify_personnel",
+  "label" : "Verified - personnel name (REDCap username)",
+  "description" : "Verified - personnel name (REDCap username)",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_verify_datetime",
+  "label" : "Verified - date and time",
+  "description" : "Verified - date and time",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+},{
+  "field" : "test_verify_result",
+  "label" : "Result verified?",
+  "description" : "Result verified?",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+}, {
+  "field" : "covid_rna_results",
+  "label" : "Final result",
+  "description" : "Final result",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+}
+]

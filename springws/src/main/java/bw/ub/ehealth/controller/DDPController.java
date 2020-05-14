@@ -3,6 +3,7 @@ package bw.ub.ehealth.controller;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,9 +127,7 @@ public class DDPController {
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String pullSpecimen(@RequestBody DDPPostObject postObject) {
-    	
     	SpecimenVO specimen = dhisLink.getOneSpecimen(postObject.getId());
-    	
         return dhisLink.getSpecimenFieldList(specimen);
     }
     
@@ -233,7 +232,7 @@ public class DDPController {
      * 
      * @return
      */
-    @GetMapping(value = "/dhisresultssynch", produces = "application/json") 
+    @GetMapping(value = "/dhissynch", produces = "application/json") 
     @ResponseBody
     @ResponseStatus(value = HttpStatus.OK)
     public String sendDhisResults() {
@@ -246,11 +245,18 @@ public class DDPController {
      * 
      * @return
      */
-    @GetMapping(value = "/updateredcapdata", produces = "application/json") 
-    @ResponseBody
+    @GetMapping(value = "/updateredcapdata") 
     @ResponseStatus(value = HttpStatus.OK)
-    public String updateRedcapData() {
+    public void updateRedcapData() {
+    	Collection<SpecimenVO> vo = specimenService.findUnsynchedSpecimen();
+    	dhisLink.updateStaging(vo);
     	
-    	return dhisLink.getDhisPayload(specimenService.findUnsynchedSpecimen());
+    	dhisLink.updateLabReport(vo);
+    }
+
+    @GetMapping(value = "/viewstaging") 
+    @ResponseStatus(value = HttpStatus.OK)
+    public void viewUpdates() {
+    	dhisLink.updateStaging(specimenService.findUnsynchedSpecimen());
     }
 }

@@ -241,10 +241,7 @@ public class SpecimenDaoImpl
 	protected Collection<Specimen> handleFindUnsynchedSpecimen() throws Exception {
 		
 		Query query = entityManager.createQuery("select s from bw.ub.ehealth.dhislink.specimen.Specimen s "
-				+ "where s.dhis2Synched = " + false + " "
-				+ "and s.results != null and s.resultsAuthorisedBy != null and s.resultsAuthorisedDate != null "
-				+ "and s.resultsEnteredBy != null and s.resultsEnteredDate != null "
-				+ "and s.resultsVerifiedDate != null and s.resultsVerifiedBy != null");
+				+ "where s.dhis2Synched = " + false);
 		
 		// TODO Auto-generated method stub
 		return query.getResultList();

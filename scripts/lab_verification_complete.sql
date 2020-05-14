@@ -97,14 +97,14 @@ begin
 			where project_id = c_project_id
 				and event_id = c_event_id
 				and record = c_record
-				and field_name = concat('covid_rna_results_', count_);
+				and field_name = concat('covid_rna_results', count_);
 			
 			-- Update the staging area
 			update redcap_ddp_specimen 
 			set results_verified_by = test_verify_personnel,
 			    results_verified_date = test_verify_datetime, 
 			    test_verify_result = verify,
-				covid_rna_results = verified,
+				COVID_RNA_RESULTS = verified,
 				dhis2_synched = false
 			where specimen_barcode = c_value;
             
@@ -216,7 +216,7 @@ begin
 			where project_id = c_project_id
 				and event_id = c_event_id
 				and record = c_record
-				and field_name = concat('covid_rna_results_', count_);
+				and field_name = concat('covid_rna_results', count_);
 			
 			-- Update the staging area
 			update redcap_ddp_specimen 

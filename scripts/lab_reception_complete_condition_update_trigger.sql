@@ -132,7 +132,7 @@ begin
 	insert into my_log values (now(), 'Inside');
 	-- Stop calling this procedure with any other data
 	if (new.field_name = 'sarscov2_lab_reception_condition_complete' and new.value = '2' and new.project_id = lab_receiving) then
-		insert into my_log values (now(), 'More inside');
+    
 		select value into batch_size 
 		from redcap_data 
 		where project_id = new.project_id 
@@ -151,7 +151,6 @@ begin
 		s1_loop: LOOP
 			fetch specimen into c_project_id, c_event_id, c_record, c_field_name, c_value, c_instance;
 			IF done THEN
-				insert into my_log values (now(), 'Done already');
 				LEAVE s1_loop;
 			END IF;
 			

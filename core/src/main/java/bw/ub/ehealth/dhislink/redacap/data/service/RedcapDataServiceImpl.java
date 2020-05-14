@@ -60,10 +60,8 @@ public class RedcapDataServiceImpl
     	criteria.setRecord(redcapDataVO.getRecord());
     	
     	/// Try to find the data in redcap_data table
-		System.out.println("Find this ........................... ");
     	List<RedcapData> dt = (List<RedcapData>) getRedcapDataDao().findByCriteria(criteria);    	
 		RedcapData data = getRedcapDataDao().redcapDataVOToEntity(redcapDataVO);
-		System.out.println("=========== Data is " + data.toString());
     	
     	if(dt == null || dt.size() == 0) /// The data does not exist
         {
