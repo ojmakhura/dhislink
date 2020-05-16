@@ -15,9 +15,17 @@
   "subcategory" : null,
   "identifier" : "0"
 },{
-  "field" : "date_specimen_collected",
-  "label" : "Specimen Collection Date and Time",
-  "description" : "A uniqie barcode specific to each specimen",
+  "field" : "dispatch_facility",
+  "label" : "Dispatch facility",
+  "description" : "Facility from which the specimen was dispatched",
+  "temporal" : "0",
+  "category" : "Specimen",
+  "subcategory" : null,
+  "identifier" : "0"
+}, {
+  "field" : "patient_facility",
+  "label" : "Patient Facility",
+  "description" : "Facility in which the patient is",
   "temporal" : "0",
   "category" : "Specimen",
   "subcategory" : null,
@@ -119,7 +127,7 @@
   "subcategory" : null,
   "identifier" : "0"
 },{
-  "field" : "birth_date",
+  "field" : "date_birth",
   "label" : "Date of birth (dd/mm/yyyy",
   "description" : "Date of birth",
   "temporal" : "0",
@@ -442,6 +450,14 @@
   "field" : "covid_rna_results",
   "label" : "Final result",
   "description" : "Final result",
+  "temporal" : "0",
+  "category" : "Results",
+  "subcategory" : null,
+  "identifier" : "0"
+}, {
+  "field" : "ipms_lab_covid_number",
+  "label" : "ipms_lab_covid_number",
+  "description" : "ipms_lab_covid_number",
   "temporal" : "0",
   "category" : "Results",
   "subcategory" : null,

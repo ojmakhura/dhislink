@@ -83,18 +83,18 @@ public class PatientDaoImpl
         super.toPatientVO(source, target);
         // WARNING! No conversion for target.specimen (can't convert source.getSpecimen():bw.ub.ehealth.dhislink.specimen.Specimen to bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO
         
-        Collection<SpecimenVO> sp = new ArrayList<>();
+        //Collection<SpecimenVO> sp = new ArrayList<>();
         
-        for(Specimen s : source.getSpecimen()) {
+        /*for(Specimen s : source.getSpecimen()) {
         	SpecimenVO tmp = new SpecimenVO();
         	tmp.setPatient(target);
         	tmp.setBatchNumber(s.getBatchNumber());
         	tmp.setId(s.getId());
         	
         	sp.add(tmp);
-        }
+        }*/
         
-        target.setSpecimen(sp);
+        //target.setSpecimen(sp);
         
         if(source.getDateOfBirth() != null) {
         	target.setDateOfBirth(source.getDateOfBirth());

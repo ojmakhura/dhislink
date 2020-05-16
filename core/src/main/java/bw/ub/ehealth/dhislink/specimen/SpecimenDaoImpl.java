@@ -7,6 +7,7 @@
 package bw.ub.ehealth.dhislink.specimen;
 
 import bw.ub.ehealth.dhislink.patient.Patient;
+import bw.ub.ehealth.dhislink.patient.vo.PatientVO;
 import bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO;
 
 import java.util.Collection;
@@ -66,7 +67,10 @@ public class SpecimenDaoImpl
         // WARNING! No conversion for target.patient (can't convert source.getPatient():bw.ub.ehealth.dhislink.patient.Patient to bw.ub.ehealth.dhislink.patient.vo.PatientVO
         
         if(source.getPatient() != null) {
-        	target.setPatient(getPatientDao().toPatientVO(source.getPatient()));
+        	PatientVO p = new PatientVO();
+        	getPatientDao().toPatientVO(source.getPatient(), p);
+        	
+        	target.setPatient(p);
         }
         
         if(source.getReceivingDateTime() != null) {
@@ -83,22 +87,6 @@ public class SpecimenDaoImpl
         
         if(source.getResultsAuthorisedDate() != null) {
         	target.setResultsAuthorisedDate(source.getResultsAuthorisedDate());
-        }
-        
-        if(source.getTestAssayDatetime() != null) {
-        	target.setTestAssayDatetime(source.getTestAssayDatetime());
-        }
-        
-        if(source.getTestDetectionDatetime() != null) {
-        	target.setTestDetectionDatetime(source.getTestDetectionDatetime());
-        }
-        
-        if(source.getTestExtractionDatetime() != null) {
-        	target.setTestExtractionDatetime(source.getTestExtractionDatetime());
-        }
-        
-        if(source.getTestTporDatetime() != null) {
-        	target.setTestTporDatetime(source.getTestTporDatetime());
         }
         
         target.setCreated(source.getCreated());
@@ -190,23 +178,6 @@ public class SpecimenDaoImpl
         if(source.getResultsAuthorisedDate() != null) {
         	target.setResultsAuthorisedDate(source.getResultsAuthorisedDate());
         }
-        
-        if(source.getTestAssayDatetime() != null) {
-        	target.setTestAssayDatetime(source.getTestAssayDatetime());
-        }
-        
-        if(source.getTestDetectionDatetime() != null) {
-        	target.setTestDetectionDatetime(source.getTestDetectionDatetime());
-        }
-        
-        if(source.getTestExtractionDatetime() != null) {
-        	target.setTestExtractionDatetime(source.getTestExtractionDatetime());
-        }
-        
-        if(source.getTestTporDatetime() != null) {
-        	target.setTestTporDatetime(source.getTestTporDatetime());
-        }
-        
         
         target.setCreated(source.getCreated());
         target.setLastUpdated(source.getLastUpdated());

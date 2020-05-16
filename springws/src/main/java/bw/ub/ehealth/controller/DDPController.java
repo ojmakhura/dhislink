@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import bw.ub.ehealth.dhislink.patient.service.PatientService;
 import bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataSearchCriteria;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataVO;
@@ -65,13 +66,13 @@ public class DDPController {
     private RedcapDataService redcapDataService;
 
     @Autowired
-    private PatientService patientService;
-
-    @Autowired
     private SpecimenService specimenService;
     
     @Autowired
     private DhisLink dhisLink;
+    
+    @Autowired
+    private RedcapLink redcapLink;
 
     @GetMapping(value = "/getdhisuser")
     @ResponseStatus(value = HttpStatus.OK)
@@ -89,7 +90,7 @@ public class DDPController {
         params.put("program", program);
         params.put("programStage", programStage);
         SpecimenVO last = specimenService.findLatestSpecimen();
-        String date = "2020-01-01";
+        String date = "2020-05-13";
         
         if(last != null) {
         	
@@ -161,17 +162,18 @@ public class DDPController {
         params.put("program", program);
         params.put("programStage", programStage);
         params.put("status", "COMPLETED");
-        //params.put("trackedEntityInstance", "Sg78qJZCXAm");
         SpecimenVO last = specimenService.findLatestSpecimen();
         
         if(last != null) {
-        	params.put("startDate", last.getCreated().toString().replace(' ', 'T'));
+        	Calendar cal = Calendar.getInstance();
+        	cal.setTime(last.getCreated());
+        	String date = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
+        	params.put("startDate", date);
         } else {
-        	params.put("startDate", "2020-05-10");
+        	params.put("startDate", "2020-05-12");
         }
         
         params.put("order", "eventDate:asc");
-        params.put("trackedEntityInstance", "Sg78qJZCXAm");
         params.put("pageSize", "" + pageSize);
         
         BigInteger numPulled = new BigInteger("0");
@@ -217,11 +219,11 @@ public class DDPController {
     @GetMapping(value = "/getredcapdata", produces = "application/json")
     @ResponseBody
     @ResponseStatus(value = HttpStatus.OK)
-    public List<RedcapDataVO> getRedcapData() {
+    public List<RedcapDataVO> getRedcapData(@RequestBody @NotNull String barcode) {
     	
     	RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
     	criteria.setFieldName("specimen_barcode");
-    	criteria.setValue("215523");
+    	criteria.setValue(barcode);
     	
     	return (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
     	
@@ -237,6 +239,8 @@ public class DDPController {
     @ResponseStatus(value = HttpStatus.OK)
     public String sendDhisResults() {
     	
+    	// Make sure the staging area is updated
+    	redcapLink.updateStaging(specimenService.findUnsynchedSpecimen()); 
     	return dhisLink.getDhisPayload(specimenService.findUnsynchedSpecimen());
     }
     
@@ -249,14 +253,12 @@ public class DDPController {
     @ResponseStatus(value = HttpStatus.OK)
     public void updateRedcapData() {
     	Collection<SpecimenVO> vo = specimenService.findUnsynchedSpecimen();
-    	dhisLink.updateStaging(vo);
-    	
-    	dhisLink.updateLabReport(vo);
+    	redcapLink.updateStaging(vo);    	
     }
 
     @GetMapping(value = "/viewstaging") 
     @ResponseStatus(value = HttpStatus.OK)
     public void viewUpdates() {
-    	dhisLink.updateStaging(specimenService.findUnsynchedSpecimen());
+    	redcapLink.updateStaging(specimenService.findUnsynchedSpecimen());
     }
 }

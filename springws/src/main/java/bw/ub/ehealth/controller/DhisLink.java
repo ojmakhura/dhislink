@@ -3,8 +3,6 @@ package bw.ub.ehealth.controller;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -18,7 +16,6 @@ import java.util.Map;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +103,9 @@ public class DhisLink implements Serializable {
 
 	@Autowired
 	private RedcapDataService redcapDataService;
+		
+	@Autowired
+	private RedcapLink redcapLink;
 	
 	private int numPulled = 0;
 	
@@ -119,6 +119,7 @@ public class DhisLink implements Serializable {
 
 	@Bean
 	public RestTemplate restTemplate() {
+		
 		return builder.basicAuthentication("demo", "Demo@2020").build();
 	}
 
@@ -146,7 +147,6 @@ public class DhisLink implements Serializable {
 		String finalUrl = dhis2Url + "/events?" + builder.toString();
 		logger.info(finalUrl);
 		EventList eventList = restTemplate().getForObject(finalUrl, EventList.class);
-
 		return (List<Event>) eventList.getEvents();
 	}
 
@@ -683,9 +683,13 @@ public class DhisLink implements Serializable {
 
 		Map<String, DataValue> values = getDataValueMap((List<DataValue>) event.getDataValues());
 		/**
-		 * If the results have already been produced, no need to pull the data or the barcode does not exist
+		 * If the results have already been produced, no need to pull the data or the barcode does not exist,
+		 * or if the specimen has 
 		 */
-		if (values.get(env.getProperty("lab.results").trim()) != null || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
+		DataValue labResults = values.get(env.getProperty("lab.results").trim());
+		if ((labResults != null && !labResults.getValue().equals("PENDING")) 
+				|| values.get(env.getProperty("lab.specimen.barcode").trim()) == null 
+				|| values.get(env.getProperty("lab.specimen.date.received").trim()) != null) {
 			return null;
 		}
 
@@ -700,6 +704,12 @@ public class DhisLink implements Serializable {
 			OrganisationUnit unit = getOrganisationUnit(
 					values.get(env.getProperty("lab.submitter.facility").trim()).getValue());
 			specimen.setDispatchLocation(unit != null ? unit.getName() : null);
+		}
+		
+		if (values.get(env.getProperty("lab.specimen.facility").trim()) != null) {
+			OrganisationUnit unit = getOrganisationUnit(
+					values.get(env.getProperty("lab.specimen.facility").trim()).getValue());
+			specimen.setPatientFacility(unit != null ? unit.getName() : null);
 		}
 		
 		if (values.get(env.getProperty("lab.submitter.city").trim()) != null) {
@@ -724,10 +734,15 @@ public class DhisLink implements Serializable {
 		}
 
 		// Get the covid number
-		if (values.get(env.getProperty("lab.covid.number").trim()) != null
-				&& StringUtils.isBlank(specimen.getSpecimenBarcode())) {
-			String barcode = values.get(env.getProperty("lab.covid.number").trim()).getValue();
-			specimen.setSpecimenBarcode(barcode.replaceAll("[^a-zA-Z0-9]", ""));
+		if (values.get(env.getProperty("lab.covid.number").trim()) != null) {
+			String covidNUmber = values.get(env.getProperty("lab.covid.number").trim()).getValue();
+			
+			specimen.setCovidNumber(covidNUmber);
+			
+			if(StringUtils.isBlank(specimen.getSpecimenBarcode())) {
+				specimen.setSpecimenBarcode(covidNUmber.replaceAll("[^a-zA-Z0-9]", ""));
+			}
+						
 		}
 
 		specimen.setDispatcher(getSubmitter(values));
@@ -796,16 +811,16 @@ public class DhisLink implements Serializable {
 		List<SpecimenVO> specimen = new ArrayList<>();
 
 		for (Event event : events) {
+
+			TrackedEntityInstance instance = getTrackedEntityInstance(event.getOrgUnit(),
+					event.getTrackedEntityInstance());
+			PatientVO patientVO = trackedEntityInstanceToPatientVO(instance);
 			
 			SpecimenVO s = eventToSpecimen(event);
 
 			if (s == null || s.getSpecimenBarcode() == null || s.getSpecimenBarcode().trim().length() == 0) {
 				continue;
 			}
-
-			TrackedEntityInstance instance = getTrackedEntityInstance(event.getOrgUnit(),
-					event.getTrackedEntityInstance());
-			PatientVO patientVO = trackedEntityInstanceToPatientVO(instance);
 
 			if (patientVO != null && patientVO.getId() == null) {
 				if(StringUtils.isBlank(patientVO.getIdentityNo())) {
@@ -827,20 +842,19 @@ public class DhisLink implements Serializable {
 			try {
 				if (patientVO.getId() == null) {
 
-					patientVO = patientService.savePatient(patientVO);
-										
+					patientVO = patientService.savePatient(patientVO);										
 				} 
 				
 				// Should not try to save the same specimen twice
 				if (specimenService.findSpecimenByBarcode(s.getSpecimenBarcode()) == null) {
-					//patientVO = patientService.savePatient(patientVO);
-					s.setPatient(patientService.findById(patientVO.getId()));
+
+					s.setPatient(patientVO);
 					s = specimenService.saveSpecimen(s);
 						
 					// We should set the information for the lab report project
-					for(RedcapDataVO r : getSpecimenRedcapData(s)) {
-						r = redcapDataService.saveRedcapData(r);
-					}
+					redcapLink.postRedcapData(s);
+					s.setDhis2Synched(true);
+					specimenService.saveSpecimen(s);
 					
 				} else {
 					continue;
@@ -850,536 +864,11 @@ public class DhisLink implements Serializable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
 		}
 
 		return specimen;
 	}
 	
-	/**
-	 * Convert a specimen into a list of redcap data objects
-	 * 
-	 * @param specimen
-	 * @return
-	 */
-	private List<RedcapDataVO> getSpecimenRedcapData(SpecimenVO specimen) {
-		
-		List<RedcapDataVO> data = new ArrayList<RedcapDataVO>();
-		
-		Long eventId = redcapDataService.findMaxEvent(labReportPID);
-		
-		RedcapDataVO tmp = new RedcapDataVO();
-		
-		if(specimen.getPatient() != null) {
-						
-			if (!StringUtils.isBlank(specimen.getPatient().getFirstName())) {
-				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
-				tmp.setEventId(eventId);
-				tmp.setRecord(specimen.getSpecimenBarcode());
-				tmp.setFieldName("patient_first_name");
-				tmp.setValue(specimen.getPatient().getFirstName());
-				data.add(tmp);
-			}
-	
-			if (!StringUtils.isBlank(specimen.getPatient().getSurname())) {
-				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
-				tmp.setEventId(eventId);
-				tmp.setRecord(specimen.getSpecimenBarcode());
-				tmp.setFieldName("patient_surname");
-				tmp.setValue(specimen.getPatient().getSurname());
-				data.add(tmp);
-			}
-	
-			if (!StringUtils.isBlank(specimen.getPatient().getSex())) {
-				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
-				tmp.setEventId(eventId);
-				tmp.setRecord(specimen.getSpecimenBarcode());
-				tmp.setFieldName("sex");
-				tmp.setValue(specimen.getPatient().getSex());
-				data.add(tmp);
-			}
-			
-			if(specimen.getPatient().getDateOfBirth() != null) {
-				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
-				tmp.setEventId(eventId);
-				tmp.setRecord(specimen.getSpecimenBarcode());
-				tmp.setFieldName("date_birth");
-				tmp.setValue(specimen.getPatient().getDateOfBirth().toString());
-				data.add(tmp);
-				
-				// Calculate the age
-				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
-				tmp.setEventId(eventId);
-				tmp.setRecord(specimen.getSpecimenBarcode());
-				tmp.setFieldName("age");
-				
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(specimen.getPatient().getDateOfBirth());
-				
-				LocalDate d1 = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE));
-				LocalDate now = LocalDate.now();
-				
-				Period diff = Period.between(d1, now);
-				
-				tmp.setValue("" + diff.getYears());
-				data.add(tmp);
-			}
-		}
-		
-		if(specimen.getDispatchDate() != null ) {
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("date_dispatched");
-			tmp.setValue(specimen.getDispatchDate().toString());
-			data.add(tmp);
-		}
-		
-		if(specimen.getDispatchDate() != null) {
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("date_specimen_collected");
-			tmp.setValue(specimen.getCollectionDateTime().toString());
-			data.add(tmp);
-		}
-		
-		if (specimen.getLatitude() != null) {
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("gis_lat");
-			tmp.setValue(specimen.getLatitude());
-			data.add(tmp);
-		}
-
-		if (specimen.getLongitude() != null) {
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("gis_long");
-			tmp.setValue(specimen.getLongitude());
-			data.add(tmp);
-		}
-
-		if (!StringUtils.isBlank(specimen.getSpecimenBarcode())) {
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("specimen_barcode");
-			tmp.setValue(specimen.getSpecimenBarcode());
-			data.add(tmp);
-			
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("receiving_lab");
-			tmp.setValue(specimen.getCovidLabReportComplete());
-			data.add(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getReceivingLab())) {
-
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("covid19_lab_report_complete");
-			tmp.setValue("0");
-			data.add(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getCovidRnaResults())) {
-
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("receiving_lab");
-			tmp.setValue(specimen.getCovidRnaResults());
-			data.add(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getCovidLabReportComplete())) {
-
-			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
-			tmp.setEventId(eventId);
-			tmp.setRecord(specimen.getSpecimenBarcode());
-			tmp.setFieldName("receiving_lab");
-			tmp.setValue(specimen.getCovidLabReportComplete());
-			data.add(tmp);
-		}
-
-		return data;
-		
-	}
-	
-	public void updateLabReport(Collection<SpecimenVO> specimen) {
-		
-		for(SpecimenVO sp : specimen) {
-			doUpdateLabReport(sp);
-		}
-		
-	}
-	
-	private void doUpdateLabReport(SpecimenVO specimen) {
-		Long eventId = redcapDataService.findMaxEvent(labReportPID);
-		RedcapDataVO tmp = new RedcapDataVO();
-		tmp.setProjectId(labReportPID);
-		tmp.setEventId(eventId);
-		tmp.setRecord(specimen.getSpecimenBarcode());
-				
-		if(!StringUtils.isBlank(specimen.getBatchNumber())) {
-
-			tmp.setFieldName("batch_number");
-			tmp.setValue(specimen.getBatchNumber());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getCovidRnaResults())) {
-
-			tmp.setFieldName("covid_rna_results");
-			tmp.setValue(specimen.getCovidRnaResults());			
-			redcapDataService.saveRedcapData(tmp);
-
-			tmp.setFieldName("covid19_lab_report_complete");
-			tmp.setValue("2");			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getDetectionBatchPosition())) {
-
-			tmp.setFieldName("det_batch_position");
-			tmp.setValue(specimen.getDetectionBatchPosition());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getDetectionLab())) {
-
-			tmp.setFieldName("detection_lab");
-			tmp.setValue(specimen.getDetectionLab());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}		
-		
-		if(!StringUtils.isBlank(specimen.getExtractionBatchPosition())) {
-
-			tmp.setFieldName("ext_batch_position");
-			tmp.setValue(specimen.getExtractionBatchPosition());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getExtractionLab())) {
-
-			tmp.setFieldName("extraction_lab");
-			tmp.setValue(specimen.getExtractionLab());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getReceivingConditionCode())) {
-
-			tmp.setFieldName("receiving_condition_code");
-			tmp.setValue(specimen.getReceivingConditionCode());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getReceivingLab())) {
-
-			tmp.setFieldName("receiving_lab");
-			tmp.setValue(specimen.getReceivingLab());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(specimen.getReceivingDateTime() != null) {
-
-			tmp.setFieldName("received_datetime");
-			tmp.setValue(specimen.getReceivingDateTime().toString());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getReceivingLab())) {
-
-			tmp.setFieldName("receiving_lab");
-			tmp.setValue(specimen.getReceivingLab());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getReceivingConditionCode())) {
-
-			tmp.setFieldName("receiving_condition_code");
-			tmp.setValue(specimen.getReceivingConditionCode());
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
-
-			//tmp.setFieldName("receiving_lab");
-			//tmp.setValue(specimen.getResultsAuthorisedBy());
-			
-			tmp.setFieldName("result_authorised");
-			tmp.setValue("1");
-			
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestAssayBatchId())) {
-
-			tmp.setFieldName("test_assay_batch_id");
-			tmp.setValue(specimen.getTestAssayBatchId());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestAssayBatchsize())) {
-
-			tmp.setFieldName("test_assay_batchsize");
-			tmp.setValue(specimen.getTestAssayBatchsize());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(specimen.getTestAssayDatetime() != null) {
-
-			tmp.setFieldName("test_assay_datetime");
-			tmp.setValue(specimen.getTestAssayDatetime().toString());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestAssayPersonnel())) {
-
-			tmp.setFieldName("test_assay_personnel");
-			tmp.setValue(specimen.getTestAssayPersonnel());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestAssayResult())) {
-
-			tmp.setFieldName("test_assay_result");
-			tmp.setValue(specimen.getTestAssayResult());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestAssayPosition())) {
-
-			tmp.setFieldName("test_assay_result");
-			tmp.setValue(specimen.getTestAssayPosition());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getSpecimenBarcode())) {
-
-			tmp.setFieldName("test_det_barcode");
-			tmp.setValue(specimen.getSpecimenBarcode());
-						
-			redcapDataService.saveRedcapData(tmp);
-			
-			tmp.setFieldName("test_ext_barcode");						
-			redcapDataService.saveRedcapData(tmp);
-			
-			tmp.setFieldName("test_tpor_barcode");						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(specimen.getTestDetectionDatetime() != null) {
-
-			tmp.setFieldName("test_det_datetime");
-			tmp.setValue(specimen.getTestDetectionDatetime().toString());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestDetectionBatchsize())) {
-
-			tmp.setFieldName("test_det_batchsize");
-			tmp.setValue(specimen.getTestDetectionBatchsize());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestDetectionBatchId())) {
-
-			tmp.setFieldName("test_det_batch_id");
-			tmp.setValue(specimen.getTestDetectionBatchId());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getDetectionBatchPosition())) {
-
-			tmp.setFieldName("test_det_id");
-			tmp.setValue(specimen.getDetectionBatchPosition());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestDetectionInstrument())) {
-
-			tmp.setFieldName("test_det_instrument");
-			tmp.setValue(specimen.getTestDetectionInstrument());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestDetectionPersonnel())) {
-
-			tmp.setFieldName("test_det_personnel");
-			tmp.setValue(specimen.getTestDetectionPersonnel());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getExtractionBatchPosition())) {
-
-			tmp.setFieldName("test_ext_id");
-			tmp.setValue(specimen.getExtractionBatchPosition());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestExtractionBatchsize())) {
-
-			tmp.setFieldName("test_ext_batchsize");
-			tmp.setValue(specimen.getTestExtractionBatchsize());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(specimen.getTestExtractionDatetime() != null) {
-
-			tmp.setFieldName("test_ext_datetime");
-			tmp.setValue(specimen.getTestExtractionDatetime().toString());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		 if(!StringUtils.isBlank(specimen.getTestExtractionBatchId())) {
-
-			tmp.setFieldName("test_ext_batch_id");
-			tmp.setValue(specimen.getTestExtractionBatchId());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestExtractionInstrument())) {
-
-			tmp.setFieldName("test_ext_instrument");
-			tmp.setValue(specimen.getTestExtractionInstrument());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestExtractionPersonnel())) {
-
-			tmp.setFieldName("test_ext_personnel");
-			tmp.setValue(specimen.getTestExtractionPersonnel());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestTporId())) {
-
-			tmp.setFieldName("test_tpor_batch_id");
-			tmp.setValue(specimen.getTestTporId());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestTporBatchsize())) {
-
-			tmp.setFieldName("test_tpor_batchsize");
-			tmp.setValue(specimen.getTestTporBatchsize());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(specimen.getTestTporDatetime() != null) {
-
-			tmp.setFieldName("test_tpor_datetime");
-			tmp.setValue(specimen.getTestTporDatetime().toString());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestTporId())) {
-
-			tmp.setFieldName("test_tpor_id");
-			tmp.setValue(specimen.getTestTporId());
-						
-			redcapDataService.saveRedcapData(tmp);
-			
-			tmp.setFieldName("tpor_batch_pos");
-			tmp.setValue(specimen.getTestTporId());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestTporPersonnel())) {
-
-			tmp.setFieldName("test_tpor_personnel");
-			tmp.setValue(specimen.getTestTporPersonnel());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
-
-			tmp.setFieldName("test_verify_personnel");
-			tmp.setValue(specimen.getResultsVerifiedBy());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(specimen.getResultsVerifiedDate() != null) {
-
-			tmp.setFieldName("test_verify_datetime");
-			tmp.setValue(specimen.getResultsVerifiedDate().toString());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
-
-			tmp.setFieldName("test_verify_personnel");
-			tmp.setValue(specimen.getResultsVerifiedBy());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-		if(!StringUtils.isBlank(specimen.getTestVerifyBatchId())) {
-
-			tmp.setFieldName("test_verify_batch_id");
-			tmp.setValue(specimen.getTestVerifyBatchId());
-						
-			redcapDataService.saveRedcapData(tmp);
-		}
-		
-	}
-
 	/**
 	 * Load organisation unit from DHSI2 using the id
 	 * @param id
@@ -1456,7 +945,7 @@ public class DhisLink implements Serializable {
 			}
 			
 			if(!StringUtils.isBlank(specimen.getPatient().getIdentityNo())) {
-				fields.add(new DDPObjectField("identity_no", specimen.getPatient().getIdentityNo(), null));
+				fields.add(new DDPObjectField("national_id", specimen.getPatient().getIdentityNo(), null));
 			}
 			
 			if(!StringUtils.isBlank(specimen.getPatient().getCity())) {
@@ -1499,6 +988,10 @@ public class DhisLink implements Serializable {
 			fields.add(new DDPObjectField("specimen_barcode", specimen.getSpecimenBarcode(), null));
 		}
 		
+		if(!StringUtils.isBlank(specimen.getCovidNumber())) {
+			fields.add(new DDPObjectField("ipms_lab_covid_number", specimen.getCovidNumber(), null));
+		}
+		
 		if(!StringUtils.isBlank(specimen.getBatchNumber())) {
 			fields.add(new DDPObjectField("batch_number", specimen.getBatchNumber(), null));
 		}
@@ -1529,9 +1022,14 @@ public class DhisLink implements Serializable {
 		}
 
 		if (!StringUtils.isBlank(specimen.getDispatchLocation())) {
-			fields.add(new DDPObjectField("location_of_dispatch", specimen.getDispatchLocation(), null));
+			fields.add(new DDPObjectField("dispatch_facility", specimen.getDispatchLocation(), null));
 		}
 
+		if (!StringUtils.isBlank(specimen.getPatientFacility())) {
+			fields.add(new DDPObjectField("patient_facility", specimen.getPatientFacility(), null));
+		}
+		
+		
 		if (!StringUtils.isBlank(specimen.getDispatcherCity())) {
 			fields.add(new DDPObjectField("specimen_dispatcher_city", specimen.getDispatcherCity(), null));
 		}
@@ -1574,7 +1072,8 @@ public class DhisLink implements Serializable {
 			int hour = cal.get(Calendar.HOUR_OF_DAY);
 			int mins = cal.get(Calendar.MINUTE);
 
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year +  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins) ;
+			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year 
+					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins) ;
 			fields.add(
 					new DDPObjectField("date_specimen_collected", datetime, null));
 		}
@@ -1623,8 +1122,12 @@ public class DhisLink implements Serializable {
 			int day = cal.get(Calendar.DAY_OF_MONTH);
 			int month = cal.get(Calendar.MONTH);
 			int year = cal.get(Calendar.YEAR);
+			
+			int hour = cal.get(Calendar.HOUR_OF_DAY);
+			int mins = cal.get(Calendar.MINUTE);
 
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year;
+			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year
+					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins);
 			fields.add(new DDPObjectField("results_entered_date", datetime, null));
 		}
 
@@ -1639,8 +1142,11 @@ public class DhisLink implements Serializable {
 			int day = cal.get(Calendar.DAY_OF_MONTH);
 			int month = cal.get(Calendar.MONTH);
 			int year = cal.get(Calendar.YEAR);
+			int hour = cal.get(Calendar.HOUR_OF_DAY);
+			int mins = cal.get(Calendar.MINUTE);
 
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year;
+			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year
+					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins);
 			
 			fields.add(new DDPObjectField("results_verified_date", datetime, null));
 		}
@@ -1661,7 +1167,8 @@ public class DhisLink implements Serializable {
 			int hour = cal.get(Calendar.HOUR_OF_DAY);
 			int mins = cal.get(Calendar.MINUTE);
 
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year;
+			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year
+					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins);
 			
 			fields.add(new DDPObjectField("results_authorised_date", datetime, null));
 		}
@@ -1672,45 +1179,27 @@ public class DhisLink implements Serializable {
 		
 		// Reception project
 		List<DDPObjectField> newf = getReceptionFormFields(specimen.getSpecimenBarcode());
-		logger.info(newf.toString());
 		fields.addAll(newf);
-		logger.info("fields size  = " + fields.size());
 
 		// Reception TPOR form
 		newf = getTporFormFields(specimen.getSpecimenBarcode());
-
-		logger.info("2=============== Reception TPOR form ==================");
-		logger.info(newf.toString());
 		fields.addAll(getTporFormFields(specimen.getSpecimenBarcode()));
-		logger.info("fields size  = " + fields.size());
 		
 		// Extraction form
 		newf = getExtractionFormFields(specimen.getSpecimenBarcode());
-		logger.info("2=============== Extraction form ==================");
-		logger.info(newf.toString());
 		fields.addAll(newf);
-		logger.info("fields size  = " + fields.size());
 		
 		// Detection form
 		newf = getDetectionFormFields(specimen.getSpecimenBarcode());
-		logger.info("2=============== Detection form ==================");
-		logger.info(newf.toString());
 		fields.addAll(newf);
-		logger.info("fields size  = " + fields.size());
 		
 		// Resulting form
 		newf = getResultingFormFields(specimen.getSpecimenBarcode());
-		logger.info("2=============== Resulting form ==================");
-		logger.info(newf.toString());
 		fields.addAll(newf);
-		logger.info("fields size  = " + fields.size());
 
 		// Verification form
 		newf = getVerificationFormFields(specimen.getSpecimenBarcode());
-		logger.info("2=============== Verification form ==================");
-		logger.info(newf.toString());
 		fields.addAll(newf);
-		logger.info("fields size  = " + fields.size());
 
 
 		StringBuilder builder = new StringBuilder();
@@ -1778,12 +1267,14 @@ public class DhisLink implements Serializable {
 			criteria.setFieldName("covid_rna_results" + pos);			
 			field = getCriteriaField(criteria);
 			if(field != null) {
+				field.setField("covid_rna_results");
 				fields.add(field);
 			}
 			
 			criteria.setFieldName("test_verify_result_" + pos);			
 			field = getCriteriaField(criteria);
 			if(field != null) {
+				field.setField("test_verify_result");
 				fields.add(field);
 			}
 			
@@ -1835,6 +1326,7 @@ public class DhisLink implements Serializable {
 			criteria.setFieldName("test_assay_result_" + pos);			
 			field = getCriteriaField(criteria);
 			if(field != null) {
+				field.setField("test_assay_result");
 				fields.add(field);
 			}
 			
@@ -1940,7 +1432,7 @@ public class DhisLink implements Serializable {
 			
 			fields.add(new DDPObjectField("ext_batch_pos", pos, null));
 			fields.add(new DDPObjectField("test_ext_barcode", rd.getValue(), null));
-			fields.add(new DDPObjectField("test_ext_id", rd.getRecord(), null));
+			fields.add(new DDPObjectField("test_ext_batch_id", rd.getRecord(), null));
 						
 			criteria = new RedcapDataSearchCriteria();
 			criteria.setProjectId(labExtractionPID);
@@ -1974,6 +1466,7 @@ public class DhisLink implements Serializable {
 			criteria.setFieldName("test_ext_instrument" + pos);			
 			field = getCriteriaField(criteria);
 			if(field != null) {
+				field.setField("test_ext_instrument");
 				fields.add(field);
 			}
 			
@@ -1999,7 +1492,7 @@ public class DhisLink implements Serializable {
 			int pindex = rd.getFieldName().lastIndexOf("_");
 			String pos = rd.getFieldName().substring(pindex + 1);
 			fields.add(new DDPObjectField("tpor_batch_pos", pos, null));
-			fields.add(new DDPObjectField("test_tpor_id", rd.getRecord(), null));
+			fields.add(new DDPObjectField("test_tpor_batch_id", rd.getRecord(), null));
 			
 			fields.add(new DDPObjectField("test_tpor_barcode", rd.getValue(), null));
 						
@@ -2037,7 +1530,12 @@ public class DhisLink implements Serializable {
 		
 	}
 	
-	
+	/**
+	 * Get the fields from the reception form on the Reception project
+	 * 
+	 * @param barcode
+	 * @return
+	 */
 	private List<DDPObjectField> getReceptionFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
@@ -2117,7 +1615,7 @@ public class DhisLink implements Serializable {
 	 * @param specimen
 	 * @return
 	 */
-	private String getEventPayloadString(Event event, SpecimenVO specimen) {
+	private String getEventPayloadString(Event event) {
 		
 		StringBuilder builder = new StringBuilder();
 
@@ -2150,42 +1648,20 @@ public class DhisLink implements Serializable {
 		builder.append("\"dataValues\": [\n");
 		
 		// Values from the the event
+		StringBuilder evbuilder = new StringBuilder();
+		int i = 0;
 		for(DataValue value : event.getDataValues()){
-			builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(value.getDataElement()) + 
-					", " + JSONObject.quote("value") + ": " + JSONObject.quote(value.getValue()) + "},\n");
+			
+			if(evbuilder.length() > 0) {
+				evbuilder.append(", ");
+			}
+			
+			evbuilder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(value.getDataElement()) + 
+					", " + JSONObject.quote("value") + ": " + JSONObject.quote(value.getValue()) + "}\n");
 		}
 		
-		// Fill in the results data values
-		builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.results")) + 
-				", " + JSONObject.quote("value") + ": " + JSONObject.quote(specimen.getResults()) + "},\n");
-		
-		builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.results.entered.by")) + 
-				", " + JSONObject.quote("value") + ": " + JSONObject.quote(specimen.getResultsEnteredBy()) + "},\n");
-		
-		builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.results.date.entered")) + 
-				", " + JSONObject.quote("value") + ": " + JSONObject.quote(specimen.getResultsEnteredDate().toString()) + "},\n");
-		
-		builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.results.verified.by")) + 
-				", " + JSONObject.quote("value") + ": " + JSONObject.quote(specimen.getResultsVerifiedBy()) + "},\n");
-		
-		builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.result.date.verified")) + 
-				", " + JSONObject.quote("value") + ": " + JSONObject.quote(specimen.getResultsVerifiedDate().toString()) + "},\n");
-		
-		builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.results.authorised.by")) + 
-				", " + JSONObject.quote("value") + ": " + JSONObject.quote(specimen.getResultsAuthorisedBy()) + "},\n");
-		
-		if(specimen.getResultsAuthorisedDate() != null) {
-			builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.results.date.authorised")) + 
-				", " + JSONObject.quote("value") + ": " + JSONObject.quote(specimen.getResultsAuthorisedDate().toString()) + "}\n");
-		}
-
-		if(specimen.getReceivingDateTime() != null) {
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");						
-			String datetime = format.format(specimen.getReceivingDateTime());
-			builder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(env.getProperty("lab.specimen.date.received")) + 
-					", " + JSONObject.quote("value") + ": " + JSONObject.quote(datetime) + "}\n");
-		}
-		
+		builder.append(evbuilder.toString());
+				
 		builder.append("]\n");
 		builder.append("}\n");
 		return builder.toString();
@@ -2217,18 +1693,6 @@ public class DhisLink implements Serializable {
 			
 			for(Event event : eventList.getEvents()) {
 			
-				if(i == 1) {
-					builder.append(", ");
-				}
-				
-				String payload = getEventPayloadString(event, sp);
-				
-				builder.append(payload);
-				
-				if(i == 0) {
-					i = 1;
-				}
-				
 				// Add the result values to the event
 				DataValue val = new DataValue();
 				if(!StringUtils.isBlank(sp.getResults())) {
@@ -2242,6 +1706,7 @@ public class DhisLink implements Serializable {
 					} else {
 						val.setValue("PENDING");	
 					}
+					event.getDataValues().add(val);
 				}
 
 				if(!StringUtils.isBlank(sp.getResultsEnteredBy())) {
@@ -2251,25 +1716,34 @@ public class DhisLink implements Serializable {
 					event.getDataValues().add(val);
 				}
 				
-				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.results.date.entered"));
-				val.setValue(sp.getResultsEnteredDate().toString());				
-				event.getDataValues().add(val);
+				if(sp.getResultsEnteredDate() != null) {
+					
+					val = new DataValue();
+					val.setDataElement(env.getProperty("lab.results.date.entered"));
+					val.setValue(sp.getResultsEnteredDate().toString());				
+					event.getDataValues().add(val);
+				}
 				
-				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.results.verified.by"));
-				val.setValue(sp.getResultsVerifiedBy());				
-				event.getDataValues().add(val);
+				if(!StringUtils.isBlank(sp.getResultsVerifiedBy())) {
+					val = new DataValue();
+					val.setDataElement(env.getProperty("lab.results.verified.by"));
+					val.setValue(sp.getResultsVerifiedBy());				
+					event.getDataValues().add(val);
+				}
 				
-				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.result.date.verified"));
-				val.setValue(sp.getResultsVerifiedDate().toString());				
-				event.getDataValues().add(val);
+				if(sp.getResultsVerifiedDate() != null) {
+					val = new DataValue();
+					val.setDataElement(env.getProperty("lab.result.date.verified"));
+					val.setValue(sp.getResultsVerifiedDate().toString());				
+					event.getDataValues().add(val);
+				}
 				
-				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.results.authorised.by"));
-				val.setValue(sp.getResultsAuthorisedBy());				
-				event.getDataValues().add(val);
+				if(!StringUtils.isBlank(sp.getResultsAuthorisedBy())) {
+					val = new DataValue();
+					val.setDataElement(env.getProperty("lab.results.authorised.by"));
+					val.setValue(sp.getResultsAuthorisedBy());				
+					event.getDataValues().add(val);
+				}
 				
 				if(sp.getResultsAuthorisedDate() != null) {
 					val = new DataValue();
@@ -2277,7 +1751,35 @@ public class DhisLink implements Serializable {
 					val.setValue(sp.getResultsAuthorisedDate().toString());				
 					event.getDataValues().add(val);
 				}
-								
+				
+				if(sp.getReceivingDateTime() != null) {
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");						
+					String datetime = format.format(sp.getReceivingDateTime());
+					val = new DataValue();
+					val.setDataElement(env.getProperty("lab.specimen.date.received"));
+					val.setValue(datetime.toString());
+					event.getDataValues().add(val);
+				}
+				
+				/*if(!StringUtils.isBlank(sp.getReceivingLab())) {
+					val = new DataValue();
+					val.setDataElement(env.getProperty("lab.results.date.authorised"));
+					val.setValue(sp.getResultsAuthorisedDate().toString());				
+					event.getDataValues().add(val);
+				}*/
+				
+				if(i == 1) {
+					builder.append(", ");
+				}
+				
+				String payload = getEventPayloadString(event);
+				
+				builder.append(payload);
+				
+				if(i == 0) {
+					i = 1;
+				}
+				
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -2305,171 +1807,4 @@ public class DhisLink implements Serializable {
 	
 	}
 	
-	/**
-	 * Update the staging area with the data from the forms
-	 * @param specimens
-	 */
-	public void updateStaging(Collection<SpecimenVO> specimens) {
-		
-		for(SpecimenVO specimen : specimens) {
-			RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
-			// Reception project
-			criteria.setProjectId(labReceptionPID);
-			criteria.setFieldName("lab_rec_barcode_%");
-			criteria.setValue(specimen.getSpecimenBarcode());
-			
-			List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-			// Update with information from receiving forms
-			if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-				RedcapDataVO rd = redcapDataVOs.get(0);
-				
-				int index = rd.getFieldName().lastIndexOf("_");
-				String pos = rd.getFieldName().substring(index + 1);
-				
-				criteria = new RedcapDataSearchCriteria();
-				criteria.setEventId(rd.getEventId());
-				criteria.setProjectId(rd.getProjectId());
-				criteria.setRecord(rd.getRecord());
-				criteria.setFieldName("received_datetime");
-				
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					try {
-						specimen.setReceivingDateTime(format.parse(rd.getValue()));
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}
-				
-				criteria.setFieldName("receiving_personnel");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					specimen.setReceivingPersonnel(rd.getValue());
-				}
-				
-				criteria.setFieldName("receiving_lab");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					specimen.setReceivingLab(rd.getValue());
-				}
-				
-				criteria.setFieldName("specimen_cond_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					specimen.setReceivingConditionCode(rd.getValue());
-				}
-			}
-			
-			criteria = new RedcapDataSearchCriteria();
-			// Resulting project
-			criteria.setProjectId(labResultingPID);
-			criteria.setFieldName("test_det_barcode_%");
-			criteria.setValue(specimen.getSpecimenBarcode());
-			
-			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-			// Update with information from receiving forms
-			if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-				RedcapDataVO rd = redcapDataVOs.get(0);
-				int index = rd.getFieldName().lastIndexOf("_");
-				String pos = rd.getFieldName().substring(index + 1);
-				
-				criteria = new RedcapDataSearchCriteria();
-				criteria.setEventId(rd.getEventId());
-				criteria.setProjectId(rd.getProjectId());
-				criteria.setRecord(rd.getRecord());
-				criteria.setFieldName("test_assay_datetime");
-				
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					try {
-						specimen.setResultsEnteredDate(format.parse(rd.getValue()));
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}
-				
-				criteria.setFieldName("test_assay_personnel");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					specimen.setResultsEnteredBy(rd.getValue());
-				}
-				
-				criteria.setFieldName("test_assay_result_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					specimen.setResults(rd.getValue());
-				}
-				
-				// Find if the the results have been verified
-				criteria.setFieldName("test_verify_result_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-					if(rd.getValue().contentEquals("5")) {
-						
-						// Replace with the verified results
-						criteria.setFieldName("covid_rna_results" + pos);
-						redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-						if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-							rd = redcapDataVOs.get(0);
-							specimen.setResults(rd.getValue());
-						}
-					}
-				}
-			}
-			
-			
-			criteria = new RedcapDataSearchCriteria(); // Resulting project
-			criteria.setProjectId(labReportPID);
-			criteria.setRecord(specimen.getSpecimenBarcode());
-			criteria.setFieldName("result_authorised");
-			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-			if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-				RedcapDataVO rd = redcapDataVOs.get(0);
-
-				if (rd.getValue().equals("1")) { // Results have been authorised
-					criteria.setFieldName("covid_rna_results");
-					redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-					if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-						rd = redcapDataVOs.get(0);
-						specimen.setResults(rd.getValue());
-					}
-					
-					// Who authorised
-					criteria.setFieldName("authorizer_personnel");
-					redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-					if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-						rd = redcapDataVOs.get(0);
-						specimen.setResultsAuthorisedBy(rd.getValue());
-					}
-					
-					// When was the results authorised
-					criteria.setFieldName("authorizer_datetime");
-					redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-					if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-						rd = redcapDataVOs.get(0);
-						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-						try {
-							specimen.setResultsAuthorisedDate(format.parse(rd.getValue()));
-						} catch (ParseException e) {
-							e.printStackTrace();
-						}
-						
-					}
-				}
-			}
-
-			specimen.setDhis2Synched(true);
-			specimenService.saveSpecimen(specimen);
-		}
-	}
 }
