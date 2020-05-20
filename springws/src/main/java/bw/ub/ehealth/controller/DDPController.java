@@ -157,17 +157,20 @@ public class DDPController {
     @ResponseStatus(value = HttpStatus.OK)
     public List<SpecimenVO> getSpecimen() {
     	
-    	int pageSize = 50;
+    	final int pageSize = 2000;
         Map<String, String> params = new HashMap<>();
         params.put("program", program);
         params.put("programStage", programStage);
         params.put("status", "COMPLETED");
+        //params.put("trackedEntityInstance", "Sg78qJZCXAm");
         SpecimenVO last = specimenService.findLatestSpecimen();
         
         if(last != null) {
         	Calendar cal = Calendar.getInstance();
         	cal.setTime(last.getCreated());
-        	String date = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
+        	String date = cal.get(Calendar.YEAR) + "-" + 
+    				(cal.get(Calendar.MONTH) < 10 ? "0" + cal.get(Calendar.MONTH) : cal.get(Calendar.MONTH)) + "-" + 
+    				(cal.get(Calendar.DAY_OF_MONTH) < 10 ? "0" + cal.get(Calendar.DAY_OF_MONTH) : cal.get(Calendar.DAY_OF_MONTH));
         	params.put("startDate", date);
         } else {
         	params.put("startDate", "2020-05-12");
@@ -183,7 +186,6 @@ public class DDPController {
 		List<SpecimenVO> tmp = dhisLink.getSpecimen(params);
 
 		while (dhisLink.getNumPulled() != 0) {
-			logger.info("Page " + page + " has " + tmp.size() + " events.");
 			specimen.addAll(tmp);
 			
 			numPulled.add(new BigInteger(tmp.size() + ""));
