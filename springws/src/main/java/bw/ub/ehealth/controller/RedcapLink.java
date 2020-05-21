@@ -110,7 +110,6 @@ public class RedcapLink {
 		{
 			e.printStackTrace();
 		}
-
 		
 		HttpClient client = HttpClientBuilder.create().build();
 		

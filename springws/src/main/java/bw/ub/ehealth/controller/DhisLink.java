@@ -705,8 +705,7 @@ public class DhisLink implements Serializable {
 
 		SpecimenVO specimen = new SpecimenVO();
 		
-		specimen.setEvent(event.getEvent());
-		
+		specimen.setEvent(event.getEvent());		
 		specimen.setCreated(event.getCreated());
 		specimen.setLastUpdated(event.getLastUpdated());
 
@@ -854,7 +853,6 @@ public class DhisLink implements Serializable {
 	 */
 	public List<SpecimenVO> getSpecimen(Map<String, String> parameters) {
 		
-		logger.info("Searching .... ");
 		List<Event> events = this.getEvents(parameters);
 		logger.info("Found " + events.size() + " events.");
 		this.numPulled = events.size();

@@ -171,9 +171,9 @@ public class DDPController {
         	String date = cal.get(Calendar.YEAR) + "-" + 
     				(cal.get(Calendar.MONTH) < 10 ? "0" + cal.get(Calendar.MONTH) : cal.get(Calendar.MONTH)) + "-" + 
     				(cal.get(Calendar.DAY_OF_MONTH) < 10 ? "0" + cal.get(Calendar.DAY_OF_MONTH) : cal.get(Calendar.DAY_OF_MONTH));
-        	params.put("startDate", date);
+        	params.put("lastUpdatedStartDate", date);
         } else {
-        	params.put("startDate", "2020-05-12");
+        	params.put("lastUpdatedStartDate", "2020-05-19");
         }
         
         params.put("order", "eventDate:asc");
@@ -189,7 +189,6 @@ public class DDPController {
 			specimen.addAll(tmp);
 			
 			numPulled.add(new BigInteger(tmp.size() + ""));
-			logger.info("================ Got " + numPulled.toString());
 			if(numPulled.intValue() > 10) {
 				break;
 			}
