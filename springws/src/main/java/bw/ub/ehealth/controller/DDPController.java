@@ -90,17 +90,16 @@ public class DDPController {
         params.put("program", program);
         params.put("programStage", programStage);
         SpecimenVO last = specimenService.findLatestSpecimen();
-        String date = "2020-05-13";
+        String date = "2020-05-20";
         
         if(last != null) {
         	
         	Calendar cal = Calendar.getInstance();
         	cal.setTime(last.getCreated());
-        	date = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
-        	params.put("startDate", last.getCreated().toString().replace(' ', 'T'));
-        } else {
-        	params.put("startDate", date);
-        }
+        	//date = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
+        	
+        } 
+        params.put("startDate", date);
         params.put("order", "eventDate:asc");
         params.put("pageSize", "50");
 
@@ -164,18 +163,17 @@ public class DDPController {
         params.put("status", "COMPLETED");
         //params.put("trackedEntityInstance", "Sg78qJZCXAm");
         SpecimenVO last = specimenService.findLatestSpecimen();
+        String date = "2020-05-20";
         
         if(last != null) {
         	Calendar cal = Calendar.getInstance();
         	cal.setTime(last.getCreated());
-        	String date = cal.get(Calendar.YEAR) + "-" + 
+        	 date = cal.get(Calendar.YEAR) + "-" + 
     				(cal.get(Calendar.MONTH) < 10 ? "0" + cal.get(Calendar.MONTH) : cal.get(Calendar.MONTH)) + "-" + 
     				(cal.get(Calendar.DAY_OF_MONTH) < 10 ? "0" + cal.get(Calendar.DAY_OF_MONTH) : cal.get(Calendar.DAY_OF_MONTH));
-        	params.put("lastUpdatedStartDate", date);
-        } else {
-        	params.put("lastUpdatedStartDate", "2020-05-19");
         }
-        
+        	
+        params.put("lastUpdatedStartDate", date);        
         params.put("order", "eventDate:asc");
         params.put("pageSize", "" + pageSize);
         

@@ -697,9 +697,8 @@ public class DhisLink implements Serializable {
 		 * or if the specimen has 
 		 */
 		DataValue labResults = values.get(env.getProperty("lab.results").trim());
-		if ((labResults != null && !labResults.getValue().equals("PENDING")) 
-				|| values.get(env.getProperty("lab.specimen.barcode").trim()) == null 
-				|| values.get(env.getProperty("lab.specimen.date.received").trim()) != null) {
+		if ((labResults != null && !labResults.getValue().trim().equals("PENDING")) 
+				|| values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
 			return null;
 		}
 
