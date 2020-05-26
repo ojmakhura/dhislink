@@ -1,10 +1,12 @@
-package bw.ub.ehealth.security;
+package bw.ub.ehealth.dhislink.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DhislinkPasswordEncoder implements PasswordEncoder {
 
 	@Override

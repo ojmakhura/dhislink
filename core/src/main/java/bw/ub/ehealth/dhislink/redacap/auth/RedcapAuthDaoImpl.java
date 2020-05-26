@@ -6,8 +6,14 @@
  */
 package bw.ub.ehealth.dhislink.redacap.auth;
 
-import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthLocationVO;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
+import bw.ub.ehealth.dhislink.security.DhislinkPasswordEncoder;
+
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.Query;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,14 +23,26 @@ import org.springframework.stereotype.Repository;
 public class RedcapAuthDaoImpl
     extends RedcapAuthDaoBase
 {
+	@Autowired
+	private DhislinkPasswordEncoder encoder;
     /**
      * {@inheritDoc}
      */
     @Override
     protected String handleFindUsernameSalt(String username)
     {
-        // TODO implement public String handleFindUsernameSalt(String username)
-        return null;
+    	String queryStr = "select ra.passwordSalt from RedcapAuth ra where username = :username";
+    	Query query = entityManager.createQuery(queryStr);
+    	query.setParameter("username", username);
+    	
+    	logger.info("Running query for " + username);
+    	
+    	try {
+			return (String) query.getSingleResult();
+		} catch(NoResultException | NonUniqueResultException e) {
+			logger.error(e.getMessage());
+			return null;
+		}
     }
 
     /**
@@ -33,8 +51,21 @@ public class RedcapAuthDaoImpl
     @Override
     protected RedcapAuth handleUserAuthentication(String username, String password)
     {
-        // TODO implement public RedcapAuth handleUserAuthentication(String username, String password)
-        return null;
+    	String salt = this.findUsernameSalt(username);
+    	logger.info(String.format("The salt for user %s is %s", username, salt));
+    	String queryStr = "select ra from bw.ub.ehealth.dhislink.redacap.auth.RedcapAuth ra "
+    			+ "where username = :username and password = :password";
+    	Query query = entityManager.createQuery(queryStr);
+    	query.setParameter("username", username);
+    	logger.info(String.format("Encoded passowrd for %s is %s", username, encoder.encode(password + salt)));
+    	query.setParameter("password", encoder.encode(password + salt));
+
+    	try {
+			return (RedcapAuth) query.getSingleResult();
+		} catch(NoResultException | NonUniqueResultException e) {
+			logger.error(e.getMessage());
+			return null;
+		}
     }
 
     /**
@@ -66,19 +97,13 @@ public class RedcapAuthDaoImpl
      */
     private RedcapAuth loadRedcapAuthFromRedcapAuthVO(RedcapAuthVO redcapAuthVO)
     {
-        // TODO implement loadRedcapAuthFromRedcapAuthVO
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.loadRedcapAuthFromRedcapAuthVO(RedcapAuthVO) not yet implemented.");
-
-        /* A typical implementation looks like this:
-        if (redcapAuthVO.getId() == null)
-        {
-            return  RedcapAuth.Factory.newInstance();
-        }
-        else
-        {
-            return this.load(redcapAuthVO.getId());
-        }
-        */
+    	RedcapAuth auth = this.searchUniqueUsername(redcapAuthVO.getUsername());
+    	
+    	if(auth == null) {
+    		auth = RedcapAuth.Factory.newInstance();
+    	}
+    	
+    	return auth;
     }
 
     /**
@@ -103,72 +128,5 @@ public class RedcapAuthDaoImpl
     {
         // TODO verify behavior of redcapAuthVOToEntity
         super.redcapAuthVOToEntity(source, target, copyIfNull);
-    }
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void toRedcapAuthLocationVO(
-        RedcapAuth source,
-        RedcapAuthLocationVO target)
-    {
-        // TODO verify behavior of toRedcapAuthLocationVO
-        super.toRedcapAuthLocationVO(source, target);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RedcapAuthLocationVO toRedcapAuthLocationVO(final RedcapAuth entity)
-    {
-        // TODO verify behavior of toRedcapAuthLocationVO
-        return super.toRedcapAuthLocationVO(entity);
-    }
-
-    /**
-     * Retrieves the entity object that is associated with the specified value object
-     * from the object store. If no such entity object exists in the object store,
-     * a new, blank entity is created
-     */
-    private RedcapAuth loadRedcapAuthFromRedcapAuthLocationVO(RedcapAuthLocationVO redcapAuthLocationVO)
-    {
-        // TODO implement loadRedcapAuthFromRedcapAuthLocationVO
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.loadRedcapAuthFromRedcapAuthLocationVO(RedcapAuthLocationVO) not yet implemented.");
-
-        /* A typical implementation looks like this:
-        if (redcapAuthLocationVO.getId() == null)
-        {
-            return  RedcapAuth.Factory.newInstance();
-        }
-        else
-        {
-            return this.load(redcapAuthLocationVO.getId());
-        }
-        */
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public RedcapAuth redcapAuthLocationVOToEntity(RedcapAuthLocationVO redcapAuthLocationVO)
-    {
-        // TODO verify behavior of redcapAuthLocationVOToEntity
-        RedcapAuth entity = this.loadRedcapAuthFromRedcapAuthLocationVO(redcapAuthLocationVO);
-        this.redcapAuthLocationVOToEntity(redcapAuthLocationVO, entity, true);
-        return entity;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void redcapAuthLocationVOToEntity(
-        RedcapAuthLocationVO source,
-        RedcapAuth target,
-        boolean copyIfNull)
-    {
-        // TODO verify behavior of redcapAuthLocationVOToEntity
-        super.redcapAuthLocationVOToEntity(source, target, copyIfNull);
     }
 }

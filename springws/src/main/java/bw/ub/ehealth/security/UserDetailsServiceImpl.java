@@ -2,6 +2,8 @@ package bw.ub.ehealth.security;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,9 +12,12 @@ import org.springframework.stereotype.Service;
 
 import bw.ub.ehealth.dhislink.redacap.auth.service.RedcapAuthService;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
+import bw.ub.ehealth.dhislink.security.UserDetailsImpl;
 
 @Service("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 	
 	@Autowired
 	RedcapAuthService redcapAuthService;

@@ -7,6 +7,13 @@
 package bw.ub.ehealth.dhislink.redacap.auth;
 
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthLocationVO;
+
+import java.util.Collection;
+
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.Query;
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -34,6 +41,7 @@ public class RedcapAuthLocationDaoImpl
     @Override
     public RedcapAuthLocationVO toRedcapAuthLocationVO(final RedcapAuthLocation entity)
     {
+    	
         // TODO verify behavior of toRedcapAuthLocationVO
         return super.toRedcapAuthLocationVO(entity);
     }
@@ -45,10 +53,7 @@ public class RedcapAuthLocationDaoImpl
      */
     private RedcapAuthLocation loadRedcapAuthLocationFromRedcapAuthLocationVO(RedcapAuthLocationVO redcapAuthLocationVO)
     {
-        // TODO implement loadRedcapAuthLocationFromRedcapAuthLocationVO
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.loadRedcapAuthLocationFromRedcapAuthLocationVO(RedcapAuthLocationVO) not yet implemented.");
-
-        /* A typical implementation looks like this:
+        
         if (redcapAuthLocationVO.getId() == null)
         {
             return  RedcapAuthLocation.Factory.newInstance();
@@ -57,7 +62,6 @@ public class RedcapAuthLocationDaoImpl
         {
             return this.load(redcapAuthLocationVO.getId());
         }
-        */
     }
 
     /**
@@ -82,5 +86,36 @@ public class RedcapAuthLocationDaoImpl
     {
         // TODO verify behavior of redcapAuthLocationVOToEntity
         super.redcapAuthLocationVOToEntity(source, target, copyIfNull);
+        if(source.getLocation() != null) {
+        	target.setLocationId(source.getLocation().getId());
+        }
+        
+        if(source.getRedcapAuth() != null) {
+        	target.setRedcapAuthUsername(source.getRedcapAuth().getUsername());
+        }
     }
+
+	@Override
+	protected RedcapAuthLocation handleFindAuthLocation(String username) throws Exception {
+		String queryStr = "select al from "
+				+ "RedcapAuthLocation al where al.authUsername = :username";
+		Query query = entityManager.createQuery(queryStr);
+		query.setParameter("username", username);
+		
+		try {
+			return (RedcapAuthLocation) query.getSingleResult();
+		} catch(NoResultException | NonUniqueResultException e) {
+			return null;
+		}
+	}
+
+	@Override
+	protected Collection<RedcapAuth> handleFindLocationAuths(Long locationId) throws Exception {
+		String queryStr = "select al from "
+				+ "RedcapAuthLocation al where al.locationId = :locationId";
+		Query query = entityManager.createQuery(queryStr);
+		query.setParameter("locationId", locationId);
+		// TODO Auto-generated method stub
+		return query.getResultList();
+	}
 }

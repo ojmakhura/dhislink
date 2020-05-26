@@ -8,6 +8,7 @@
  */
 package bw.ub.ehealth.dhislink.redacap.auth.service;
 
+import bw.ub.ehealth.dhislink.redacap.auth.RedcapAuth;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,8 +30,13 @@ public class RedcapAuthServiceImpl
     protected  RedcapAuthVO handleFindByUsername(String username)
         throws Exception
     {
-        // TODO implement protected  RedcapAuthVO handleFindByUsername(String username)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.service.RedcapAuthService.handleFindByUsername(String username) Not implemented!");
+    	RedcapAuth auth = getRedcapAuthDao().searchUniqueUsername(username);
+    	
+    	if(auth == null) {
+    		return null;
+    	}
+    	
+    	return getRedcapAuthDao().toRedcapAuthVO(auth);
     }
 
 }

@@ -8,10 +8,14 @@
  */
 package bw.ub.ehealth.dhislink.redacap.auth.service;
 
+import bw.ub.ehealth.dhislink.redacap.auth.RedcapAuthLocation;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthLocationVO;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
 import bw.ub.ehealth.dhislink.redacap.location.vo.LocationVO;
 import java.util.Collection;
+
+import javax.validation.constraints.NotNull;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,19 +36,28 @@ public class AuthLocationServiceImpl
     protected  RedcapAuthLocationVO handleCreateAuthLocation(RedcapAuthLocationVO authLocationVO)
         throws Exception
     {
-        // TODO implement protected  RedcapAuthLocationVO handleCreateAuthLocation(RedcapAuthLocationVO authLocationVO)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService.handleCreateAuthLocation(RedcapAuthLocationVO authLocationVO) Not implemented!");
+    	RedcapAuthLocation loc = getRedcapAuthLocationDao().redcapAuthLocationVOToEntity(authLocationVO);
+    	
+    	if(loc != null && loc.getId() == null) {
+    		loc = getRedcapAuthLocationDao().create(loc);
+    		return getRedcapAuthLocationDao().toRedcapAuthLocationVO(loc);
+    	}
+    	
+    	return null;
     }
 
     /**
      * @see bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService#updateAuthLocation(LocationVO)
      */
     @Override
-    protected  void handleUpdateAuthLocation(LocationVO authLocationVO)
+    protected  void handleUpdateAuthLocation(RedcapAuthLocationVO authLocationVO)
         throws Exception
     {
-        // TODO implement protected  void handleUpdateAuthLocation(LocationVO authLocationVO)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService.handleUpdateAuthLocation(LocationVO authLocationVO) Not implemented!");
+    	RedcapAuthLocation loc = getRedcapAuthLocationDao().redcapAuthLocationVOToEntity(authLocationVO);
+    	
+    	if(loc != null && loc.getId() == null) {
+    		getRedcapAuthLocationDao().update(loc);
+    	}
     }
 
     /**
@@ -62,22 +75,26 @@ public class AuthLocationServiceImpl
      * @see bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService#findById(Long)
      */
     @Override
-    protected  RedcapAuthLocationVO handleFindById(Long id)
+    protected  RedcapAuthLocationVO handleFindById(@NotNull Long id)
         throws Exception
     {
-        // TODO implement protected  RedcapAuthLocationVO handleFindById(Long id)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService.handleFindById(Long id) Not implemented!");
+    	return getRedcapAuthLocationDao().toRedcapAuthLocationVO(getRedcapAuthLocationDao().load(id));
     }
 
     /**
      * @see bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService#searchByRedcapAuth(RedcapAuthVO)
      */
     @Override
-    protected  RedcapAuthVO handleSearchByRedcapAuth(RedcapAuthVO auth)
+    protected  RedcapAuthLocationVO handleSearchByRedcapAuth(RedcapAuthVO auth)
         throws Exception
-    {
-        // TODO implement protected  RedcapAuthVO handleSearchByRedcapAuth(RedcapAuthVO auth)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService.handleSearchByRedcapAuth(RedcapAuthVO auth) Not implemented!");
+    {    	
+    	RedcapAuthLocation loc = getRedcapAuthLocationDao().findAuthLocation(auth.getUsername());
+    	
+    	if(loc != null) {
+    		return getRedcapAuthLocationDao().toRedcapAuthLocationVO(loc);
+    	}
+    	
+    	return null;
     }
 
     /**
@@ -87,8 +104,7 @@ public class AuthLocationServiceImpl
     protected  Collection<RedcapAuthLocationVO> handleFindAll()
         throws Exception
     {
-        // TODO implement protected  Collection<RedcapAuthLocationVO> handleFindAll()
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.auth.service.AuthLocationService.handleFindAll() Not implemented!");
+    	return getRedcapAuthLocationDao().toRedcapAuthLocationVOCollection(getRedcapAuthLocationDao().loadAll());
     }
 
 }

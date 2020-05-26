@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
+import bw.ub.ehealth.dhislink.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -30,13 +31,15 @@ public class JwtTokenProvider {
 	
 	public String generateToken(Authentication authentication) {
 		
-		RedcapAuthVO userVO = (RedcapAuthVO) authentication.getPrincipal();
+		logger.info("Principal is " + authentication.getPrincipal());
+		
+		UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
 		
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 		
 		return Jwts.builder()
-				.setSubject(userVO.getUsername())
+				.setSubject(principal.getUsername())
 				.setIssuedAt(new Date())
 				.setExpiration(expiryDate)
 				.signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -45,10 +48,14 @@ public class JwtTokenProvider {
 	
 	public String getUsernameFromJWT(String token) {
 		
+		logger.info("Got the token " + token);
+		
 		Claims claims = Jwts.parser()
 				.setSigningKey(jwtSecret)
 				.parseClaimsJws(token)
 				.getBody();
+		
+		logger.info("Claims " + claims.toString());
 		
 		return claims.getSubject();
 	}
@@ -56,7 +63,7 @@ public class JwtTokenProvider {
 	public boolean validateToken(String authToken) {
 		
 		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+			logger.info(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken).toString());
 			return true;
 		} catch (SignatureException ex) {
 			logger.error("Invalid JWT signature");

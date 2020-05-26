@@ -5,6 +5,9 @@ import java.util.Collections;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +16,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import bw.ub.ehealth.dhislink.redacap.auth.service.SecurityService;
+import bw.ub.ehealth.dhislink.redacap.auth.service.SecurityServiceImpl;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
+import bw.ub.ehealth.dhislink.security.UserDetailsImpl;
 import bw.ub.ehealth.dhislink.vo.JwtAuthenticationResponse;
 import bw.ub.ehealth.security.JwtTokenProvider;
 
@@ -26,6 +34,8 @@ import bw.ub.ehealth.security.JwtTokenProvider;
 @RequestMapping("/ddpcontroller/auth")
 public class RedcapAuthController {
 
+	private static final Logger logger = LoggerFactory.getLogger(RedcapAuthController.class);
+	
 	@Autowired
 	AuthenticationManager authenticationManager;
 	
@@ -35,17 +45,34 @@ public class RedcapAuthController {
 	@Autowired
 	JwtTokenProvider tokenProvider;
 	
+	@Autowired
+	private SecurityService securityService;
+	
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticatedUser(@Valid @RequestBody RedcapAuthVO authVO) {
 		
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(authVO.getUsername(), authVO.getPassword())
-		);
+		securityService.login(authVO.getUsername(), authVO.getPassword());
+		logger.info(SecurityContextHolder.getContext().toString());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
-		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = tokenProvider.generateToken(authentication);
 		
 		return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+	}
+	
+	@GetMapping("/me")
+	@ResponseBody
+	public UserDetailsImpl getLoggedInUser() {
+		String username = securityService.findLoggedInUsername();
+		
+		if(StringUtils.isBlank(username)) {
+			return null;
+		}
+		
+		UserDetailsImpl details = new UserDetailsImpl();
+		details.setUsername(username);
+		
+		return details;
 	}
 	
 	/*@PostMapping("/signup")

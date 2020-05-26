@@ -17,7 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import bw.ub.ehealth.security.DhislinkPasswordEncoder;
+import bw.ub.ehealth.dhislink.security.DhislinkPasswordEncoder;
 import bw.ub.ehealth.security.JwtAuthenticationEntryPoint;
 import bw.ub.ehealth.security.JwtAuthenticationFilter;
 
@@ -86,10 +86,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						"/**/*.css",
 						"/**/*.js")
 					.permitAll()
-				.antMatchers("/ddpcontroller/auth/**")
+				.antMatchers("/ddpcontroller/auth/signin")
 					.permitAll()
-				.antMatchers(HttpMethod.GET, "/api/myrest/**", "/api/users/**")
-					.permitAll()
+				//.antMatchers(HttpMethod.GET, "/ddpcontroller/auth/**")
+				//	.permitAll()
 				.anyRequest()
 					.authenticated();
 		

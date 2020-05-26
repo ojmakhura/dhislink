@@ -34,7 +34,8 @@ public class SpecimenDaoImpl
     protected Specimen handleFindByBarcode(String barcode)
     {
     	
-    	Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where specimenBarcode = '" + barcode + "'");
+    	Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where specimenBarcode = :barcode ");
+    	query.setParameter("barcode", barcode);
     	
     	try {
 			return (Specimen) query.getSingleResult();
