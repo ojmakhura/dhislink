@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:MagicDrawProfile="http://www.omg.org/spec/UML/20131001/MagicDrawProfile" xmlns:andromdacommon="http:///schemas/andromdacommon/_eX9QIJeGEeq_eK0GEqqPkw/0" xmlns:andromdapersistence="http:///schemas/andromdapersistence/_eYGaEJeGEeq_eK0GEqqPkw/0" xmlns:andromdaservice="http:///schemas/andromdaservice/_eX4XoJeGEeq_eK0GEqqPkw/0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http://www.omg.org/spec/UML/20131001/MagicDrawProfile UML_Standard_Profile.MagicDraw_Profile.profile.uml#_eeEg9peGEeq_eK0GEqqPkw http:///schemas/andromdacommon/_eX9QIJeGEeq_eK0GEqqPkw/0 andromda-common.profile.uml#_eeA00peGEeq_eK0GEqqPkw http:///schemas/andromdapersistence/_eYGaEJeGEeq_eK0GEqqPkw/0 andromda-persistence.profile.uml#_eeKnrpeGEeq_eK0GEqqPkw http:///schemas/andromdaservice/_eX4XoJeGEeq_eK0GEqqPkw/0 andromda-service.profile.uml#_eeJ-0ZeGEeq_eK0GEqqPkw">
+<xmi:XMI xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:MagicDrawProfile="http://www.omg.org/spec/UML/20131001/MagicDrawProfile" xmlns:andromdacommon="http:///schemas/andromdacommon/_XJOVwJ8fEeq4Nc5J5FVscg/0" xmlns:andromdapersistence="http:///schemas/andromdapersistence/_XJKEUJ8fEeq4Nc5J5FVscg/0" xmlns:andromdaservice="http:///schemas/andromdaservice/_XJW4oJ8fEeq4Nc5J5FVscg/0" xmlns:andromdawebservice="http:///schemas/andromdawebservice/_XJYt0J8fEeq4Nc5J5FVscg/0" xmlns:andromdaxml="http:///schemas/andromdaxml/_XJPj4J8fEeq4Nc5J5FVscg/0" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xsi:schemaLocation="http://www.omg.org/spec/UML/20131001/MagicDrawProfile UML_Standard_Profile.MagicDraw_Profile.profile.uml#_XVYk1p8fEeq4Nc5J5FVscg http:///schemas/andromdacommon/_XJOVwJ8fEeq4Nc5J5FVscg/0 andromda-common.profile.uml#_XVc20J8fEeq4Nc5J5FVscg http:///schemas/andromdapersistence/_XJKEUJ8fEeq4Nc5J5FVscg/0 andromda-persistence.profile.uml#_XVcNOp8fEeq4Nc5J5FVscg http:///schemas/andromdaservice/_XJW4oJ8fEeq4Nc5J5FVscg/0 andromda-service.profile.uml#_XVX8rJ8fEeq4Nc5J5FVscg http:///schemas/andromdawebservice/_XJYt0J8fEeq4Nc5J5FVscg/0 andromda-webservice.profile.uml#_XVWIGp8fEeq4Nc5J5FVscg http:///schemas/andromdaxml/_XJPj4J8fEeq4Nc5J5FVscg/0 andromda-xml.profile.uml#_XVX8Fp8fEeq4Nc5J5FVscg">
   <uml:Model xmi:id="_7zZYwCXvEdyeC6-v07fheA" name="NewModel" visibility="public" URI="" viewpoint="">
     <ownedComment xmi:id="_18_1beta_8c90288_1415101994820_370998_4336" annotatedElement="_7zZYwCXvEdyeC6-v07fheA" body="Author:junior.&#xA;Created:5/1/20 3:33 PM.&#xA;Title:.&#xA;Comment:.&#xA;"/>
     <packageImport xmi:id="_7tQHQExuEd60KbaIlrDIWg" importedPackage="eee_1045467100313_135436_1"/>
@@ -1106,6 +1106,14 @@
             <defaultValue xmi:type="uml:LiteralString" xmi:id="_19_0_3_90e0298_1588488558864_7923_11017" name="" visibility="public" value="UNKNOWN"/>
           </ownedAttribute>
         </packagedElement>
+        <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590476620204_91561_6165" name="JwtAuthenticationResponse" visibility="public">
+          <ownedAttribute xmi:id="_19_0_3_90e0298_1590476687158_873492_6191" name="accessToken" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+          <ownedAttribute xmi:id="_19_0_3_90e0298_1590476713672_657020_6193" name="accessType" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66">
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590476723799_247419_6195" name="" visibility="public"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590476723799_971804_6196" name="" visibility="public" value="1"/>
+            <defaultValue xmi:type="uml:LiteralString" xmi:id="_19_0_3_90e0298_1590476742237_513537_6197" name="" visibility="public" value="Bearer"/>
+          </ownedAttribute>
+        </packagedElement>
       </packagedElement>
       <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1588348625508_341114_9145" name="metadata" visibility="public" URI=""/>
       <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1588348636604_25749_9146" name="redcapconfig" visibility="public" URI=""/>
@@ -1252,368 +1260,591 @@
             </ownedAttribute>
           </packagedElement>
         </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1590429474461_624173_5161" name="auth" visibility="public" URI="">
+          <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590429496878_321351_5195" name="RedcapAuth" visibility="public">
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590429557195_13861_5231" name="username" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" isID="true">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590429569075_86042_5233" name="" visibility="public"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590429569076_624822_5234" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590429688208_281640_5243" name="password" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" isUnique="false">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590429791591_467909_5249" name="" visibility="public"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590429791591_559227_5250" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590429719012_269120_5245" name="passwordSalt" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" isUnique="false">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590429734344_9657_5247" name="" visibility="public"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590429734344_267130_5248" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+            <ownedOperation xmi:id="_19_0_3_90e0298_1590430169627_509864_5396" name="findUsernameSalt" visibility="public" isStatic="true">
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590430190220_9353_5398" name="" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" direction="return"/>
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590430194786_538686_5399" name="username" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+            </ownedOperation>
+            <ownedOperation xmi:id="_19_0_3_90e0298_1590430232555_907429_5400" name="userAuthentication" visibility="public" isStatic="true">
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590430251699_428238_5402" name="" visibility="public" type="_19_0_3_90e0298_1590429496878_321351_5195" direction="return"/>
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590430255440_700602_5403" name="username" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590430299384_40794_5404" name="password" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1590429865925_825770_5251" name="vo" visibility="public" URI="">
+            <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590429944865_705542_5355" name="RedcapAuthVO" visibility="public">
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590429974975_697973_5381" name="username" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" isUnique="false">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590429974977_105363_5385" name="" visibility="public"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590429974976_472518_5384" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590429974976_160681_5382" name="password" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" isUnique="false">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590429974978_697424_5388" name="" visibility="public"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590429974978_801142_5387" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590429974976_696561_5383" name="passwordSalt" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" isUnique="false">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590429974978_242238_5390" name="" visibility="public"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590429974978_145596_5389" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+            </packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590436954034_799228_5904" name="RedcapAuthLocationVO" visibility="public">
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590436975359_49843_5929" name="redcapAuth" visibility="public" type="_19_0_3_90e0298_1590429944865_705542_5355" isUnique="false">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590436975360_75935_5932" name="" visibility="public" value="1"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590436975360_500374_5931" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590436975360_384130_5930" name="location" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645" isUnique="false">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590436975360_706060_5934" name="" visibility="public" value="1"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590436975360_576536_5933" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+            </packagedElement>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1590429873678_818813_5252" name="service" visibility="public" URI="">
+            <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590429910907_165297_5318" name="RedcapAuthService" visibility="public">
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590431247797_258266_5519" name="findByUsername" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590431261551_635732_5521" name="" visibility="public" type="_19_0_3_90e0298_1590429944865_705542_5355" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590431269252_825950_5522" name="username" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+              </ownedOperation>
+            </packagedElement>
+            <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590430385469_156638_5469" name="" visibility="public" client="_19_0_3_90e0298_1590429910907_165297_5318" supplier="_19_0_3_90e0298_1590429496878_321351_5195"/>
+            <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590430574301_750631_5472" name="SeurityService" visibility="public">
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590431131891_592412_5511" name="findLoggedInUsername" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590431145311_869480_5513" name="" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66" direction="return"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590431151363_647324_5514" name="login" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590431169584_986798_5516" name="" visibility="public" type="_9_0_1fe00f9_1119336925531_324247_52" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590431177506_65818_5517" name="username" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590431186906_288276_5518" name="password" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+              </ownedOperation>
+            </packagedElement>
+            <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590430595287_923324_5498" name="" visibility="public" client="_19_0_3_90e0298_1590430574301_750631_5472" supplier="_19_0_3_90e0298_1590429496878_321351_5195"/>
+            <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590437245597_729984_6002" name="AuthLocationService" visibility="public">
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590437280621_632976_6038" name="createAuthLocation" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280622_820047_6044" name="" visibility="public" type="_19_0_3_90e0298_1590436954034_799228_5904" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_764389_6045" name="authLocationVO" visibility="public" type="_19_0_3_90e0298_1590436954034_799228_5904"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590437280622_441209_6039" name="updateAuthLocation" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_453739_6046" name="" visibility="public" type="_9_0_1fe00f9_1119336925531_324247_52" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_71755_6047" name="authLocationVO" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590437280622_387047_6040" name="deleteAuthLocation" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_691380_6048" name="" visibility="public" type="_9_0_1fe00f9_1119336925531_324247_52" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_552327_6049" name="id" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590437280622_765368_6041" name="findById" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_223795_6050" name="" visibility="public" type="_19_0_3_90e0298_1590436954034_799228_5904" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_328409_6051" name="id" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590437280622_466874_6042" name="searchByRedcapAuth" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_573516_6052" name="" visibility="public" type="_19_0_3_90e0298_1590429944865_705542_5355" direction="return">
+                  <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590437280623_248199_6056" name="" visibility="public"/>
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590437280623_865288_6055" name="" visibility="public" value="1"/>
+                </ownedParameter>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_446905_6053" name="auth" visibility="public" type="_19_0_3_90e0298_1590429944865_705542_5355"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590437280622_120773_6043" name="findAll" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590437280623_519861_6054" name="" visibility="public" type="_19_0_3_90e0298_1590436954034_799228_5904" direction="return">
+                  <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590437280623_127214_6058" name="" visibility="public"/>
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590437280623_83768_6057" name="" visibility="public" value="*"/>
+                </ownedParameter>
+              </ownedOperation>
+            </packagedElement>
+            <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590437949752_912769_6092" name="" visibility="public" client="_19_0_3_90e0298_1590437245597_729984_6002" supplier="_19_0_3_90e0298_1590436785887_27817_5859"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590430371963_609160_5437" name="" visibility="public" client="_19_0_3_90e0298_1590429496878_321351_5195" supplier="_19_0_3_90e0298_1590429944865_705542_5355"/>
+          <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590436785887_27817_5859" name="RedcapAuthLocation" visibility="public">
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590436890693_389887_5895" name="redcapAuthId" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59" isUnique="false">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590436907587_134174_5897" name="" visibility="public"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590436907587_545918_5898" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590436912288_382912_5899" name="locationId" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59" isUnique="false">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590436938936_710770_5901" name="" visibility="public"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590436938936_941961_5902" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+            <ownedOperation xmi:id="_19_0_3_90e0298_1590440248812_333148_6135" name="findAuthLocation" visibility="public">
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590440281158_922629_6139" name="" visibility="public" type="_19_0_3_90e0298_1590436785887_27817_5859" direction="return"/>
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590440286174_147358_6140" name="authId" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590440296195_916582_6141" name="" visibility="public"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590440296195_791492_6142" name="" visibility="public" value="1"/>
+              </ownedParameter>
+            </ownedOperation>
+            <ownedOperation xmi:id="_19_0_3_90e0298_1590440305849_803121_6143" name="findLocationAuths" visibility="public">
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590440320565_884799_6147" name="" visibility="public" type="_19_0_3_90e0298_1590429496878_321351_5195" direction="return">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590440329791_501381_6148" name="" visibility="public"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590440329791_652293_6149" name="" visibility="public" value="*"/>
+              </ownedParameter>
+              <ownedParameter xmi:id="_19_0_3_90e0298_1590440336487_25750_6150" name="locationId" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59"/>
+            </ownedOperation>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590437113963_799298_5966" name="" visibility="public" client="_19_0_3_90e0298_1590436785887_27817_5859" supplier="_19_0_3_90e0298_1590436954034_799228_5904"/>
+          <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590437126958_819063_5969" name="" visibility="public" client="_19_0_3_90e0298_1590429496878_321351_5195" supplier="_19_0_3_90e0298_1590436954034_799228_5904"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1590433068309_435615_5526" name="location" visibility="public" URI="">
+          <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1590435367354_765371_5527" name="vo" visibility="public" URI="">
+            <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590435581754_744840_5645" name="LocationVO" visibility="public">
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590435581754_158317_5646" name="code" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590435581755_663316_5651" name="" visibility="public" value="1"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590435581755_762839_5650" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590435581754_750665_5647" name="name" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590435581755_581894_5653" name="" visibility="public" value="1"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590435581755_132954_5652" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+              <ownedAttribute xmi:id="_19_0_3_90e0298_1590435581755_301076_5648" name="description" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66">
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590435581755_108447_5655" name="" visibility="public"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590435581755_862648_5654" name="" visibility="public" value="1"/>
+              </ownedAttribute>
+            </packagedElement>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Package" xmi:id="_19_0_3_90e0298_1590435373429_310132_5528" name="service" visibility="public" URI="">
+            <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590435644107_344585_5726" name="LocationService" visibility="public">
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590435778147_305914_5800" name="createLocation" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436068463_612462_5802" name="" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436200777_444455_5810" name="locationVO" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590436072562_40931_5803" name="updateLocation" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436083857_321819_5805" name="" visibility="public" type="_9_0_1fe00f9_1119336925531_324247_52" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436242277_791662_5811" name="locationVO" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590436113922_641218_5806" name="deleteLocation" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436173243_789049_5808" name="" visibility="public" type="_9_0_1fe00f9_1119336925531_324247_52" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436177468_392359_5809" name="id" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590436328872_358097_5812" name="findById" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436343080_527555_5814" name="" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645" direction="return"/>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436355314_220111_5815" name="id" visibility="public" type="_9_0_1fe00f9_1119336925531_227130_59"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590436594241_443343_5816" name="searchByName" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436610150_189812_5818" name="" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645" direction="return">
+                  <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590436615508_615705_5819" name="" visibility="public"/>
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590436615508_170007_5820" name="" visibility="public" value="*"/>
+                </ownedParameter>
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436618597_517591_5821" name="name" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66"/>
+              </ownedOperation>
+              <ownedOperation xmi:id="_19_0_3_90e0298_1590436631288_402126_5822" name="findAll" visibility="public">
+                <ownedParameter xmi:id="_19_0_3_90e0298_1590436640386_845971_5824" name="" visibility="public" type="_19_0_3_90e0298_1590435581754_744840_5645" direction="return">
+                  <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590436645142_979801_5825" name="" visibility="public"/>
+                  <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590436645142_113099_5826" name="" visibility="public" value="*"/>
+                </ownedParameter>
+              </ownedOperation>
+            </packagedElement>
+            <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590435706748_307699_5794" name="" visibility="public" client="_19_0_3_90e0298_1590435644107_344585_5726" supplier="_19_0_3_90e0298_1590435387284_73487_5562"/>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Class" xmi:id="_19_0_3_90e0298_1590435387284_73487_5562" name="Location" visibility="public">
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590435494568_71980_5601" name="code" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590435512285_444490_5603" name="" visibility="public" value="1"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590435512285_480930_5604" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590435519899_760681_5605" name="name" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590435534858_704012_5607" name="" visibility="public" value="1"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590435534858_935482_5608" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+            <ownedAttribute xmi:id="_19_0_3_90e0298_1590435538488_632735_5609" name="description" visibility="public" type="_9_0_1fe00f9_1119336925531_364079_66">
+              <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_19_0_3_90e0298_1590435549743_24444_5611" name="" visibility="public"/>
+              <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_19_0_3_90e0298_1590435549744_174536_5612" name="" visibility="public" value="1"/>
+            </ownedAttribute>
+          </packagedElement>
+          <packagedElement xmi:type="uml:Dependency" xmi:id="_19_0_3_90e0298_1590437133779_672991_5999" name="" visibility="public" client="_19_0_3_90e0298_1590435387284_73487_5562" supplier="_19_0_3_90e0298_1590436954034_799228_5904"/>
+        </packagedElement>
       </packagedElement>
     </packagedElement>
     <packagedElement xmi:type="uml:Package" xmi:id="magicdraw_uml_standard_profile_v_0001" name="UML Standard Profile" visibility="public" URI="">
       <ownedComment xmi:id="_be00301_1078843546940_242228_131" annotatedElement="magicdraw_uml_standard_profile_v_0001" body="UML Standard Profile contains a UML metamodel (metaclasses without properties and associations), Standard UML stereotypes defined in the annex C of UML specification, validation suites for UML model correctness and completeness checking, and stereotypes used by MagicDraw internally."/>
     </packagedElement>
     <profileApplication xmi:id="_8a70287_1078771814628_224704_589profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeWMAJeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="andromda-common.profile.uml#_eeA00peGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVkIoJ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="andromda-common.profile.uml#_XVc20J8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="andromda-common.profile.uml#_8a70287_1078771814628_224704_589"/>
     </profileApplication>
     <profileApplication xmi:id="_9_0_2_12ab03bf_1120853774265_65497_87profileApplicationNewModel">
-      <eAnnotations xmi:id="_eec5sJeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="andromda-persistence.profile.uml#_eeKnrpeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVeCnJ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="andromda-persistence.profile.uml#_XVcNOp8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="andromda-persistence.profile.uml#_9_0_2_12ab03bf_1120853774265_65497_87"/>
     </profileApplication>
     <profileApplication xmi:id="_9_0_2_12ab03bf_1120853223187_211304_0profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeU94JeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="andromda-presentation.profile.uml#_eeD5eJeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVpoMJ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="andromda-presentation.profile.uml#_XVWGMp8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="andromda-presentation.profile.uml#_9_0_2_12ab03bf_1120853223187_211304_0"/>
     </profileApplication>
     <profileApplication xmi:id="_9_0_2_12ab03bf_1120853175671_502460_0profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeYoQJeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="andromda-process.profile.uml#_eeJZmpeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVgeQJ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="andromda-process.profile.uml#_XVVgHZ8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="andromda-process.profile.uml#_9_0_2_12ab03bf_1120853175671_502460_0"/>
     </profileApplication>
     <profileApplication xmi:id="_9_0_2_12ab03bf_1120852978046_265263_0profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeOQMJeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="andromda-service.profile.uml#_eeJ-0ZeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVtSkJ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="andromda-service.profile.uml#_XVX8rJ8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="andromda-service.profile.uml#_9_0_2_12ab03bf_1120852978046_265263_0"/>
     </profileApplication>
     <profileApplication xmi:id="_9_0_2_12ab03bf_1120852932765_76536_0profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeRTgJeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="andromda-webservice.profile.uml#_eeIJkpeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVvHwJ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="andromda-webservice.profile.uml#_XVWIGp8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="andromda-webservice.profile.uml#_9_0_2_12ab03bf_1120852932765_76536_0"/>
     </profileApplication>
     <profileApplication xmi:id="_9_0_2_12ab03bf_1120852471296_986007_0profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeQFYJeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="andromda-xml.profile.uml#_eeHj9JeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVl90J8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="andromda-xml.profile.uml#_XVX8Fp8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="andromda-xml.profile.uml#_9_0_2_12ab03bf_1120852471296_986007_0"/>
     </profileApplication>
     <profileApplication xmi:id="_11_5_f720368_1159529670215_231387_1profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeL11ZeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.Validation_Profile.profile.uml#_eeKBaZeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XViTcZ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.Validation_Profile.profile.uml#_XVdcnp8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="UML_Standard_Profile.Validation_Profile.profile.uml#_11_5_f720368_1159529670215_231387_1"/>
     </profileApplication>
     <profileApplication xmi:id="_17_0_4beta_8ca0285_1361349406965_180847_3086profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeTIsZeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.Dependency_Matrix_Profile.profile.uml#_eeL0cJeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVnzAZ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.Dependency_Matrix_Profile.profile.uml#_XVXVEJ8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="UML_Standard_Profile.Dependency_Matrix_Profile.profile.uml#_17_0_4beta_8ca0285_1361349406965_180847_3086"/>
     </profileApplication>
-    <profileApplication xmi:id="_19_0beta_8bb027e_1484121177637_661582_4502profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeXaIZeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.Find_By_Text.profile.uml#_eeKBWZeGEeq_eK0GEqqPkw"/>
-      </eAnnotations>
-      <appliedProfile href="UML_Standard_Profile.MagicDraw_Profile.Find_By_Text.profile.uml#_19_0beta_8bb027e_1484121177637_661582_4502"/>
-    </profileApplication>
-    <profileApplication xmi:id="_be00301_1073394351331_445580_2profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeZ2YZeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.profile.uml#_eeEg9peGEeq_eK0GEqqPkw"/>
-      </eAnnotations>
-      <appliedProfile href="UML_Standard_Profile.MagicDraw_Profile.profile.uml#_be00301_1073394351331_445580_2"/>
-    </profileApplication>
     <profileApplication xmi:id="_11_5_be00301_1153310565718_226811_161profileApplicationNewModel">
-      <eAnnotations xmi:id="_eebrkZeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.DSL_Customization.profile.uml#_eeIxAJeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVrdYZ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.DSL_Customization.profile.uml#_XVURAp8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="UML_Standard_Profile.MagicDraw_Profile.DSL_Customization.profile.uml#_11_5_be00301_1153310565718_226811_161"/>
     </profileApplication>
+    <profileApplication xmi:id="_be00301_1073394351331_445580_2profileApplicationNewModel">
+      <eAnnotations xmi:id="_XVwV4Z8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.profile.uml#_XVYk1p8fEeq4Nc5J5FVscg"/>
+      </eAnnotations>
+      <appliedProfile href="UML_Standard_Profile.MagicDraw_Profile.profile.uml#_be00301_1073394351331_445580_2"/>
+    </profileApplication>
+    <profileApplication xmi:id="_19_0beta_8bb027e_1484121177637_661582_4502profileApplicationNewModel">
+      <eAnnotations xmi:id="_XVyLEZ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.Find_By_Text.profile.uml#_XVVgp58fEeq4Nc5J5FVscg"/>
+      </eAnnotations>
+      <appliedProfile href="UML_Standard_Profile.MagicDraw_Profile.Find_By_Text.profile.uml#_19_0beta_8bb027e_1484121177637_661582_4502"/>
+    </profileApplication>
     <profileApplication xmi:id="_16_6_8f90291_1254846042821_86742_517profileApplicationNewModel">
-      <eAnnotations xmi:id="_eeeH0ZeGEeq_eK0GEqqPkw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.Traceability_customization.profile.uml#_eeD4IpeGEeq_eK0GEqqPkw"/>
+      <eAnnotations xmi:id="_XVzZMZ8fEeq4Nc5J5FVscg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="UML_Standard_Profile.MagicDraw_Profile.Traceability_customization.profile.uml#_XVYjgJ8fEeq4Nc5J5FVscg"/>
       </eAnnotations>
       <appliedProfile href="UML_Standard_Profile.MagicDraw_Profile.Traceability_customization.profile.uml#_16_6_8f90291_1254846042821_86742_517"/>
     </profileApplication>
   </uml:Model>
-  <andromdaservice:Service xmi:id="_eesKUpeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1589028251985_862851_5343"/>
-  <andromdaservice:Service xmi:id="_eesKU5eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588342035421_902170_8386"/>
-  <andromdaservice:Service xmi:id="_eesKVJeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588340597491_838679_7907"/>
-  <andromdacommon:Enumeration xmi:id="_eeyQ4JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588488474714_609491_10983"/>
-  <andromdacommon:Enumeration xmi:id="_eeyQ4ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588467583712_941439_10913"/>
-  <andromdacommon:Enumeration xmi:id="_eeyQ4peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588467255606_973204_10865"/>
-  <andromdacommon:Enumeration xmi:id="_eeyQ45eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588466788231_970486_10820"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ5JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432922710_178007_10155">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ5ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1589370846875_602397_5142"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ5peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588774069416_304931_5401"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ55eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588773002412_704581_5159"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ6JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432973428_886496_10187">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ6ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588434845769_24525_10450">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ6peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588435267057_347565_10522"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ65eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432826763_244933_10126">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ7JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432756229_580211_10062">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ7ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432788125_463020_10094">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ7peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432711423_840925_10033">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ75eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432664937_813410_10001">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ8JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432637170_765262_9972">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ8ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432589596_416781_9943">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ8peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432540174_820147_9914">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ85eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432508534_900792_9885">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ9JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432442059_850903_9853">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ9ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432402746_899956_9824">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ9peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588432145262_3019_9765"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ95eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588431436235_188421_9603">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ-JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588431635275_62650_9673">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ-ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588431654883_350318_9699">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ-peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588431378437_555369_9572">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ-5eGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588431510776_426243_9636"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ_JeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588427499786_625434_9529"/>
-  <andromdacommon:ValueObject xmi:id="_eeyQ_ZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588341777447_51463_8261">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:ValueObject xmi:id="_eeyQ_peGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588340434629_580108_7785">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
-  </andromdacommon:ValueObject>
-  <andromdacommon:Attribute xmi:id="_eeyQ_5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1589640584394_61_5615">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;covid_number&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eeyRAJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1589543474712_378767_5141">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_facility&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eeyRAZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1589206336773_969509_5134">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;receiving_lab&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eeyRApeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588460420937_88967_10799">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;dispatcher_city&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eeyRA5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588460420936_679009_10798">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;dispatcher_email&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eeyRBJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588460420935_597841_10797">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;dispatcher_contact&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eeyRBZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456706551_739562_10721">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;authorizer_datetime&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey38JeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456706551_902860_10720">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;authorizer_personnel&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey38ZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456706550_673961_10719">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_verify_datetime&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey38peGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456706550_420206_10718">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_verify_personnel&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey385eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456706549_88938_10717">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_assay_datetime&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey39JeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456706549_385834_10716">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_assay_personnel&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey39ZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1589027530016_510384_5166">
-    <andromda_additionalAnnotations>javax.persistence.Id</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey39peGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588433822719_589685_10328">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;redcap_url&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey395eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588433807712_118546_10324">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;project_id&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3-JeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588863022877_71120_5508">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3-ZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588434308875_861703_10386">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3-peGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588434241302_393846_10377">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3-5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588434291611_79912_10384">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3_JeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588434218175_411992_10374">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3_ZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588433453645_71606_10275">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3_peGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588433416583_794689_10270">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey3_5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588432278567_140964_9806">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4AJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588432217185_29421_9795">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4AZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588432084278_585983_9759">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4ApeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588431891031_205085_9738">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4A5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588432028993_478802_9752">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4BJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588431963835_32011_9745">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4BZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588414319187_926006_9417">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;time_dispatched&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4BpeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588348156297_396914_9138">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;received_datetime&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4B5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588413981705_29526_9401">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;specimen_type&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4CJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921307_616576_8306">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;symptom&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4CZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_682378_8305">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;sample_status_dispatch&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4CpeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_849402_8304">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;receiving_condition_code&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4C5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_958992_8303">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;receiving_personnel&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4DJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_758392_8302">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;outcome&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4DZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_94784_8301">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;specimen_barcode&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4DpeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_834952_8300">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;gis_long&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4D5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_174237_8299">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;gis_lat&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4EJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921306_538026_8298">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;date_specimen_collected&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4EZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921305_95876_8297">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;location_of_dispatch&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4EpeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921305_338740_8295">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;date_dispatched&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4E5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588341921305_66593_8294">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;batch_number&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4FJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588340468628_400991_7819">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;sex&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4FZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588340468628_891911_7818">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;date_birth&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4FpeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588340468628_544431_7816">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_surname&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4F5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588340468628_849594_7817">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_contact&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eey4GJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588340468627_287421_7815">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_first_name&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <andromdacommon:Attribute xmi:id="_eezfAJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588340468626_464963_7814">
-    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;identity_no&quot;)</andromda_additionalAnnotations>
-  </andromdacommon:Attribute>
-  <MagicDrawProfile:auxiliaryResource xmi:id="_eezfAZeGEeq_eK0GEqqPkw" base_Element="magicdraw_uml_standard_profile_v_0001"/>
-  <andromdapersistence:Entity xmi:id="_efI2MJeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1589027449058_125527_5128">
+  <andromdapersistence:Entity xmi:id="_XV7VAJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590436785887_27817_5859"/>
+  <andromdapersistence:Entity xmi:id="_XV7VAZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590435387284_73487_5562"/>
+  <andromdapersistence:Entity xmi:id="_XV7VAp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590429496878_321351_5195"/>
+  <andromdapersistence:Entity xmi:id="_XV7VA58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1589027449058_125527_5128">
     <andromda_additionalAnnotations>javax.persistence.IdClass(RedcapDataId.class)</andromda_additionalAnnotations>
   </andromdapersistence:Entity>
-  <andromdapersistence:Entity xmi:id="_efI2MZeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588341179921_571976_8041"/>
-  <andromdapersistence:Entity xmi:id="_efI2MpeGEeq_eK0GEqqPkw" base_Class="_19_0_3_90e0298_1588340178581_685919_7690"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2M5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589640553200_119514_5609"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2NJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027772354_300911_5191"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2NZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027709848_621592_5184"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2NpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027652718_43738_5179"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2N5eGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1589027811592_400877_5198"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2OJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027575631_172689_5170"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2OZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="false" base_Property="_19_0_3_90e0298_1588755289139_183672_5434"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2OpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588459196098_885862_10790"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2O5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588459081235_352323_10783"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2PJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588459036011_497497_10776"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2PZeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456809353_871746_10766"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2PpeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456625754_65046_10709"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2P5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456568649_959098_10702"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2QJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456495041_663600_10695"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2QZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456457969_226620_10688"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2QpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456424609_942003_10681"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2Q5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456326201_26452_10669"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efI2RJeGEeq_eK0GEqqPkw" base_Property="_19_0_3_90e0298_1588456380649_516655_10676"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdQJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456244601_199552_10662"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdQZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588441762372_528662_10552"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdQpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588413931122_363954_9394"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdQ5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588348101883_520514_9131"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdRJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341661771_345671_8127"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdRZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341489420_223510_8123"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdRpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341469140_625620_8119"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdR5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341448268_637701_8115"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdSJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341430956_86259_8111"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdSZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341392860_805029_8107"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdSpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341378221_275377_8103"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdS5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341349492_364551_8099"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdTJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341316677_63262_8095"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdTZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341297221_956253_8091"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdTpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341274413_517610_8087"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdT5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341230973_610225_8079"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdUJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341205685_605208_8077"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdUZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="false" base_Property="_19_0_3_90e0298_1588755368379_870976_5441"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdUpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455620083_655250_10601"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdU5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588490918074_118610_11018"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdVJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455572851_161284_10596"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdVZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455547907_418944_10591"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdVpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455514555_310139_10586"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efJdV5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455480971_865077_10581"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEUJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455391860_339177_10571"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEUZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455424035_936549_10576"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEUpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340257418_746189_7734"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEU5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455373509_460515_10566"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEVJeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340346601_926268_7746"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEVZeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340277865_653399_7738"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEVpeGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340303969_368384_7742"/>
-  <andromdapersistence:PersistentAttribute xmi:id="_efKEV5eGEeq_eK0GEqqPkw" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340240473_290655_7730"/>
-  <andromdapersistence:PersistentClass xmi:id="_efKEWJeGEeq_eK0GEqqPkw" andromda_persistence_table="redcap_data" base_Class="_19_0_3_90e0298_1589027449058_125527_5128"/>
-  <andromdapersistence:PersistentClass xmi:id="_efKEWZeGEeq_eK0GEqqPkw" andromda_persistence_table="redcap_ddp_specimen" base_Class="_19_0_3_90e0298_1588341179921_571976_8041"/>
-  <andromdapersistence:PersistentClass xmi:id="_efKEWpeGEeq_eK0GEqqPkw" andromda_persistence_table="redcap_ddp_patient" base_Class="_19_0_3_90e0298_1588340178581_685919_7690"/>
+  <andromdapersistence:Entity xmi:id="_XV7VBJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588341179921_571976_8041"/>
+  <andromdapersistence:Entity xmi:id="_XV7VBZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588340178581_685919_7690"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VBp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1590429557195_13861_5231"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VB58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027772354_300911_5191"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VCJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1589027811592_400877_5198"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VCZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027709848_621592_5184"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VCp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027652718_43738_5179"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VC58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589027575631_172689_5170"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VDJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341661771_345671_8127"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VDZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588459081235_352323_10783"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV7VDp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1589640553200_119514_5609"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78EJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588459196098_885862_10790"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78EZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="false" base_Property="_19_0_3_90e0298_1588755289139_183672_5434"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78Ep8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456457969_226620_10688"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78E58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588459036011_497497_10776"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78FJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456568649_959098_10702"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78FZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341489420_223510_8123"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78Fp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456809353_871746_10766"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78F58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456244601_199552_10662"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78GJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341469140_625620_8119"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78GZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456495041_663600_10695"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78Gp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456625754_65046_10709"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78G58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456424609_942003_10681"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78HJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588348101883_520514_9131"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78HZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456380649_516655_10676"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78Hp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341392860_805029_8107"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78H58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341378221_275377_8103"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78IJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588456326201_26452_10669"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78IZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588441762372_528662_10552"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78Ip8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588413931122_363954_9394"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78I58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341430956_86259_8111"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78JJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341448268_637701_8115"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78JZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341349492_364551_8099"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78Jp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341316677_63262_8095"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78J58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341297221_956253_8091"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV78KJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341205685_605208_8077"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jIJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341274413_517610_8087"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jIZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588341230973_610225_8079"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jIp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="false" base_Property="_19_0_3_90e0298_1588755368379_870976_5441"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jI58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588490918074_118610_11018"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jJJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455572851_161284_10596"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jJZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455480971_865077_10581"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jJp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340277865_653399_7738"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jJ58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455620083_655250_10601"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jKJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455547907_418944_10591"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jKZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455514555_310139_10586"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jKp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455424035_936549_10576"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jK58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455391860_339177_10571"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jLJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588455373509_460515_10566"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jLZ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340346601_926268_7746"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jLp8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340257418_746189_7734"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jL58fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340303969_368384_7742"/>
+  <andromdapersistence:PersistentAttribute xmi:id="_XV8jMJ8fEeq4Nc5J5FVscg" andromda_persistence_column_nullable="true" base_Property="_19_0_3_90e0298_1588340240473_290655_7730"/>
+  <andromdapersistence:PersistentClass xmi:id="_XV8jMZ8fEeq4Nc5J5FVscg" andromda_persistence_table="redcap_dd_location" base_Class="_19_0_3_90e0298_1590435387284_73487_5562"/>
+  <andromdapersistence:PersistentClass xmi:id="_XV8jMp8fEeq4Nc5J5FVscg" andromda_persistence_table="redcap_data" base_Class="_19_0_3_90e0298_1589027449058_125527_5128"/>
+  <andromdapersistence:PersistentClass xmi:id="_XV8jM58fEeq4Nc5J5FVscg" andromda_persistence_table="redcap_ddp_specimen" base_Class="_19_0_3_90e0298_1588341179921_571976_8041"/>
+  <andromdapersistence:PersistentClass xmi:id="_XV8jNJ8fEeq4Nc5J5FVscg" andromda_persistence_table="redcap_ddp_patient" base_Class="_19_0_3_90e0298_1588340178581_685919_7690"/>
+  <andromdacommon:Enumeration xmi:id="_XWLMp58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588466788231_970486_10820"/>
+  <andromdacommon:Enumeration xmi:id="_XWLMqJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588488474714_609491_10983"/>
+  <andromdacommon:Enumeration xmi:id="_XWLMqZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588467583712_941439_10913"/>
+  <andromdacommon:Enumeration xmi:id="_XWLMqp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588467255606_973204_10865"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMq58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590476620204_91561_6165"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMrJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590436954034_799228_5904"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMrZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590435581754_744840_5645"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMrp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590429944865_705542_5355">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMr58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1589370846875_602397_5142"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMsJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588774069416_304931_5401"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMsZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588773002412_704581_5159"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMsp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588434845769_24525_10450">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMs58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432973428_886496_10187">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMtJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588435267057_347565_10522"/>
+  <andromdacommon:ValueObject xmi:id="_XWLMtZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432826763_244933_10126">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMtp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432788125_463020_10094">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMt58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432922710_178007_10155">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMuJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432756229_580211_10062">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMuZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432711423_840925_10033">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMup8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432637170_765262_9972">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMu58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432589596_416781_9943">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMvJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432664937_813410_10001">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMvZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432540174_820147_9914">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMvp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432508534_900792_9885">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMv58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432442059_850903_9853">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLMwJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432402746_899956_9824">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLzsJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588431654883_350318_9699">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLzsZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588431635275_62650_9673">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLzsp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588432145262_3019_9765"/>
+  <andromdacommon:ValueObject xmi:id="_XWLzs58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588431378437_555369_9572">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLztJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588431436235_188421_9603">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLztZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588431510776_426243_9636"/>
+  <andromdacommon:ValueObject xmi:id="_XWLztp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588427499786_625434_9529"/>
+  <andromdacommon:ValueObject xmi:id="_XWLzt58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588341777447_51463_8261">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:ValueObject xmi:id="_XWLzuJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588340434629_580108_7785">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</andromda_additionalAnnotations>
+  </andromdacommon:ValueObject>
+  <andromdacommon:Attribute xmi:id="_XWLzuZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588434291611_79912_10384">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzup8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588433807712_118546_10324">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;project_id&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzu58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1589027530016_510384_5166">
+    <andromda_additionalAnnotations>javax.persistence.Id</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzvJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588434241302_393846_10377">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzvZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588434218175_411992_10374">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzvp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588433822719_589685_10328">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;redcap_url&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzv58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588863022877_71120_5508">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzwJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588434308875_861703_10386">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzwZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588432217185_29421_9795">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzwp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588433416583_794689_10270">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzw58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588433453645_71606_10275">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzxJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588432278567_140964_9806">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzxZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588432084278_585983_9759">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzxp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588432028993_478802_9752">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzx58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588431963835_32011_9745">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzyJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588431891031_205085_9738">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonFormat(shape = JsonFormat.Shape.STRING, pattern = &quot;yyyy-MM-dd'T'HH:mm:ss.SSS&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzyZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1589640584394_61_5615">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;covid_number&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzyp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1589543474712_378767_5141">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_facility&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzy58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456706550_420206_10718">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_verify_personnel&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzzJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588460420935_597841_10797">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;dispatcher_contact&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzzZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1589206336773_969509_5134">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;receiving_lab&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzzp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456706549_88938_10717">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_assay_datetime&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLzz58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456706551_739562_10721">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;authorizer_datetime&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLz0J8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456706550_673961_10719">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_verify_datetime&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWLz0Z8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_849402_8304">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;receiving_condition_code&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMawJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588460420937_88967_10799">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;dispatcher_city&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMawZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588460420936_679009_10798">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;dispatcher_email&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMawp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588413981705_29526_9401">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;specimen_type&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMaw58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456706551_902860_10720">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;authorizer_personnel&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMaxJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588456706549_385834_10716">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;test_assay_personnel&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMaxZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588414319187_926006_9417">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;time_dispatched&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMaxp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_682378_8305">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;sample_status_dispatch&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMax58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588348156297_396914_9138">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;received_datetime&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMayJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921305_338740_8295">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;date_dispatched&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMayZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921307_616576_8306">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;symptom&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMayp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_958992_8303">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;receiving_personnel&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMay58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_758392_8302">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;outcome&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMazJ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_94784_8301">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;specimen_barcode&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMazZ8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_834952_8300">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;gis_long&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMazp8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921305_95876_8297">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;location_of_dispatch&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMaz58fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_538026_8298">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;date_specimen_collected&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa0J8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588340468627_287421_7815">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_first_name&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa0Z8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921306_174237_8299">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;gis_lat&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa0p8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588341921305_66593_8294">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;batch_number&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa058fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588340468628_400991_7819">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;sex&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa1J8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588340468628_849594_7817">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_contact&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa1Z8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588340468626_464963_7814">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;identity_no&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa1p8fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588340468628_544431_7816">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;patient_surname&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdacommon:Attribute xmi:id="_XWMa158fEeq4Nc5J5FVscg" base_Property="_19_0_3_90e0298_1588340468628_891911_7818">
+    <andromda_additionalAnnotations>com.fasterxml.jackson.annotation.JsonProperty(&quot;date_birth&quot;)</andromda_additionalAnnotations>
+  </andromdacommon:Attribute>
+  <andromdaxml:XmlSchema xmi:id="_XWMa2J8fEeq4Nc5J5FVscg" base_Package="_19_0_3_90e0298_1590435367354_765371_5527"/>
+  <andromdaxml:XmlSchema xmi:id="_XWMa2Z8fEeq4Nc5J5FVscg" base_Package="_19_0_3_90e0298_1590433068309_435615_5526"/>
+  <andromdaxml:XmlSchema xmi:id="_XWMa2p8fEeq4Nc5J5FVscg" base_Package="_19_0_3_90e0298_1590435373429_310132_5528"/>
+  <andromdaservice:Service xmi:id="_XWYoBJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590437245597_729984_6002"/>
+  <andromdaservice:Service xmi:id="_XWYoBZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590435644107_344585_5726"/>
+  <andromdaservice:Service xmi:id="_XWYoBp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590430574301_750631_5472"/>
+  <andromdaservice:Service xmi:id="_XWYoB58fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1590429910907_165297_5318"/>
+  <andromdaservice:Service xmi:id="_XWYoCJ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1589028251985_862851_5343"/>
+  <andromdaservice:Service xmi:id="_XWYoCZ8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588342035421_902170_8386"/>
+  <andromdaservice:Service xmi:id="_XWYoCp8fEeq4Nc5J5FVscg" base_Class="_19_0_3_90e0298_1588340597491_838679_7907"/>
+  <andromdawebservice:WebService xmi:id="_XWYoC58fEeq4Nc5J5FVscg" andromda_REST="true" andromda_REST_path="/dhislink/location" andromda_REST_produces="ApplicationJSON" base_Class="_19_0_3_90e0298_1590435644107_344585_5726"/>
+  <andromdawebservice:WebServiceOperation xmi:id="_XWYoDJ8fEeq4Nc5J5FVscg" andromda_REST_path="/all" andromda_REST_produces="ApplicationJSON" base_Operation="_19_0_3_90e0298_1590436631288_402126_5822"/>
+  <andromdawebservice:WebServiceOperation xmi:id="_XWYoDZ8fEeq4Nc5J5FVscg" andromda_REST_path="/search" andromda_REST_produces="ApplicationJSON" base_Operation="_19_0_3_90e0298_1590436594241_443343_5816"/>
+  <andromdawebservice:WebServiceOperation xmi:id="_XWYoDp8fEeq4Nc5J5FVscg" andromda_REST_request_type="GET" base_Operation="_19_0_3_90e0298_1590436328872_358097_5812"/>
+  <andromdawebservice:WebServiceOperation xmi:id="_XWYoD58fEeq4Nc5J5FVscg" andromda_REST_path="/update" andromda_REST_request_type="PATCH" base_Operation="_19_0_3_90e0298_1590436072562_40931_5803"/>
+  <andromdawebservice:WebServiceOperation xmi:id="_XWYoEJ8fEeq4Nc5J5FVscg" andromda_REST_path="/delete" andromda_REST_request_type="DELETE" base_Operation="_19_0_3_90e0298_1590436113922_641218_5806"/>
+  <andromdawebservice:WebServiceOperation xmi:id="_XWYoEZ8fEeq4Nc5J5FVscg" andromda_REST_request_type="POST" base_Operation="_19_0_3_90e0298_1590435778147_305914_5800"/>
+  <andromdawebservice:WebServiceParam xmi:id="_XWYoEp8fEeq4Nc5J5FVscg" andromda_REST_param_type="PathParam" base_Parameter="_19_0_3_90e0298_1590436355314_220111_5815"/>
+  <MagicDrawProfile:auxiliaryResource xmi:id="_XWZPEJ8fEeq4Nc5J5FVscg" base_Element="magicdraw_uml_standard_profile_v_0001"/>
 </xmi:XMI>
