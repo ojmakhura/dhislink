@@ -178,8 +178,6 @@ public class RedcapLink {
 			}
 		}
 
-		System.out.println("respCode: " + respCode);
-		System.out.println("result: " + result.toString());
 	}
 	
 	

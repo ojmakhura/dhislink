@@ -31,8 +31,6 @@ public class JwtTokenProvider {
 	
 	public String generateToken(Authentication authentication) {
 		
-		logger.info("Principal is " + authentication.getPrincipal());
-		
 		UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
 		
 		Date now = new Date();
@@ -48,14 +46,11 @@ public class JwtTokenProvider {
 	
 	public String getUsernameFromJWT(String token) {
 		
-		logger.info("Got the token " + token);
-		
 		Claims claims = Jwts.parser()
 				.setSigningKey(jwtSecret)
 				.parseClaimsJws(token)
 				.getBody();
 		
-		logger.info("Claims " + claims.toString());
 		
 		return claims.getSubject();
 	}

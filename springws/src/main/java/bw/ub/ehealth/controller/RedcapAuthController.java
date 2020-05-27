@@ -37,18 +37,19 @@ public class RedcapAuthController {
 	private static final Logger logger = LoggerFactory.getLogger(RedcapAuthController.class);
 	
 	@Autowired
-	AuthenticationManager authenticationManager;
+	private AuthenticationManager authenticationManager;
 	
 	@Autowired
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 	
 	@Autowired
-	JwtTokenProvider tokenProvider;
+	private JwtTokenProvider tokenProvider;
 	
 	@Autowired
 	private SecurityService securityService;
 	
 	@PostMapping("/signin")
+	@ResponseBody
 	public ResponseEntity<?> authenticatedUser(@Valid @RequestBody RedcapAuthVO authVO) {
 		
 		securityService.login(authVO.getUsername(), authVO.getPassword());
@@ -56,8 +57,17 @@ public class RedcapAuthController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
 		String jwt = tokenProvider.generateToken(authentication);
+		JwtAuthenticationResponse response = new JwtAuthenticationResponse();
 		
-		return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+		if(!StringUtils.isBlank(jwt)) {
+			response.setAccessToken(jwt);
+			response.setStatus(HttpStatus.OK.value());
+			logger.info(response.toString());
+		} else {
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		}
+		
+		return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("/me")
