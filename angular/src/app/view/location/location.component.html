@@ -1,0 +1,76 @@
+<div class="row">
+    <mat-tab-group id="tabGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
+        <!-- Editing a location -->
+        <mat-tab label="Edit">
+            <div class="col-md-6">
+                <form #saveForm="ngForm" (ngSubmit)="save()">
+                    <div class="form-group">          
+                        <mat-form-field>
+                            <mat-label>Code</mat-label>
+                            <input matInput
+                                [(ngModel)]="locationVO.code" name="code" id = "code" #code="ngModel" required="true">
+                        </mat-form-field>
+                    </div>
+                    <div class="form-group">          
+                        <mat-form-field>
+                            <mat-label>Name</mat-label>
+                            <input matInput
+                                [(ngModel)]="locationVO.name" name="name" id = "name" #name="ngModel" required="true">
+                        </mat-form-field>
+                    </div>
+                    <div class="form-group">          
+                        <mat-form-field>
+                            <mat-label>Description</mat-label>
+                            <input matInput 
+                                [(ngModel)]="locationVO.description" name="description" id = "description" #description="ngModel" required="false">
+                        </mat-form-field>
+                    </div>
+                    <div class="form-group">  
+                        <button class="btn btn-success" [disabled]="saveForm.invalid">Save</button>
+                        <button type="button" class="btn btn-success" (click)="new()">New</button>
+                    </div>
+                </form>
+            </div>
+        </mat-tab>
+
+        <!-- Searching a location -->
+        <mat-tab label="Search">
+            <div class="col-md-6">
+                <form #searchForm="ngForm" (ngSubmit)="search()">
+                    <div class="form-group">          
+                        <mat-form-field>
+                            <input matInput
+                            (change)="onSearchFieldChange($event)" name="searchText" id = "searchText" required="true">
+                        </mat-form-field>
+                    </div>
+                </form>
+            </div>
+            <div class="form-group">  
+                <button class="btn btn-success" (click)="search()">Search</button>
+                <button type="button" class="btn btn-success" (click)="clearSearch()">Clear</button>
+            </div>
+            <div class="form-group">  
+                <table id="roles" class="table table-bordered table-striped">
+                    <thead>
+                        <th scope="col"></th>
+                        <th scope="col">Code</th>
+                        <th scope="col">Name</th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of locations">
+                            <td id = "action">
+                                <div class = "form-group">
+                                    <button class="btn btn-info" (click)="editLocation(row.id)">
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>{{ row.code }}</td>
+                            <td>{{ row.name }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>

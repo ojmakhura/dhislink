@@ -75,14 +75,14 @@ public class RedcapLink {
 	
 	public void postRedcapData(SpecimenVO specimen) {
 		List<RedcapDataVO> list  = getSpecimenRedcapData(specimen);
-		doPostRedcapData(list);
+		doPostRedcapData(list, "redcap.lab.report.token");
 	}
 	
-	public void postRedcapData(List<RedcapDataVO> list) {
-		doPostRedcapData(list);
+	public void postRedcapData(List<RedcapDataVO> list, String project ) {
+		doPostRedcapData(list, project);
 	}
 
-	public void doPostRedcapData(List<RedcapDataVO> list) {
+	public void doPostRedcapData(List<RedcapDataVO> list, String project) {
 
 		JSONArray arr = new JSONArray();
 		JSONObject records = new JSONObject();
@@ -96,7 +96,7 @@ public class RedcapLink {
 		}
 
 		arr.put(records);
-		ArrayList<NameValuePair> params = getLabReportParams();
+		ArrayList<NameValuePair> params = getProjectParams(project);
 		params.add(new BasicNameValuePair("data", arr.toString()));
 
 		HttpPost post = new HttpPost(redcapApiUrl);
@@ -116,22 +116,16 @@ public class RedcapLink {
 		doPost(client, post);
 	}
 	
-	private ArrayList<NameValuePair> getLabReportParams() {
-		ArrayList<NameValuePair> params = getRedcapParams();
-		params.add(new BasicNameValuePair("token", env.getProperty("redcap.lab.report.token")));
-		
-		return params;
-	}
-	
-	private ArrayList<NameValuePair> getRedcapParams() {
+	private ArrayList<NameValuePair> getProjectParams(String project) {
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("content", "record"));
 		params.add(new BasicNameValuePair("format", "json"));
 		params.add(new BasicNameValuePair("type", "flat"));
+		params.add(new BasicNameValuePair("token", env.getProperty(project)));
 		
 		return params;
 	}
-	
+		
 	public void doPost(HttpClient client, HttpPost post)
 	{
 		StringBuffer result = new StringBuffer();
@@ -705,7 +699,7 @@ public class RedcapLink {
 			}
 
 			specimenService.saveSpecimen(specimen);
-			doPostRedcapData(redcapDataVOs);
+			doPostRedcapData(redcapDataVOs, "redcap.lab.report.token");
 		}
 	}
 }

@@ -3,8 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import * as jwt_decode from 'jwt-decode';
+import { UserDetails } from 'src/app/model/user/user-details';
 
 export const TOKEN_NAME: string = 'jwt_token';
+export const CURRENT_ROUTE: string = 'currentRoute';
+export const CURRENT_USER: string = 'currentUser';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +18,9 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient) { }
 
-  login(loginPayoload) : Observable<AuthenticationResponse> {
+  login(loginPayload) : Observable<AuthenticationResponse> {
 
-    return this.http.post<AuthenticationResponse>(this.url + '/signin', loginPayoload);
+    return this.http.post<AuthenticationResponse>(this.url + '/signin', loginPayload);
   }
 
   getToken(): string {
@@ -41,6 +44,12 @@ export class AuthenticationService {
   isTokenExpired(token?: string): boolean {
     if(!token) token = this.getToken();
     if(!token) return true;
+
+    this.http.get<UserDetails>(this.url + '/me').subscribe(user => {
+      if(!user || !user.username) {
+        return true;
+      }
+    });
 
     const date = this.getTokenExpirationDate(token);
     if(date === undefined) return false;

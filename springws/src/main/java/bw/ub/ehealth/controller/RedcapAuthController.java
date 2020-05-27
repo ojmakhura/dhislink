@@ -61,10 +61,10 @@ public class RedcapAuthController {
 		
 		if(!StringUtils.isBlank(jwt)) {
 			response.setAccessToken(jwt);
-			response.setStatus(HttpStatus.OK.value());
+			response.setStatus((long)HttpStatus.OK.value());
 			logger.info(response.toString());
 		} else {
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.setStatus((long)HttpStatus.UNAUTHORIZED.value());
 		}
 		
 		return ResponseEntity.ok(response);

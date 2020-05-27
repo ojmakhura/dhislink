@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
-import { AuthenticationService } from '../service/authentication/authentication.service';
+import { 
+  AuthenticationService, 
+  TOKEN_NAME, 
+  CURRENT_ROUTE,
+  CURRENT_USER } from '../service/authentication/authentication.service';
 import { RedcapAuth } from '../model/authentication/redcap-auth';
 
 @Component({
@@ -15,23 +18,31 @@ export class LoginComponent implements OnInit {
   redcapAuth: RedcapAuth;
   hide = true;
 
-  constructor(private router: Router, 
-              private authService: AuthenticationService
-               ) {
+  constructor(private router: Router, private authService: AuthenticationService ) {
     this.redcapAuth = new RedcapAuth();
   }
 
   ngOnInit(): void {
-    window.localStorage.removeItem('jwt_token');
+    window.localStorage.removeItem(TOKEN_NAME);
+  }
+
+  getCurrentUser() : string {
+    return window.localStorage.getItem(CURRENT_USER);
   }
 
   onSubmit() {
-    
+    console.log(this.redcapAuth);
     this.authService.login(this.redcapAuth).subscribe(data => {
       debugger;
       if(data.status === 200) {
-        window.localStorage.setItem('jwt_token', data.accessToken);
-        ///this.router.navigate(['list-user']);
+        window.localStorage.setItem(TOKEN_NAME, data.accessToken);
+        window.localStorage.setItem(CURRENT_USER, this.redcapAuth.username);
+
+        if(window.localStorage.getItem(CURRENT_ROUTE)) {
+          this.router.navigate([window.localStorage.getItem(CURRENT_ROUTE)]);
+        } else {
+          this.router.navigate(['location']);
+        }
       }else {
         this.invalidLogin = true;
         alert("Login failed!");

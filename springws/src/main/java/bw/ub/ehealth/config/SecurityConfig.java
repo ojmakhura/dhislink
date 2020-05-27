@@ -88,8 +88,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.permitAll()
 				.antMatchers("/ddpcontroller/auth/signin")
 					.permitAll()
-				//.antMatchers(HttpMethod.GET, "/ddpcontroller/auth/**")
-				//	.permitAll()
 				.anyRequest()
 					.authenticated();
 		

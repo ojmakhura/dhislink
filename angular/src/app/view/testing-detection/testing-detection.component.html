@@ -1,0 +1,121 @@
+<div class="row">
+        <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
+            <!-- Editing a location -->
+            <mat-tab label="Edit">
+                <div class="col">
+                    <form #saveForm="ngForm" (ngSubmit)="saveDetectionBatch()">
+                        <div class="row">
+                        <div class="form-group">
+                            <mat-form-field>
+                                <mat-label>Batch Id</mat-label>
+                                <input matInput
+                                   [(ngModel)]="detectionBatch.batchId" name="batchId" id = "batchId" #batchId="ngModel" required="true">
+                            </mat-form-field>
+                        </div>
+                        <div class="form-group">          
+                            <mat-form-field>
+                                <mat-label>Lab</mat-label>
+                                <mat-select [(value)]="detectionBatch.lab">
+                                    <mat-option *ngFor="let location of locations" [value]="location">
+                                                {{location.name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        </div>
+                        <div class="form-group">
+                            <mat-form-field>
+                                <mat-label>Detection Datetime</mat-label>
+                                 
+                                <input matInput disabled = "true"
+                                    [(ngModel)]="detectionBatch.detectionDateTime" 
+                                    name="detectionDateTime" id = "detectionDateTime" 
+                                    #detectionDateTime="ngModel" required="true">                                
+                            </mat-form-field>
+                            <button class="btn btn-success" (click)="now()">now</button>
+                        </div>
+                        <div class="form-group">
+                            <mat-form-field>
+                                <mat-label>Detection Personnel</mat-label>
+                                <input matInput  disabled = "true"
+                                    [(ngModel)]="detectionBatch.detectionPersonnel" 
+                                    name="detectionPersonnel" id = "detectionPersonnel" 
+                                    #detectionPersonnel="ngModel" required="false">
+                            </mat-form-field>
+                        </div>
+                        <div class="row">  
+                            <div class="form-group">  
+                                <button class="btn btn-success" [disabled]="saveForm.invalid">Save</button>
+                            </div>
+                            <div class="form-group">  
+                                <button type="button" class="btn btn-success" (click)="newDetectionBatch()">New</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </mat-tab>
+    
+            <!-- Searching a location -->
+            <mat-tab label="Search">
+                <div class="col-md-6">
+                    <form #searchForm="ngForm" (ngSubmit)="searchBatches()">
+                        <div class="form-group">  
+                            <mat-form-field>
+                                <mat-label>Batch Id</mat-label>
+                                <input matInput
+                                    [(ngModel)]="searchCriteria.batchId" name="searchBatchId" 
+                                    id = "searchBatchId" #searchBatchId="ngModel">
+                            </mat-form-field>
+                        </div>
+                        <div class="form-group">  
+                            <mat-form-field>
+                                <mat-label>Specimen Barcode</mat-label>
+                                <input matInput
+                                    [(ngModel)]="searchCriteria.specimemBarcode" name="searchSpecimenBarcode" 
+                                    id = "searchSpecimenBarcode" #searchSpecimenBarcode="ngModel">
+                            </mat-form-field>
+                        </div>
+                        <div class="form-group">  
+                            <mat-form-field>
+                                <mat-label>Batch Id</mat-label>
+                                <input matInput
+                                    [(ngModel)]="searchCriteria.batchId" name="searchBatchId" 
+                                    id = "searchBatchId" #searchBatchId="ngModel" required="true">
+                            </mat-form-field>
+                        </div>
+                    </form>
+                </div>
+                <div class="form-group">  
+                    <button class="btn btn-success" (click)="searchBatches()">Search</button>
+                    <button type="button" class="btn btn-success" (click)="clearSearch()">Clear</button>
+                </div>
+                <div class="form-group">  
+                    <table id="batches" class="table table-bordered table-striped">
+                        <thead>
+                            <th scope="col"></th>
+                            <th scope="col">Batch Id</th>
+                            <th scope="col">Detection Personnel</th>
+                            <th scope="col">Detection Datetime</th>
+                            <th scope="col">Detection Status</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of batches">
+                                <td id = "action">
+                                    <div class = "form-group">
+                                        <button class="btn btn-info" (click)="editBatch(row.batchId)">
+                                            <mat-icon>edit</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>{{ row.batchId }}</td>
+                                <td>{{ row.detectionPersonnel }}</td>
+                                <td>{{ row.detectionDatetime }}</td>
+                                <td>{{ row.detectionStatus }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    

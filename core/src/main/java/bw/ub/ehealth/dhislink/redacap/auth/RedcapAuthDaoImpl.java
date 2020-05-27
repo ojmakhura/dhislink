@@ -35,8 +35,6 @@ public class RedcapAuthDaoImpl
     	Query query = entityManager.createQuery(queryStr);
     	query.setParameter("username", username);
     	
-    	logger.info("Running query for " + username);
-    	
     	try {
 			return (String) query.getSingleResult();
 		} catch(NoResultException | NonUniqueResultException e) {

@@ -9,6 +9,7 @@
  */
 package bw.ub.ehealth.dhislink.redacap.location.service;
 
+import bw.ub.ehealth.dhislink.redacap.location.Location;
 import bw.ub.ehealth.dhislink.redacap.location.vo.LocationVO;
 import java.util.Collection;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,16 @@ public class LocationServiceImpl
     protected  LocationVO handleCreateLocation(LocationVO locationVO)
         throws Exception
     {
-        // TODO implement protected  LocationVO handleCreateLocation(LocationVO locationVO)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.location.service.LocationService.handleCreateLocation(LocationVO locationVO) Not implemented!");
+    	// If the id is not null, then delegate to the update method
+    	if(locationVO.getId() != null) {
+    		this.updateLocation(locationVO);
+    		return locationVO;
+    	}
+    	
+    	Location location = getLocationDao().locationVOToEntity(locationVO);
+    	
+    	location = getLocationDao().create(location);
+    	return getLocationDao().toLocationVO(location);    	
     }
 
     /**
@@ -42,8 +51,9 @@ public class LocationServiceImpl
     protected  void handleUpdateLocation(LocationVO locationVO)
         throws Exception
     {
-        // TODO implement protected  void handleUpdateLocation(LocationVO locationVO)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.location.service.LocationService.handleUpdateLocation(LocationVO locationVO) Not implemented!");
+    	if(locationVO.getId() != null) {
+    		getLocationDao().update(getLocationDao().locationVOToEntity(locationVO));
+    	}
     }
 
     /**
@@ -53,8 +63,7 @@ public class LocationServiceImpl
     protected  void handleDeleteLocation(Long id)
         throws Exception
     {
-        // TODO implement protected  void handleDeleteLocation(Long id)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.location.service.LocationService.handleDeleteLocation(Long id) Not implemented!");
+    	this.getLocationDao().remove(id);
     }
 
     /**
@@ -64,8 +73,7 @@ public class LocationServiceImpl
     protected  LocationVO handleFindById(Long id)
         throws Exception
     {
-        // TODO implement protected  LocationVO handleFindById(Long id)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.location.service.LocationService.handleFindById(Long id) Not implemented!");
+    	return getLocationDao().toLocationVO(getLocationDao().load(id));
     }
 
     /**
@@ -75,8 +83,7 @@ public class LocationServiceImpl
     protected  Collection<LocationVO> handleSearchByName(String name)
         throws Exception
     {
-        // TODO implement protected  Collection<LocationVO> handleSearchByName(String name)
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.location.service.LocationService.handleSearchByName(String name) Not implemented!");
+    	return getLocationDao().toLocationVOCollection(getLocationDao().searchByName(name));
     }
 
     /**
@@ -86,8 +93,7 @@ public class LocationServiceImpl
     protected  Collection<LocationVO> handleFindAll()
         throws Exception
     {
-        // TODO implement protected  Collection<LocationVO> handleFindAll()
-        throw new UnsupportedOperationException("bw.ub.ehealth.dhislink.redacap.location.service.LocationService.handleFindAll() Not implemented!");
+        return getLocationDao().toLocationVOCollection(getLocationDao().loadAll());
     }
 
 }

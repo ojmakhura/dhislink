@@ -7,6 +7,11 @@
 package bw.ub.ehealth.dhislink.redacap.location;
 
 import bw.ub.ehealth.dhislink.redacap.location.vo.LocationVO;
+
+import java.util.Collection;
+
+import javax.persistence.Query;
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -79,4 +84,13 @@ public class LocationDaoImpl
         // TODO verify behavior of locationVOToEntity
         super.locationVOToEntity(source, target, copyIfNull);
     }
+
+	@Override
+	protected Collection<Location> handleSearchByName(String name) throws Exception {
+		String queryStr = "select location from Location location where name like :name or code like :name";
+    	Query query = entityManager.createQuery(queryStr);
+    	query.setParameter("name", "%" + name + "%");
+		// TODO Auto-generated method stub
+		return query.getResultList();
+	}
 }
