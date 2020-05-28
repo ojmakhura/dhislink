@@ -16,6 +16,7 @@
                             <mat-form-field>
                                 <mat-label>Lab</mat-label>
                                 <mat-select [(value)]="detectionBatch.lab">
+                                    <mat-option value="None"></mat-option>
                                     <mat-option *ngFor="let location of locations" [value]="location">
                                                 {{location.name}}
                                     </mat-option>
@@ -57,14 +58,14 @@
     
             <!-- Searching a location -->
             <mat-tab label="Search">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <form #searchForm="ngForm" (ngSubmit)="searchBatches()">
                         <div class="form-group">  
                             <mat-form-field>
                                 <mat-label>Batch Id</mat-label>
                                 <input matInput
                                     [(ngModel)]="searchCriteria.batchId" name="searchBatchId" 
-                                    id = "searchBatchId" #searchBatchId="ngModel">
+                                    id = "searchBatchId" #searchBatchId="ngModel"  required="false">
                             </mat-form-field>
                         </div>
                         <div class="form-group">  
@@ -72,15 +73,18 @@
                                 <mat-label>Specimen Barcode</mat-label>
                                 <input matInput
                                     [(ngModel)]="searchCriteria.specimemBarcode" name="searchSpecimenBarcode" 
-                                    id = "searchSpecimenBarcode" #searchSpecimenBarcode="ngModel">
+                                    id = "searchSpecimenBarcode" #searchSpecimenBarcode="ngModel"  required="false">
                             </mat-form-field>
                         </div>
-                        <div class="form-group">  
+                        <div class="form-group"> 
                             <mat-form-field>
-                                <mat-label>Batch Id</mat-label>
-                                <input matInput
-                                    [(ngModel)]="searchCriteria.batchId" name="searchBatchId" 
-                                    id = "searchBatchId" #searchBatchId="ngModel" required="true">
+                                <mat-label>Lab</mat-label>
+                                <mat-select [(value)]="searchCriteria.lab">
+                                    <mat-option value="None"></mat-option>
+                                    <mat-option *ngFor="let location of locations" [value]="location.code">
+                                                {{location.name}}
+                                    </mat-option>
+                                </mat-select>
                             </mat-form-field>
                         </div>
                     </form>
@@ -109,7 +113,7 @@
                                 </td>
                                 <td>{{ row.batchId }}</td>
                                 <td>{{ row.detectionPersonnel }}</td>
-                                <td>{{ row.detectionDatetime }}</td>
+                                <td>{{ row.detectionDateTime }}</td>
                                 <td>{{ row.detectionStatus }}</td>
                             </tr>
                         </tbody>

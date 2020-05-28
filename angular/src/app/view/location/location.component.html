@@ -1,8 +1,8 @@
-<div class="row">
+<div class="card-body">
     <mat-tab-group id="tabGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
         <!-- Editing a location -->
         <mat-tab label="Edit">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <form #saveForm="ngForm" (ngSubmit)="save()">
                     <div class="form-group">          
                         <mat-form-field>
@@ -35,7 +35,7 @@
 
         <!-- Searching a location -->
         <mat-tab label="Search">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <form #searchForm="ngForm" (ngSubmit)="search()">
                     <div class="form-group">          
                         <mat-form-field>

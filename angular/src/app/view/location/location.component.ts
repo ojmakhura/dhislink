@@ -57,16 +57,16 @@ export class LocationComponent implements OnInit {
   }
 
   save() {
-    
-    if(!this.locationVO.id || this.locationVO.id === undefined) {
+    console.log(this.locationVO);
+    //if(!this.locationVO.id || this.locationVO.id === undefined) {
       
       this.locationService.createLocation(this.locationVO).subscribe(loc => {
         console.log(loc);
       });
-    } else {
+    //} else {
       
-      this.locationService.updateLocation(this.locationVO);
-    }
+    //  this.locationService.updateLocation(this.locationVO);
+    //}
   }
 
   new() {

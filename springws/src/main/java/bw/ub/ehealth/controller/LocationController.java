@@ -57,8 +57,10 @@ bw.ub.ehealth.dhislink.redacap.location.service.LocationService.createLocation(l
      * @param locationVO TODO: Model Documentation for
 bw.ub.ehealth.dhislink.redacap.location.service.LocationService.updateLocation(locationVO)
      */
-	@PutMapping("update")
+	@PutMapping("/update")
+	@ResponseStatus(code = HttpStatus.OK)
     public void updateLocation( @RequestBody LocationVO locationVO) {
+		
     	locationService.updateLocation(locationVO);
     }
 

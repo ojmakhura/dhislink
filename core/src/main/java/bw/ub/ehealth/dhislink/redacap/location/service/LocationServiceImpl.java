@@ -51,6 +51,7 @@ public class LocationServiceImpl
     protected  void handleUpdateLocation(LocationVO locationVO)
         throws Exception
     {
+    	System.out.println("=================== " + locationVO.toString());
     	if(locationVO.getId() != null) {
     		getLocationDao().update(getLocationDao().locationVOToEntity(locationVO));
     	}

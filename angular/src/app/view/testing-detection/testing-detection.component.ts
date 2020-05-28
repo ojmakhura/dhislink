@@ -50,12 +50,13 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   searchBatches() {
-
+    console.log(this.searchCriteria);
+    
   }
+
   clearSearch() {
 
   }
-
 
   editBatch(batchId: string) {
 
