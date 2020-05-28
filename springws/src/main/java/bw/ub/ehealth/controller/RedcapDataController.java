@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import bw.ub.ehealth.dhislink.patient.vo.PatientVO;
 import bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService;
 import bw.ub.ehealth.dhislink.redacap.data.vo.BatchVO;
-import bw.ub.ehealth.dhislink.redacap.data.vo.InstrumentBatchVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.InstrumentVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataSearchCriteria;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataVO;
@@ -239,11 +238,9 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     		} else if(rd.getFieldName().equals("test_det_instrument")) {
     			
-    			InstrumentBatchVO ib = new InstrumentBatchVO();
     			InstrumentVO inst = new InstrumentVO();
     			inst.setCode(rd.getValue());
-    			ib.setInstrument(inst);
-    			batch.setDetectionBatch1(ib);
+    			batch.setInstrument(inst);
     			
     		} else if(rd.getFieldName().contains("test_det_barcode_")) {
     			
@@ -251,9 +248,9 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		}
     	}
     	
-    	batch.getDetectionBatch1().setInstrumentBatchSize((long)t2.size());
+    	batch.setInstrumentBatchSize((long)t2.size());
     	ArrayList<SpecimenVO> items = new ArrayList<>();
-    	batch.getDetectionBatch1().setBatchItems(items);
+    	batch.setBatchItems(items);
     	
     	for(int i = 0; i < t2.size(); i++) {
     		items.add(new SpecimenVO());

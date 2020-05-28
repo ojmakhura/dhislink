@@ -20,7 +20,7 @@ import { FormControl, Validators } from '@angular/forms';
 })
 export class TestingDetectionComponent implements OnInit {
 
-  detectionBatch: Batch;
+  batch: Batch;
   batches: Batch[];
   locations: LocationVO[];
   searchCriteria: BatchSearchCriteria;
@@ -36,17 +36,13 @@ export class TestingDetectionComponent implements OnInit {
               private redcaDataService: RedcapDataService,
               private specimenBarcode: SpecimenService) {
                 
-    this.detectionBatch = new Batch();
-    this.detectionBatch.detectionBatch1 = new InstrumentBatch();
-    this.detectionBatch.detectionBatch2 = new InstrumentBatch();
-    this.detectionBatch.detectionBatch3 = new InstrumentBatch();
-    this.detectionBatch.detectionBatch4 = new InstrumentBatch();
-    this.detectionBatch.lab = new LocationVO();
+    this.batch = new Batch();
+    this.batch.lab = new LocationVO();
     this.batches = [];
     this.searchCriteria = new BatchSearchCriteria();
     this.instruments = InstrumentList.allIntruments();
     
-    locationService.findAll().subscribe(results => {
+    this.locationService.findAll().subscribe(results => {
       this.locations = results;
     });
   }
@@ -61,28 +57,28 @@ export class TestingDetectionComponent implements OnInit {
 
   saveDetectionBatch() {
     
-    if(!this.detectionBatch.detectionPersonnel || this.detectionBatch.detectionPersonnel.length == 0) {
+    if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
       this.authService.getLoggeInUser().subscribe( res => {
-        this.detectionBatch.detectionPersonnel = res.username;
+        this.batch.detectionPersonnel = res.username;
       });
     }
 
-    this.detectionBatch.lab = this.locations.find(loc => loc.code == this.labControl.value)
-    this.detectionBatch.detectionBatch1.instrument = this.instruments.find(loc => loc.code == this.instrumentControl.value)
+    this.batch.lab = this.locations.find(loc => loc.code == this.labControl.value)
+    this.batch.instrument = this.instruments.find(loc => loc.code == this.instrumentControl.value)
   }
 
   newDetectionBatch() {
-    this.detectionBatch = new Batch();
-    this.labControl.setValue(this.detectionBatch.lab.code);
-    this.instrumentControl.setValue(this.detectionBatch.detectionBatch1.instrument.code);
+    this.batch = new Batch();
+    this.labControl.setValue(this.batch.lab.code);
+    this.instrumentControl.setValue(this.batch.instrument.code);
   }
 
   now() {
-    this.detectionBatch.detectionDateTime = new Date();
-    if(!this.detectionBatch.detectionPersonnel || this.detectionBatch.detectionPersonnel.length == 0) {
+    this.batch.detectionDateTime = new Date();
+    if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
       
       this.authService.getLoggeInUser().subscribe( res => {
-        this.detectionBatch.detectionPersonnel = res.username;
+        this.batch.detectionPersonnel = res.username;
       });
     }
   }
@@ -100,19 +96,19 @@ export class TestingDetectionComponent implements OnInit {
 
   editBatch(batch: Batch) {
     
-    this.detectionBatch = batch;
+    this.batch = batch;
     this.labControl.setValue(batch.lab.code);
-    this.instrumentControl.setValue(batch.detectionBatch1.instrument.code);
+    this.instrumentControl.setValue(batch.instrument.code);
   }
 
   addSpecimen() {
-    if(this.detectionBatch.detectionStatus != 'Complete') {
-      if(!this.detectionBatch.detectionBatch1.batchItems.find(item => item.specimen_barcode == this.barcode) && 
-          this.detectionBatch.detectionBatch1.batchItems.length <= 96) {
+    if(this.batch.detectionStatus != 'Complete') {
+      if(!this.batch.batchItems.find(item => item.specimen_barcode == this.barcode) && 
+          this.batch.batchItems.length <= 96) {
 
         this.specimenBarcode.findSpecimenByBarcode(this.barcode).subscribe(result => {
-          this.detectionBatch.detectionBatch1.batchItems.push(result);
-          this.detectionBatch.detectionBatch1.instrumentBatchSize = this.detectionBatch.detectionBatch1.batchItems.length;
+          this.batch.batchItems.push(result);
+          this.batch.instrumentBatchSize = this.batch.batchItems.length;
         });
       }
     }

@@ -18,7 +18,7 @@
                                 <mat-form-field>
                                     <mat-label>Batch Id</mat-label>
                                     <input matInput
-                                    [(ngModel)]="detectionBatch.batchId" name="batchId" id = "batchId" #batchId="ngModel" required="true">
+                                    [(ngModel)]="batch.batchId" name="batchId" id = "batchId" #batchId="ngModel" required="true">
                                 </mat-form-field>
                             </div>
                             <div class="form-group">          
@@ -38,7 +38,7 @@
                                 <mat-form-field>
                                     <mat-label>Detection Personnel</mat-label>
                                     <input matInput  disabled = "true"
-                                        [(ngModel)]="detectionBatch.detectionPersonnel" 
+                                        [(ngModel)]="batch.detectionPersonnel" 
                                         name="detectionPersonnel" id = "detectionPersonnel" 
                                         #detectionPersonnel="ngModel" required="false">
                                 </mat-form-field>
@@ -48,7 +48,7 @@
                                     <mat-label>Detection Datetime</mat-label>
                                     
                                     <input matInput disabled = "true"
-                                        [(ngModel)]="detectionBatch.detectionDateTime" 
+                                        [(ngModel)]="batch.detectionDateTime" 
                                         name="detectionDateTime" id = "detectionDateTime" 
                                         #detectionDateTime="ngModel" required="true">                                
                                 </mat-form-field>
@@ -71,7 +71,7 @@
                                 <mat-form-field>
                                     <mat-label>Batch Size</mat-label>
                                     <input matInput
-                                        [(ngModel)]="detectionBatch.detectionBatch1.instrumentBatchSize" 
+                                        [(ngModel)]="batch.instrumentBatchSize" 
                                         name="instrumentBatchSize" id = "instrumentBatchSize" 
                                         #instrumentBatchSize="ngModel" required="true" disabled = "true">
                                 </mat-form-field>
@@ -79,8 +79,8 @@
                         </div>
                         <div class="form-group">          
                             <mat-form-field>
-                                <mat-label>Instrument</mat-label>
-                                <mat-select [(ngModel)]="detectionBatch.detectionStatus" 
+                                <mat-label>Detection Status</mat-label>
+                                <mat-select [(ngModel)]="batch.detectionStatus" 
                                         name="detectionStatus" id = "detectionStatus" 
                                         #detectionStatus="ngModel" required="true">
                                     <mat-option value="" selected></mat-option>
@@ -110,7 +110,7 @@
                                         <th scope="col">Patient Id</th>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let row of detectionBatch.detectionBatch1.batchItems">
+                                        <tr *ngFor="let row of batch.batchItems">
                                             <td id = "action">
                                                 <div class = "form-group">
                                                     

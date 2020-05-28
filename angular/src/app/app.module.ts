@@ -28,6 +28,9 @@ import { VerificationComponent } from './view/verification/verification.componen
 import { LocationComponent } from './view/location/location.component';
 import { JwtInterceptor } from './helpers/jwt-interceptor';
 import { TestingDetectionComponent } from './view/testing-detection/testing-detection.component';
+import { ResultingComponent } from './view/resulting/resulting.component';
+import { LocationService } from './service/location/location.service';
+import { RedcapDataService } from './service/data/redcap-data.service';
 
 
 @NgModule({
@@ -35,6 +38,7 @@ import { TestingDetectionComponent } from './view/testing-detection/testing-dete
     AppComponent,
     LoginComponent,
     VerificationComponent,
+    ResultingComponent,
     LocationComponent,
     TestingDetectionComponent
   ],
@@ -79,6 +83,8 @@ import { TestingDetectionComponent } from './view/testing-detection/testing-dete
     AuthenticationService,
     AuthenticationResponse,
     LoginComponent,
+    LocationService,
+    RedcapDataService,
     RedcapAuth
   ],
   bootstrap: [AppComponent]

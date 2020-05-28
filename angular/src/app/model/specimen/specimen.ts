@@ -39,4 +39,7 @@ export class Specimen {
     receiving_lab: string;
     patient_facility: string;
     covid_number: string;
+    testAssayResults: string;
+    testVerifyResults: string;
+    covidRnaResults: string;
 }
