@@ -1,7 +1,13 @@
-import { BatchItem } from './batch-item';
+import { Instrument } from '../instrument/instrument';
+import { Specimen } from '../specimen/specimen';
 
 export class InstrumentBatch {
-    instrument: string;
+    instrument: Instrument;
     instrumentBatchSize: number = 0;
-    instrumentItems: BatchItem[];
+    batchItems: Specimen[];
+
+    constructor() {
+        this.batchItems = [];
+        this.instrument = new Instrument('', '');
+    }
 }

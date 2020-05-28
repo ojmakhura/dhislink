@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule }   from '@angular/forms';
+import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule} from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table'  
@@ -57,6 +57,7 @@ import { TestingDetectionComponent } from './view/testing-detection/testing-dete
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule
   ],
   exports: [

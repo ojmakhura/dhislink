@@ -96,13 +96,28 @@ bw.ub.ehealth.dhislink.redacap.location.service.LocationService.findById(id)
 bw.ub.ehealth.dhislink.redacap.location.service.LocationService.searchByName(name)
      * @return Collection<LocationVO>
      */
-    @GetMapping("/search/{name}")
+    @GetMapping("/name/{name}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public Collection<LocationVO> searchByName(@PathVariable String name) {
     	
     	return locationService.searchByName(name);
     }
+    
+    /**
+     * TODO: Model Documentation for
+     * bw.ub.ehealth.dhislink.redacap.location.service.LocationService.searchByCode
+     * @param code TODO: Model Documentation for
+bw.ub.ehealth.dhislink.redacap.location.service.LocationService.searchByCode(code)
+     * @return LocationVO
+     */
+    @GetMapping("/code/{code}")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public LocationVO searchByCode(@PathVariable String code) {
+    	return locationService.searchByCode(code);
+    }
+
 
     /**
      * TODO: Model Documentation for

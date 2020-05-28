@@ -31,7 +31,12 @@ export class LocationService {
 
   searchByName(name: string) : Observable<LocationVO[]> {
 
-    return this.http.get<LocationVO[]>(this.url + 'search/' + name);
+    return this.http.get<LocationVO[]>(this.url + 'name/' + name);
+  }
+
+  searchByCode(code: string) : Observable<LocationVO> {
+
+    return this.http.get<LocationVO>(this.url + 'code/' + code);
   }
 
   findAll(): Observable<LocationVO[]> {

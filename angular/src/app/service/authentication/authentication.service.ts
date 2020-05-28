@@ -15,8 +15,11 @@ export const CURRENT_USER: string = 'currentUser';
 export class AuthenticationService {
 
   private url= 'http://localhost:8080/ddpcontroller/auth';
+  user: UserDetails;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.user = new UserDetails();
+  }
 
   login(loginPayload) : Observable<AuthenticationResponse> {
 
@@ -36,7 +39,7 @@ export class AuthenticationService {
 
     if (decoded.exp === undefined) return null;
 
-    const date = new Date(0); 
+    const date = new Date(); 
     date.setUTCSeconds(decoded.exp);
     return date;
   }
@@ -48,11 +51,18 @@ export class AuthenticationService {
     this.http.get<UserDetails>(this.url + '/me').subscribe(user => {
       if(!user || !user.username) {
         return true;
+      } else {
+        return false;
       }
     });
 
     const date = this.getTokenExpirationDate(token);
     if(date === undefined) return false;
     return !(date.valueOf() > new Date().valueOf());
+  }
+
+  getLoggeInUser(): Observable<UserDetails> {
+
+    return this.http.get<UserDetails>(this.url + '/me');
   }
 }

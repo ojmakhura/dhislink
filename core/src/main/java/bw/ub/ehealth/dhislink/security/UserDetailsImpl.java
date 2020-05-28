@@ -12,10 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UserDetailsImpl implements UserDetails {
 	
-	@JsonIgnore
 	private String username;
 	
-	@JsonIgnore
     private String password;
 	
 	public UserDetailsImpl(String username, String password) {

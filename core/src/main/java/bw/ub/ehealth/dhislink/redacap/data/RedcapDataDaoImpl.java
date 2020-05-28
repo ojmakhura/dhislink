@@ -15,6 +15,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -30,7 +31,7 @@ public class RedcapDataDaoImpl
     @Override
     protected Collection<RedcapData> handleFindByCriteria(RedcapDataSearchCriteria searchCriteria)
     {
-    	String queryStr = "select rd from bw.ub.ehealth.dhislink.redacap.data.RedcapData rd";
+    	String queryStr = "select rd from RedcapData rd";
     	
     	StringBuilder where = new StringBuilder();
     	
@@ -39,7 +40,7 @@ public class RedcapDataDaoImpl
     		where.append(" where eventId = :eventId");
     	}
     	
-    	if(searchCriteria.getValue() != null) {
+    	if(!StringUtils.isBlank(searchCriteria.getValue())) {
     		
     		if(where.length() == 0) {
     			where.append(" where ");
@@ -50,7 +51,7 @@ public class RedcapDataDaoImpl
     		where.append("value = :value");
     	}
     	
-    	if(searchCriteria.getFieldName() != null) {
+    	if(!StringUtils.isBlank(searchCriteria.getFieldName())) {
     		
     		if(where.length() == 0) {
     			where.append(" where ");
@@ -66,7 +67,7 @@ public class RedcapDataDaoImpl
     		}
     	}
     	
-    	if(searchCriteria.getRecord() != null) {
+    	if(!StringUtils.isBlank(searchCriteria.getRecord())) {
     		
     		if(where.length() == 0) {
     			where.append(" where ");
@@ -95,17 +96,17 @@ public class RedcapDataDaoImpl
     		query.setParameter("eventId", searchCriteria.getEventId());
     	}
     	
-    	if(searchCriteria.getValue() != null) {
+    	if(!StringUtils.isBlank(searchCriteria.getValue())) {
 
     		query.setParameter("value", searchCriteria.getValue());
     	}
     	
-    	if(searchCriteria.getFieldName() != null) {
+    	if(!StringUtils.isBlank(searchCriteria.getFieldName())) {
     		
     		query.setParameter("fieldName", searchCriteria.getFieldName());
     	}
     	
-    	if(searchCriteria.getRecord() != null) {
+    	if(!StringUtils.isBlank(searchCriteria.getRecord())) {
     		
     		query.setParameter("record", searchCriteria.getRecord());
     	}
@@ -115,7 +116,9 @@ public class RedcapDataDaoImpl
     		query.setParameter("projectId", searchCriteria.getProjectId());
     	}
     	
-        return query.getResultList();
+    	Collection<RedcapData> tmp = query.getResultList();
+    	
+        return tmp;
     }
 
     /**

@@ -37,7 +37,7 @@ public class SpecimenController {
 bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findSpecimenByBarcode(barcode)
      * @return SpecimenVO
      */
-	@GetMapping("/{id}")
+	@GetMapping("/barcode/{barcode}")
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
     public SpecimenVO findSpecimenByBarcode(@PathVariable String barcode) {
@@ -51,6 +51,7 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findSpecimenByBarcode(ba
 bw.ub.ehealth.dhislink.specimen.service.SpecimenService.deleteSpecimen(id)
      */
     @DeleteMapping("/delete/{id}")
+	@ResponseStatus(code = HttpStatus.OK)
     public void deleteSpecimen(@PathVariable Long id) {
     	specimenService.deleteSpecimen(id);
     }
@@ -62,7 +63,7 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.deleteSpecimen(id)
 bw.ub.ehealth.dhislink.specimen.service.SpecimenService.saveSpecimen(specimenVO)
      * @return SpecimenVO
      */
-    @PostMapping("/new")
+    @PostMapping()
     @ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
     public SpecimenVO saveSpecimen(@NotNull @RequestBody SpecimenVO specimenVO) {

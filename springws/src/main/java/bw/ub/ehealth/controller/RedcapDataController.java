@@ -24,12 +24,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import bw.ub.ehealth.dhislink.patient.vo.PatientVO;
 import bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService;
-import bw.ub.ehealth.dhislink.redacap.data.vo.BatchItemVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.BatchVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.InstrumentBatchVO;
+import bw.ub.ehealth.dhislink.redacap.data.vo.InstrumentVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataSearchCriteria;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataVO;
+import bw.ub.ehealth.dhislink.redacap.location.service.LocationService;
 import bw.ub.ehealth.dhislink.specimen.service.SpecimenService;
 import bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO;
 import bw.ub.ehealth.dhislink.vo.BatchSearchCriteria;
@@ -59,6 +61,9 @@ public class RedcapDataController {
 	private SpecimenService specimenService;
 	
 	@Autowired
+	private LocationService locationService;
+	
+	@Autowired
 	private RedcapLink redcapLink;
 	
 	/**
@@ -81,12 +86,16 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
     @ResponseStatus(code = HttpStatus.OK)
     public Collection<RedcapDataVO> saveRedcapData(@RequestBody Collection<RedcapDataVO> data, @RequestBody Long projectId) {
     	
+    	logger.info("Saving " + data.toString());
+    	
     	if(projectId == labReportPID) {
     		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.report.token");
     	} else if(projectId == labExtractionPID) {
     		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.extraction.token");
     	} else if(projectId == labResultingPID) {
     		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.resulting.token");
+    	} else if(projectId == labReceptionPID) {
+    		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.reception.token");
     	}
      	
     	return data;
@@ -113,28 +122,21 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
      * @param data
      * @return
      */
-    Map<String, List<RedcapDataVO>> getRedcapDataBatchMap(Collection<RedcapDataVO> data) {
+    private Map<String, List<RedcapDataVO>> getRedcapDataBatchMap(Collection<RedcapDataVO> data) {
     	
     	Map<String, List<RedcapDataVO>> map = new HashMap<String, List<RedcapDataVO>>();
     	List<RedcapDataVO> batchIds = new ArrayList<RedcapDataVO>();
     	
     	// First find the batch ids
     	for(RedcapDataVO d : data) {
-    		if(d.getFieldName().equals("test_det_batch_id")) {
-    			batchIds.add(d);
-    		}    			
-    	}
-    	
-    	for(RedcapDataVO d : batchIds) {
-    		map.put(d.getValue(), new ArrayList<RedcapDataVO>());
-    		for(RedcapDataVO dt : data) {
-        		if(d.getEventId() == dt.getEventId() &&
-        				d.getProjectId() == dt.getProjectId() &&
-        				d.getRecord().equals(dt.getRecord())) {
-        			
-        			map.get(d.getValue()).add(dt);
-        		}    			
-        	}
+    		List<RedcapDataVO> tmp = map.get(d.getRecord());
+    		
+    		if(tmp == null) {
+    			tmp = new ArrayList<RedcapDataVO>();
+    			map.put(d.getRecord(), tmp);
+    		}
+    		
+    		tmp.add(d);
     	}
     	
     	return map;
@@ -143,6 +145,8 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     private BatchVO getBatchFromRedcapData(List<RedcapDataVO> data) {
     	BatchVO batch = new BatchVO();
     	List<RedcapDataVO> t2 = new ArrayList<RedcapDataVO>();
+    	
+    	batch.setBatchId(data.get(0).getRecord());
     	
     	for(RedcapDataVO rd : data) {
     		if(rd.getFieldName().equals("test_det_batch_id")) {
@@ -182,19 +186,40 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     		} else if(rd.getFieldName().equals("detection_lab")) {
     			
-    			batch.setLab(rd.getValue());
+    			batch.setLab(locationService.searchByCode(rd.getValue()));
     			
     		} else if(rd.getFieldName().equals("testing_detection_complete")) {
     			
-    			batch.setDetectionStatus(rd.getValue());
+    			String val = "Complete";
+    			if(rd.getValue().equals("0")) {
+    				val = "Incomplete";
+    			} else if(rd.getValue().equals("1")) {
+    				val = "Unverified";
+    			}
+    			
+    			batch.setDetectionStatus(val);
     			
     		} else if(rd.getFieldName().equals("resulting_complete")) {
     			
-    			batch.setResultingStatus(rd.getValue());
+    			String val = "Complete";
+    			if(rd.getValue().equals("0")) {
+    				val = "Incomplete";
+    			} else if(rd.getValue().equals("1")) {
+    				val = "Unverified";
+    			}
+    			
+    			batch.setResultingStatus(val);
     			
     		} else if(rd.getFieldName().equals("verification_complete")) {
     			
-    			batch.setVerificationStatus(rd.getValue());
+    			String val = "Complete";
+    			if(rd.getValue().equals("0")) {
+    				val = "Incomplete";
+    			} else if(rd.getValue().equals("1")) {
+    				val = "Unverified";
+    			}
+    			
+    			batch.setVerificationStatus(val);
     			
     		} else if(rd.getFieldName().equals("test_det_personnel")) {
     			
@@ -215,7 +240,9 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		} else if(rd.getFieldName().equals("test_det_instrument")) {
     			
     			InstrumentBatchVO ib = new InstrumentBatchVO();
-    			ib.setInstrument(rd.getValue());
+    			InstrumentVO inst = new InstrumentVO();
+    			inst.setCode(rd.getValue());
+    			ib.setInstrument(inst);
     			batch.setDetectionBatch1(ib);
     			
     		} else if(rd.getFieldName().contains("test_det_barcode_")) {
@@ -225,53 +252,37 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	}
     	
     	batch.getDetectionBatch1().setInstrumentBatchSize((long)t2.size());
-    	batch.getDetectionBatch1().setBatchItems(new ArrayList<BatchItemVO>());
+    	ArrayList<SpecimenVO> items = new ArrayList<>();
+    	batch.getDetectionBatch1().setBatchItems(items);
     	
-    	ArrayList<BatchItemVO> items = (ArrayList<BatchItemVO>) batch.getDetectionBatch1().getBatchItems();
-    	
+    	for(int i = 0; i < t2.size(); i++) {
+    		items.add(new SpecimenVO());
+    	}
+    	    	
     	// Get the specimen information
     	for(RedcapDataVO rd : t2) {
+    		String pos = rd.getFieldName().substring(17);
     		
-    		String pos = rd.getValue().substring(17);
     		int idx = Integer.parseInt(pos) - 1;
-    		BatchItemVO item = new BatchItemVO();
-    		
     		SpecimenVO specimen = specimenService.findSpecimenByBarcode(rd.getValue());
-    		    		
-    		Calendar cal = Calendar.getInstance();
-			cal.setTime(specimen.getPatient().getDateOfBirth());
-			
-			int year = cal.get(Calendar.YEAR);
-			int month =  cal.get(Calendar.MONTH);
-			
-			if(month == 0 || month > 12) {
-				month = 1;
-			}
-			
-			int day = cal.get(Calendar.DATE);
-			
-			if(day == 0 || day > 31) {
-				day = 1;
-			}
-			
-			LocalDate d1 = LocalDate.of(year, month, day);
-			LocalDate now = LocalDate.now();
-			
-			Period diff = Period.between(d1, now);
-			item.setPatientAge((long)diff.getYears());
-			
-			item.setPatientId(specimen.getPatient().getIdentityNo());
-			item.setPatientName(specimen.getPatient().getFirstName());
-			item.setPatientSex(specimen.getPatient().getSex());
-			item.setPatientSurname(specimen.getPatient().getSurname());
-			item.setSpecimenBarcode(rd.getValue());
     		
-    		items.set(idx, item);
+    		if(specimen == null) {
+    			specimen = new SpecimenVO();
+    			specimen.setSpecimenBarcode(rd.getValue());
+    			specimen.setPatient(new PatientVO());
+    		}
+    		items.set(idx, specimen);
     	}
     	
     	return batch;
     }
     
+    /**
+     * Search the batched
+     * 
+     * @param searchCriteria
+     * @return
+     */
     @PostMapping("/search/batch")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
@@ -283,10 +294,10 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	criteria.setProjectId(labResultingPID);
     	
     	if(!StringUtils.isBlank(searchCriteria.getBatchId())) {
-    		criteria.setFieldName("test_det_batch_id");
-    		criteria.setValue(searchCriteria.getBatchId());
-    		
+    		criteria.setRecord(searchCriteria.getBatchId());
+    		logger.info(criteria.toString());
     		Collection<RedcapDataVO> tmp = redcapDataService.searchByCriteria(criteria);
+    		logger.info(tmp.toString());
     		
     		// Find all the other fields    		
     		if(tmp != null && tmp.size() > 0) {
@@ -303,20 +314,20 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		}
     		
     	} else if(!StringUtils.isBlank(searchCriteria.getSpecimenBarcode())) {
-    		criteria.setFieldName("test_det_barcode_%");
-    		criteria.setValue(searchCriteria.getSpecimenBarcode());
     		
+    		criteria.setValue(searchCriteria.getSpecimenBarcode());
     		Collection<RedcapDataVO> tmp = redcapDataService.searchByCriteria(criteria);
     		
     		if(tmp != null && tmp.size() > 0) {
-    			
     			RedcapDataVO rd = tmp.iterator().next();
+    			
     			criteria = new RedcapDataSearchCriteria();
     			criteria.setEventId(rd.getEventId());
     			criteria.setProjectId(rd.getProjectId());
     			criteria.setRecord(rd.getRecord());
     			
-    			tmp = redcapDataService.searchByCriteria(criteria);    			
+    			tmp = redcapDataService.searchByCriteria(criteria);
+    			
     			Map<String, List<RedcapDataVO>> map = getRedcapDataBatchMap(tmp);
     			
     			for(Map.Entry<String, List<RedcapDataVO>> e : map.entrySet()) {
@@ -347,15 +358,5 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	return batches;    	
     }
 
-    /**
-     * TODO: Model Documentation for
-     * bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.findMaxEvent
-     * @param projectId TODO: Model Documentation for
-bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.findMaxEvent(projectId)
-     * @return Long
-     */
-    public Long findMaxEvent(Long projectId) {
-    	
-    	return redcapDataService.findMaxEvent(projectId);
-    }
+    
 }

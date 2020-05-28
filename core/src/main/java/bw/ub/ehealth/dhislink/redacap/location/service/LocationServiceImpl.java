@@ -97,4 +97,11 @@ public class LocationServiceImpl
         return getLocationDao().toLocationVOCollection(getLocationDao().loadAll());
     }
 
+	@Override
+	protected LocationVO handleSearchByCode(String code) throws Exception {
+		
+		Location loc = getLocationDao().searchUniqueCode(code);
+		return getLocationDao().toLocationVO(loc);
+	}
+
 }

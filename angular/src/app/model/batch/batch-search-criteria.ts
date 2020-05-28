@@ -1,5 +1,5 @@
 export class BatchSearchCriteria {
     batchId: string;
-    specimemBarcode: string;
+    specimenBarcode: string;
     lab: string;
 }
