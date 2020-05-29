@@ -57,11 +57,11 @@ export class ResultingComponent implements OnInit {
   }
 
   now() {
-    this.batch.verificationDateTime = new Date();
-    if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
+    this.batch.resultingDateTime = new Date();
+    if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
       
       this.authService.getLoggeInUser().subscribe( res => {
-        this.batch.verificationPersonnel = res.username;
+        this.batch.resultingPersonnel = res.username;
       });
     }
   }

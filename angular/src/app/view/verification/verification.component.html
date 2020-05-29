@@ -31,20 +31,20 @@
                     <div class="row">  
                         <div class="form-group">
                             <mat-form-field>
-                                <mat-label>Resulting Personnel</mat-label>
+                                <mat-label>Verification Personnel</mat-label>
                                 <input matInput  disabled = "true"
-                                    [(ngModel)]="batch.resultingPersonnel" 
-                                    name="resultingPersonnel" id = "resultingPersonnel" 
-                                    #resultingPersonnel="ngModel" required="false">
+                                    [(ngModel)]="batch.verificationPersonnel" 
+                                    name="verificationPersonnel" id = "verificationPersonnel" 
+                                    #verificationPersonnel="ngModel" required="false">
                             </mat-form-field>
                         </div>
                         <div class="form-group">
                             <mat-form-field>
-                                <mat-label>Resulting Datetime</mat-label>                                
+                                <mat-label>Verification Datetime</mat-label>                                
                                 <input matInput disabled = "true"
-                                    [(ngModel)]="batch.resultingDateTime" 
-                                    name="resultingDateTime" id = "resultingDateTime" 
-                                    #resultingDateTime="ngModel" required="true">                                
+                                    [(ngModel)]="batch.verificationDateTime" 
+                                    name="verificationDateTime" id = "verificationDateTime" 
+                                    #verificationDateTime="ngModel" required="true">                                
                             </mat-form-field>
                             <button class="btn btn-success" (click)="now()">now</button>
                         </div>
