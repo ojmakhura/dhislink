@@ -21,7 +21,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthenticationResponse } from './model/authentication/authentication-response';
-import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './service/authentication/authentication.service';
 import { RedcapAuth } from './model/authentication/redcap-auth';
 import { VerificationComponent } from './view/verification/verification.component';
@@ -39,7 +38,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthErrorHandler } from './helpers/auth-error-handler';
 import { RequestOptions } from '@angular/http';
 import { AuthRequestOptions } from './helpers/auth-request-options';
-
+import { LoginComponent } from './view/login/login.component';
+import { NgForm }   from '@angular/forms';
 
 @NgModule({
   declarations: [

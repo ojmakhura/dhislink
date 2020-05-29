@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService, CURRENT_ROUTE } from 'src/app/service/authentication/authentication.service';
 import { Batch } from 'src/app/model/batch/batch';
 import { LocationService } from 'src/app/service/location/location.service';
 import { LocationVO } from 'src/app/model/location/location-vo';
@@ -16,6 +16,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { formatDate } from '@angular/common';
+import { NgForm }   from '@angular/forms';
 
 @Component({
   selector: 'app-testing-detection',
@@ -35,7 +37,7 @@ export class TestingDetectionComponent implements OnInit {
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
 
-  searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
+  searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'detectionStatus'];
   specimenColumns: string[] = ['specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no'];
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
@@ -68,8 +70,10 @@ export class TestingDetectionComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
+    window.localStorage.setItem(CURRENT_ROUTE, 'detection')
     
     if(this.authService.isTokenExpired(token)) {
+      
       this.router.navigate(['/login']);
     }
   }
@@ -94,7 +98,7 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   now() {
-    this.batch.detectionDateTime = new Date();
+    this.batch.detectionDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en-US');
     if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
       
       this.authService.getLoggeInUser().subscribe( res => {
@@ -115,8 +119,9 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    
+    console.log(batch);
     this.batch = batch;
+    this.batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm:ss', 'en-US');
     this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);

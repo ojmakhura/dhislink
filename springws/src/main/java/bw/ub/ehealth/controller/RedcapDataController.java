@@ -192,7 +192,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     		} else if(rd.getFieldName().equals("test_det_datetime")) {
     			
-    			SimpleDateFormat format = new SimpleDateFormat("dd-mm-yyyy HH:mm");    			
+    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");    			
     			try {
 					batch.setDetectionDateTime(format.parse(rd.getValue()));
 				} catch (ParseException e) {
@@ -202,7 +202,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     		} else if(rd.getFieldName().equals("test_assay_datetime")) {
     			
-    			SimpleDateFormat format = new SimpleDateFormat("dd-mm-yyyy HH:mm");    			
+    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");    			
     			try {
 					batch.setResultingDateTime(format.parse(rd.getValue()));
 				} catch (ParseException e) {
@@ -212,7 +212,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     		} else if(rd.getFieldName().equals("test_verify_datetime")) {
     			
-    			SimpleDateFormat format = new SimpleDateFormat("dd-mm-yyyy HH:mm");    			
+    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");    			
     			try {
 					batch.setVerificationDateTime(format.parse(rd.getValue()));
 				} catch (ParseException e) {

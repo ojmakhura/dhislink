@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService, CURRENT_ROUTE } from 'src/app/service/authentication/authentication.service';
 import { Batch } from 'src/app/model/batch/batch';
 import { LocationVO } from 'src/app/model/location/location-vo';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
@@ -15,6 +15,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { MatSort } from '@angular/material/sort';
+import { formatDate } from '@angular/common';
+import { NgForm }   from '@angular/forms';
 
 @Component({
   selector: 'app-resulting',
@@ -64,9 +66,11 @@ export class ResultingComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
+    window.localStorage.setItem(CURRENT_ROUTE, 'resulting')
     
     if(this.authService.isTokenExpired(token)) {
-      this.router.navigate(['/login']);
+      
+      this.router.navigate(['login']);
     }
   }
 
@@ -75,7 +79,7 @@ export class ResultingComponent implements OnInit {
   }
 
   now() {
-    this.batch.resultingDateTime = new Date();
+    this.batch.resultingDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm:ss', 'en-US');
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
       
       this.authService.getLoggeInUser().subscribe( res => {

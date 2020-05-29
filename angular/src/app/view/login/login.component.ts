@@ -4,8 +4,9 @@ import {
   AuthenticationService, 
   TOKEN_NAME, 
   CURRENT_ROUTE,
-  CURRENT_USER } from '../service/authentication/authentication.service';
-import { RedcapAuth } from '../model/authentication/redcap-auth';
+  CURRENT_USER } from '../../service/authentication/authentication.service';
+import { RedcapAuth } from '../../model/authentication/redcap-auth';
+import { NgForm }   from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +42,7 @@ export class LoginComponent implements OnInit {
         if(window.localStorage.getItem(CURRENT_ROUTE)) {
           this.router.navigate([window.localStorage.getItem(CURRENT_ROUTE)]);
         } else {
-          this.router.navigate(['location']);
+          this.router.navigate(['detection']);
         }
       }else {
         this.invalidLogin = true;

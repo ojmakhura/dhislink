@@ -8,6 +8,8 @@
  */
 package bw.ub.ehealth.dhislink.redacap.auth.service;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +72,6 @@ public class SecurityServiceImpl
     		userDetails.setPassword(auth.getPassword());
     	}
     	
-    	String encodedPassword = dhislinkPasswordEncoder.encode(password + auth.getPasswordSalt());
     	UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password + auth.getPasswordSalt(), userDetails.getAuthorities());
     	
     	Authentication authentication = authenticationManager.authenticate(token);
@@ -79,5 +80,11 @@ public class SecurityServiceImpl
     		SecurityContextHolder.getContext().setAuthentication(authentication);
     	}
     }
+
+	@Override
+	protected void handleRefreshLogin(@NotNull String username) throws Exception {
+
+		
+	}
 
 }

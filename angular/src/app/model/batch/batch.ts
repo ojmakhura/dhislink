@@ -9,9 +9,9 @@ export class Batch {
     detectionPersonnel: string;
     resultingPersonnel: string;
     verificationPersonnel: string; 
-    detectionDateTime: Date;
-    resultingDateTime: Date;
-    verificationDateTime: Date;
+    detectionDateTime: string;
+    resultingDateTime: string;
+    verificationDateTime: string;
     detectionSize: number;
     instrument: Instrument;
     instrumentBatchSize: number = 0;

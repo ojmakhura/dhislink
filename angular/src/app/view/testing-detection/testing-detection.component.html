@@ -47,9 +47,8 @@
                             </div>
                             <div class="form-group">
                                 <mat-form-field>
-                                    <mat-label>Detection Datetime</mat-label>
-                                    
-                                    <input matInput disabled = "true"
+                                    <mat-label>Detection Datetime</mat-label>                                    
+                                    <input matInput disabled = "true" datetime="dd-MM-yyyy HH:mm:ss"
                                         [(ngModel)]="batch.detectionDateTime" 
                                         name="detectionDateTime" id = "detectionDateTime" 
                                         #detectionDateTime="ngModel" required="true">                                
@@ -189,17 +188,17 @@
                             <mat-header-cell *matHeaderCellDef>Batch Id</mat-header-cell>
                             <mat-cell *matCellDef="let row"> {{ row.batchId }} </mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="resultingPersonnel">
-                            <mat-header-cell *matHeaderCellDef>Resulting Personnel</mat-header-cell>
-                            <mat-cell *matCellDef="let row"> {{ row.resultingPersonnel }} </mat-cell>
+                        <ng-container matColumnDef="detectionPersonnel">
+                            <mat-header-cell *matHeaderCellDef>Detection Personnel</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{ row.detectionPersonnel }} </mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="resultingDateTime">
-                            <mat-header-cell *matHeaderCellDef>Resulting Datetime</mat-header-cell>
-                            <mat-cell *matCellDef="let row"> {{ row.resultingDateTime }} </mat-cell>
+                        <ng-container matColumnDef="detectionDateTime">
+                            <mat-header-cell *matHeaderCellDef>Detection Datetime</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{ row.detectionDateTime }} </mat-cell>
                         </ng-container>
-                        <ng-container matColumnDef="resultingStatus">
-                            <mat-header-cell *matHeaderCellDef>Resulting Status</mat-header-cell>
-                            <mat-cell *matCellDef="let row"> {{ row.resultingStatus }} </mat-cell>
+                        <ng-container matColumnDef="detectionStatus">
+                            <mat-header-cell *matHeaderCellDef>Detection Status</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{ row.detectionStatus }} </mat-cell>
                         </ng-container>
     
                         <mat-header-row *matHeaderRowDef="searchColumns"></mat-header-row>

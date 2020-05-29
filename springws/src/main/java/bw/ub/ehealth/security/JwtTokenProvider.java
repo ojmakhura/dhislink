@@ -2,6 +2,8 @@ package bw.ub.ehealth.security;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,9 +30,9 @@ public class JwtTokenProvider {
 	@Value("${app.jwtExpirationInMs}")
 	private int jwtExpirationInMs;
 	
-	public String generateToken(Authentication authentication) {
+	public String generateToken(@NotNull UserDetailsImpl principal) {
 		
-		UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+		//UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
 		
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);

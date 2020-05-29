@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService, CURRENT_ROUTE } from 'src/app/service/authentication/authentication.service';
 import { Batch } from 'src/app/model/batch/batch';
 import { LocationVO } from 'src/app/model/location/location-vo';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
@@ -13,6 +13,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Specimen } from 'src/app/model/specimen/specimen';
+import { formatDate } from '@angular/common';
+import { NgForm }   from '@angular/forms';
 
 @Component({
   selector: 'app-verification',
@@ -64,9 +66,10 @@ export class VerificationComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
-    
-    if(this.authService.isTokenExpired(token)) {
-      this.router.navigate(['/login']);
+    window.localStorage.setItem(CURRENT_ROUTE, 'verification')
+
+    if(this.authService.isTokenExpired(token)) {      
+      this.router.navigate(['login']);
     }
   }
 
@@ -75,7 +78,7 @@ export class VerificationComponent implements OnInit {
   }
 
   now() {
-    this.batch.verificationDateTime = new Date();
+    this.batch.verificationDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm:ss', 'en-US');
     if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
       
       this.authService.getLoggeInUser().subscribe( res => {
