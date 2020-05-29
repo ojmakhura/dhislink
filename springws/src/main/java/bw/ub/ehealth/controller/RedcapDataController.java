@@ -2,14 +2,13 @@ package bw.ub.ehealth.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,6 +79,42 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
     public RedcapDataVO saveRedcapData(RedcapDataVO redcapDataVO) {
     	
     	return redcapDataService.saveRedcapData(redcapDataVO);
+    }
+    
+    @PostMapping("/savebatch")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public void saveBatch(@RequestBody BatchVO batch, @RequestBody Long projectId) {
+    	
+    	logger.info("Saving " + batch.toString() + " for project " + projectId);
+    }
+    
+    @GetMapping("/extraction/specimen/{batchId}")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public Collection<SpecimenVO> fetchExtractionBatchSpecimen(@PathVariable @NotNull String batchId) {
+    	
+    	Collection<SpecimenVO> specimens = new ArrayList<SpecimenVO>();
+    	RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
+    	criteria.setProjectId(labExtractionPID);    	
+    	criteria.setFieldName("test_ext_barcode_%");
+    	criteria.setRecord(batchId);
+    	
+    	Collection<RedcapDataVO> tmp = redcapDataService.searchByCriteria(criteria);
+    	
+    	for(RedcapDataVO rd : tmp) {
+    		SpecimenVO specimen = specimenService.findSpecimenByBarcode(rd.getValue());
+    		
+    		if(specimen == null) {
+    			specimen = new SpecimenVO();
+    			specimen.setSpecimenBarcode(rd.getValue());
+    			specimen.setPatient(new PatientVO());
+    		}
+    		
+    		specimens.add(specimen);
+    	}
+    	
+    	return specimens;
     }
     
     @PostMapping("/saveall")
@@ -167,7 +204,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     			SimpleDateFormat format = new SimpleDateFormat("dd-mm-yyyy HH:mm");    			
     			try {
-					batch.setDetectionDateTime(format.parse(rd.getValue()));
+					batch.setResultingDateTime(format.parse(rd.getValue()));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -177,7 +214,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     			SimpleDateFormat format = new SimpleDateFormat("dd-mm-yyyy HH:mm");    			
     			try {
-					batch.setDetectionDateTime(format.parse(rd.getValue()));
+					batch.setVerificationDateTime(format.parse(rd.getValue()));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -292,9 +329,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	
     	if(!StringUtils.isBlank(searchCriteria.getBatchId())) {
     		criteria.setRecord(searchCriteria.getBatchId());
-    		logger.info(criteria.toString());
     		Collection<RedcapDataVO> tmp = redcapDataService.searchByCriteria(criteria);
-    		logger.info(tmp.toString());
     		
     		// Find all the other fields    		
     		if(tmp != null && tmp.size() > 0) {

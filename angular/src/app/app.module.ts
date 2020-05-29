@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule} from '@angular/material/tabs';
@@ -31,6 +31,14 @@ import { TestingDetectionComponent } from './view/testing-detection/testing-dete
 import { ResultingComponent } from './view/resulting/resulting.component';
 import { LocationService } from './service/location/location.service';
 import { RedcapDataService } from './service/data/redcap-data.service';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthErrorHandler } from './helpers/auth-error-handler';
+import { RequestOptions } from '@angular/http';
+import { AuthRequestOptions } from './helpers/auth-request-options';
 
 
 @NgModule({
@@ -43,20 +51,24 @@ import { RedcapDataService } from './service/data/redcap-data.service';
     TestingDetectionComponent
   ],
   imports: [
-    CommonModule,
-    MatTabsModule,
-    MatListModule,
-    MatSidenavModule,
-    MatToolbarModule,
     MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatCheckboxModule,
-    MatTableModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatPaginatorModule,
+    MatRippleModule,
     MatSelectModule,
+    MatSidenavModule,
+    MatSortModule,
+    MatTableModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -65,27 +77,35 @@ import { RedcapDataService } from './service/data/redcap-data.service';
     HttpClientModule
   ],
   exports: [
-      MatTabsModule,
-      MatSidenavModule,
-      MatToolbarModule,
-      MatButtonModule,
-      MatIconModule,
-      MatMenuModule,
-      MatDatepickerModule,
-      MatFormFieldModule,
-      MatInputModule,
-      MatCheckboxModule,
-      MatTableModule,
-      MatSelectModule
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatDialogModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatNativeDateModule,
+    MatPaginatorModule,
+    MatRippleModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSortModule,
+    MatTableModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    //{ provide: RequestOptions,  useClass: AuthRequestOptions },
     AuthenticationService,
     AuthenticationResponse,
     LoginComponent,
     LocationService,
     RedcapDataService,
-    RedcapAuth
+    RedcapAuth,
+    { provide: ErrorHandler, useClass: AuthErrorHandler }
   ],
   bootstrap: [AppComponent]
 })
