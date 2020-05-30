@@ -4,7 +4,8 @@ import {
   AuthenticationService, 
   TOKEN_NAME, 
   CURRENT_ROUTE,
-  CURRENT_USER } from '../../service/authentication/authentication.service';
+  CURRENT_USER, 
+  REFRESH_TOKEN} from '../../service/authentication/authentication.service';
 import { RedcapAuth } from '../../model/authentication/redcap-auth';
 import { NgForm }   from '@angular/forms';
 
@@ -34,15 +35,15 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     console.log(this.redcapAuth);
     this.authService.login(this.redcapAuth).subscribe(data => {
-      debugger;
       if(data.status === 200) {
         window.localStorage.setItem(TOKEN_NAME, data.accessToken);
         window.localStorage.setItem(CURRENT_USER, this.redcapAuth.username);
+        window.localStorage.setItem(REFRESH_TOKEN, data.refreshToken);
 
         if(window.localStorage.getItem(CURRENT_ROUTE)) {
           this.router.navigate([window.localStorage.getItem(CURRENT_ROUTE)]);
         } else {
-          this.router.navigate(['detection']);
+          this.router.navigate(['/detection']);
         }
       }else {
         this.invalidLogin = true;

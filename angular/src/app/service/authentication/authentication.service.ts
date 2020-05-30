@@ -4,7 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import * as jwt_decode from 'jwt-decode';
 import { UserDetails } from 'src/app/model/user/user-details';
-import { retry, catchError } from 'rxjs/operators';
+import { retry, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 export const TOKEN_NAME: string = 'jwt_token';
@@ -35,10 +35,21 @@ export class AuthenticationService {
     refreshPayload.refreshToken = this.getRefreshToken();
     refreshPayload.username = this.getCurrentUser();
 
-    return this.http.post<AuthenticationResponse>(this.url + '/refresh', refreshPayload).pipe(
-      retry(1),
-      catchError(this.redirectToLogin)
-    );
+    if(!refreshPayload.accessToken 
+        || !refreshPayload.refreshToken 
+        || refreshPayload.refreshToken === 'undefined'
+        || !refreshPayload.username
+        || refreshPayload.username === 'undefined') {
+      this.redirectToLogin().pipe(
+        map(res=> {
+          console.log(res);
+        })
+      );
+    }
+
+    console.log(refreshPayload);
+
+    return this.http.post<AuthenticationResponse>(this.url + '/refresh', refreshPayload);
   }
 
   redirectToLogin() {

@@ -11,7 +11,7 @@ export class AuthErrorHandler implements ErrorHandler {
     console.log(error);
     console.log(error.status)
     
-    if (error.status === 401 || error.status === 403) {
+    if (error.status === 401 || error.status === 403 || error.status === 500) {
       router.navigate(['/login']);
     }
     

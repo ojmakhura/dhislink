@@ -32,7 +32,7 @@ export class VerificationComponent implements OnInit {
   instruments: Instrument[];
   barcode = '';
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
-  specimenColumns: string[] = ['specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'testVerifyResults', 'covidRnaResults'];
+  specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'covidRnaResults', 'testVerifyResults'];
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
@@ -66,10 +66,10 @@ export class VerificationComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, 'verification')
+    window.localStorage.setItem(CURRENT_ROUTE, '/verification')
 
-    if(this.authService.isTokenExpired(token)) {      
-      this.router.navigate(['login']);
+    if(!this.authService.getCurrentUser() ||this.authService.isTokenExpired(token)) {      
+      this.router.navigate(['/login']);
     }
   }
 
@@ -89,6 +89,7 @@ export class VerificationComponent implements OnInit {
 
   searchBatches() {
     this.redcaDataService.search(this.searchCriteria).subscribe(results => {      
+      console.log(results)
       this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
     });

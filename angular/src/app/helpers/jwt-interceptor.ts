@@ -1,6 +1,6 @@
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { AuthenticationService } from '../service/authentication/authentication.service';
+import { AuthenticationService, REFRESH_TOKEN } from '../service/authentication/authentication.service';
 import { Injectable } from '@angular/core';
 import { catchError, filter, take, switchMap } from 'rxjs/operators'; 
 
@@ -9,8 +9,11 @@ export class JwtInterceptor implements HttpInterceptor {
     constructor(private authenticationService: AuthenticationService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        
         window.localStorage.setItem('isIntercept', 'true');
         let token = this.authenticationService.getToken();
+        
+        console.log(localStorage.getItem(REFRESH_TOKEN));
         if (token) {
             
             request = this.addToken(request, token);

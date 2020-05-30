@@ -89,6 +89,8 @@ public class RedcapAuthController {
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK) 
 	public ResponseEntity<?> refreshToken(@RequestBody JwtAuthenticationResponse request) {
+		
+		logger.info(request.toString());
 				
 		String username = request.getUsername();
 		

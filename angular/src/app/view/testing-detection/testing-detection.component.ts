@@ -38,7 +38,7 @@ export class TestingDetectionComponent implements OnInit {
   instrumentControl = new FormControl('', Validators.required);
 
   searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'detectionStatus'];
-  specimenColumns: string[] = ['specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no'];
+  specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no'];
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
@@ -49,7 +49,7 @@ export class TestingDetectionComponent implements OnInit {
               private authService: AuthenticationService,
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
-              private specimenBarcode: SpecimenService) {
+              private specimenService: SpecimenService) {
                 
     this.batch = new Batch();
     this.batch.lab = new LocationVO();
@@ -70,9 +70,9 @@ export class TestingDetectionComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, 'detection')
+    window.localStorage.setItem(CURRENT_ROUTE, '/detection')
     
-    if(this.authService.isTokenExpired(token)) {
+    if(!this.authService.getCurrentUser() ||this.authService.isTokenExpired(token)) {
       
       this.router.navigate(['/login']);
     }
@@ -132,7 +132,7 @@ export class TestingDetectionComponent implements OnInit {
       if(!this.batch.batchItems.find(item => item.specimen_barcode == this.barcode) && 
           this.batch.batchItems.length <= 96) {
 
-        this.specimenBarcode.findSpecimenByBarcode(this.barcode).subscribe(result => {
+        this.specimenService.findSpecimenByBarcode(this.barcode).subscribe(result => {
           this.batch.batchItems.push(result);
           this.specimen.data  = this.batch.batchItems;
           this.batch.instrumentBatchSize = this.batch.batchItems.length;
@@ -144,12 +144,17 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   fetchBatchData() {
-    console.log("Fetching data");
+    
     if(!this.batch.detectionStatus) {
       this.redcaDataService.fetchExtractionSpecimen(this.batch.batchId).subscribe(results => {
-        console.log(results)
+        
         this.batch.batchItems = results;
+        for(let i = 0; i < results.length; i++) {
+          results[i].position = this.specimenService.encodePosition(i);
+        }
+
         this.specimen.data  = this.batch.batchItems;
+
       });
     }
   }

@@ -1,5 +1,6 @@
 <div class="component">
-        <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
+    <h2>Detection</h2>
+    <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
             <!-- Editing a location -->
             <mat-tab label="Edit">
                 <div class="col">
@@ -103,6 +104,10 @@
                             </div>
                             <div class="mat-elevation-z8 specimen-list"> 
                                 <mat-table [dataSource]="specimen" class="table table-bordered table-striped" style="width: 100%;">
+                                    <ng-container matColumnDef="position">
+                                        <mat-header-cell *matHeaderCellDef>POsition</mat-header-cell>
+                                        <mat-cell *matCellDef="let row"> {{ row.position }} </mat-cell>
+                                    </ng-container>
                                     <ng-container matColumnDef="specimen_barcode">
                                         <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
                                         <mat-cell *matCellDef="let row"> {{ row.specimen_barcode }} </mat-cell>
@@ -208,6 +213,6 @@
                     <mat-paginator #BatchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons></mat-paginator>
                 </div>
             </mat-tab>
-        </mat-tab-group>
+    </mat-tab-group>
 </div>
     

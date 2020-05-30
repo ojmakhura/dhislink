@@ -34,7 +34,7 @@ export class ResultingComponent implements OnInit {
   instruments: Instrument[];
   barcode = '';
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
-  specimenColumns: string[] = ['specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'testAssayResults'];
+  specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'testAssayResults'];
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
@@ -66,11 +66,11 @@ export class ResultingComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, 'resulting')
+    window.localStorage.setItem(CURRENT_ROUTE, '/resulting')
     
-    if(this.authService.isTokenExpired(token)) {
+    if(!this.authService.getCurrentUser() || this.authService.isTokenExpired(token)) {
       
-      this.router.navigate(['login']);
+      this.router.navigate(['/login']);
     }
   }
 

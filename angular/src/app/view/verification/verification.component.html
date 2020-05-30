@@ -1,4 +1,5 @@
 <div class="component">
+    <h2>Verification</h2>
     <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
         <!-- Editing a location -->
         <mat-tab label="Edit">
@@ -88,6 +89,10 @@
                                     <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
                                     <mat-cell *matCellDef="let row"> {{ row.specimen_barcode }} </mat-cell>
                                 </ng-container>
+                                <ng-container matColumnDef="position">
+                                    <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
+                                    <mat-cell *matCellDef="let row"> {{ row.position }} </mat-cell>
+                                </ng-container>
                                 <ng-container matColumnDef="patient_first_name">
                                     <mat-header-cell *matHeaderCellDef>Patient Name</mat-header-cell>
                                     <mat-cell *matCellDef="let row"> {{ row.patient.patient_first_name }} </mat-cell>
@@ -99,20 +104,6 @@
                                 <ng-container matColumnDef="identity_no">
                                     <mat-header-cell *matHeaderCellDef>Patient Id</mat-header-cell>
                                     <mat-cell *matCellDef="let row"> {{ row.patient.identity_no }} </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="testVerifyResults">
-                                    <mat-header-cell *matHeaderCellDef>Verify Results</mat-header-cell>                                    
-                                    <mat-cell *matCellDef="let row">
-                                        <mat-form-field>
-                                            <mat-select [(ngModel)]="row.testVerifyResults" required = "false"
-                                                        name="testVerifyResults" id = "testVerifyResults" 
-                                                        #testVerifyResults="ngModel">
-                                                <mat-option value="" selected></mat-option>
-                                                <mat-option value="5" selected>Verified</mat-option>
-                                                <mat-option value="6" selected>Not Accepted</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="covidRnaResults">
                                     <mat-header-cell *matHeaderCellDef>Results</mat-header-cell>
@@ -126,6 +117,20 @@
                                                 <mat-option value="2" selected>Negative</mat-option>
                                                 <mat-option value="3" selected>Inconclusive</mat-option> 
                                                 <mat-option value="4" selected>No Results</mat-option> 
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="testVerifyResults">
+                                    <mat-header-cell *matHeaderCellDef>Verify Results</mat-header-cell>                                    
+                                    <mat-cell *matCellDef="let row">
+                                        <mat-form-field>
+                                            <mat-select [(ngModel)]="row.testVerifyResults" required = "false"
+                                                        name="testVerifyResults" id = "testVerifyResults" 
+                                                        #testVerifyResults="ngModel">
+                                                <mat-option value="" selected></mat-option>
+                                                <mat-option value="5" selected>Verified</mat-option>
+                                                <mat-option value="6" selected>Not Accepted</mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                     </mat-cell>

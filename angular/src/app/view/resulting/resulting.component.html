@@ -1,6 +1,6 @@
 
 <div class="component"  style="width: 100%;">
-    <h2>Detection</h2>
+    <h2>Resulting</h2>
     <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
         <!-- Editing a location -->
         <mat-tab label="Edit">
@@ -87,6 +87,10 @@
                     <div>
                         <div class="mat-elevation-z8 specimen-list"> 
                             <mat-table [dataSource]="specimen" class="table table-bordered table-striped" style="width: 100%;">
+                                <ng-container matColumnDef="position">
+                                    <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
+                                    <mat-cell *matCellDef="let row"> {{ row.position }} </mat-cell>
+                                </ng-container>
                                 <ng-container matColumnDef="specimen_barcode">
                                     <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
                                     <mat-cell *matCellDef="let row"> {{ row.specimen_barcode }} </mat-cell>

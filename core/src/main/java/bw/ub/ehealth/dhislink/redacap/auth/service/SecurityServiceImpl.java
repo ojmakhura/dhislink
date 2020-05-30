@@ -80,11 +80,4 @@ public class SecurityServiceImpl
     		SecurityContextHolder.getContext().setAuthentication(authentication);
     	}
     }
-
-	@Override
-	protected void handleRefreshLogin(@NotNull String username) throws Exception {
-
-		
-	}
-
 }

@@ -72,4 +72,34 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findByEvent(event)
     findUnsynchedSpecimen(): Observable<Specimen[]> {
       return this.http.get<Specimen[]>(this.url + 'unsynched');
     }
+
+    encodePosition(i: number): string {
+
+      i = i + 1;
+      var q: number = Math.floor(i / 12);
+      var r: number = i % 12;
+      let position = '';
+
+      if(q === 0) {
+        position = 'A' + r;
+      } else if(q === 1) {
+        position = 'B' + r;
+      } else if(q === 2) {
+        position = 'C' + r;
+      } else if(q === 3) {
+        position = 'D' + r;
+      } else if(q === 4) {
+        position = 'E' + r;
+      } else if(q === 5) {
+        position = 'F' + r;
+      } else if(q === 6) {
+        position = 'G' + r;
+      } else if(q === 7) {
+        position = 'H' + r;
+      }
+      console.log(i + ' ' + q + ' ' + r)
+      console.log(position)
+
+      return position;
+    }
 }

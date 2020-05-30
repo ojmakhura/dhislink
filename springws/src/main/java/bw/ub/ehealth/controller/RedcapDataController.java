@@ -305,10 +305,49 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			specimen.setSpecimenBarcode(rd.getValue());
     			specimen.setPatient(new PatientVO());
     		}
+    		specimen.setPosition(encodePosition(Integer.parseInt(pos)));
+    		specimen.setCovidRnaResults(specimen.getTestAssayResults());
+    		
     		items.set(idx, specimen);
     	}
     	
+    	redcapLink.updateStaging(items);
+    	logger.info(items.toString());
+    	
     	return batch;
+    }
+    
+    private String encodePosition(int i) {
+    	
+        int q = i / 12;
+        int r = i % 12;
+        
+        if(r == 0) {
+        	r = 12;
+        	q--;
+        }
+        
+        String position = "";
+
+        if(q == 0) {
+          position = "A" + r;
+        } else if(q == 1) {
+          position = "B" + r;
+        } else if(q == 2) {
+          position = "C" + r;
+        } else if(q == 3) {
+          position = "D" + r;
+        } else if(q == 4) {
+          position = "E" + r;
+        } else if(q == 5) {
+          position = "F" + r;
+        } else if(q == 6) {
+          position = "G" + r;
+        } else if(q == 7) {
+          position = "H" + r;
+        }
+
+        return position;
     }
     
     /**
