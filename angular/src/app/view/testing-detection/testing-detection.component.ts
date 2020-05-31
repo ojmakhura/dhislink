@@ -70,9 +70,9 @@ export class TestingDetectionComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, '/detection')
+    window.localStorage.setItem(CURRENT_ROUTE, 'detection')
     
-    if(!this.authService.getCurrentUser() ||this.authService.isTokenExpired(token)) {
+    if(!this.authService.getCurrentUser() || this.authService.isTokenExpired(token)) {
       
       this.router.navigate(['/login']);
     }
@@ -87,7 +87,10 @@ export class TestingDetectionComponent implements OnInit {
     }
 
     this.batch.lab = this.locations.find(loc => loc.code == this.labControl.value)
-    this.batch.instrument = this.instruments.find(loc => loc.code == this.instrumentControl.value)
+    this.batch.instrument = this.instruments.find(loc => loc.code == this.instrumentControl.value);
+    console.log('Saving batch');
+    
+    this.redcaDataService.saveBatch(this.batch).subscribe();
   }
 
   newDetectionBatch() {
@@ -98,7 +101,7 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   now() {
-    this.batch.detectionDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm:ss', 'en-US');
+    this.batch.detectionDateTime = formatDate(new Date(), "yyyy-MM-dd HH:mm:ss", 'en-US');
     if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
       
       this.authService.getLoggeInUser().subscribe( res => {
@@ -133,7 +136,9 @@ export class TestingDetectionComponent implements OnInit {
           this.batch.batchItems.length <= 96) {
 
         this.specimenService.findSpecimenByBarcode(this.barcode).subscribe(result => {
-          this.batch.batchItems.push(result);
+          let sp = result;
+          sp.position = this.specimenService.encodePosition(this.batch.batchItems.length);
+          this.batch.batchItems.push(sp);
           this.specimen.data  = this.batch.batchItems;
           this.batch.instrumentBatchSize = this.batch.batchItems.length;
         });
@@ -154,6 +159,7 @@ export class TestingDetectionComponent implements OnInit {
         }
 
         this.specimen.data  = this.batch.batchItems;
+        this.batch.instrumentBatchSize = this.specimen.data.length;
 
       });
     }

@@ -39,4 +39,10 @@ public class RedcapAuthServiceImpl
     	return getRedcapAuthDao().toRedcapAuthVO(auth);
     }
 
+	@Override
+	protected String handleGetUserProjectToken(String username, Long projectId) throws Exception {
+		
+		return getUserRightDao().getUserProjectToken(username, projectId);
+	}
+
 }

@@ -13,16 +13,16 @@ export class JwtInterceptor implements HttpInterceptor {
         window.localStorage.setItem('isIntercept', 'true');
         let token = this.authenticationService.getToken();
         
-        console.log(localStorage.getItem(REFRESH_TOKEN));
-        if (token) {
-            
+        if (token) {            
             request = this.addToken(request, token);
         }
 
         return next.handle(request).pipe(catchError(error => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
+                
               return this.handle401Error(request, next);
             } else {
+            
               return throwError(error);
             }
           }));
@@ -43,21 +43,21 @@ export class JwtInterceptor implements HttpInterceptor {
         if (!this.isRefreshing) {
             this.isRefreshing = true;
             this.refreshTokenSubject.next(null);
-
+            
             return this.authenticationService.refreshToken().pipe(
-            switchMap((token: any) => {
-                this.isRefreshing = false;
-                this.refreshTokenSubject.next(token.jwt);
-                console.log(token);
-                return next.handle(this.addToken(request, token.jwt));
+                switchMap((token: any) => {
+                    this.isRefreshing = false;
+                    this.refreshTokenSubject.next(token.jwt);
+                    
+                    return next.handle(this.addToken(request, token.jwt));
             }));
 
         } else {
             return this.refreshTokenSubject.pipe(
-            filter(token => token != null),
-            take(1),
-            switchMap(jwt => {
-                return next.handle(this.addToken(request, jwt));
+                filter(token => token != null),
+                take(1),
+                switchMap(jwt => {                                
+                    return next.handle(this.addToken(request, jwt));
             }));
         }
     }

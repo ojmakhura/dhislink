@@ -29,6 +29,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import bw.ub.ehealth.dhislink.redacap.auth.service.RedcapAuthService;
+import bw.ub.ehealth.dhislink.redacap.auth.service.SecurityService;
 import bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataSearchCriteria;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataVO;
@@ -73,16 +75,24 @@ public class RedcapLink {
 	@Autowired
 	private SpecimenService specimenService;
 	
+	@Autowired
+	private SecurityService securityService;
+	
+	@Autowired
+	private RedcapAuthService redcapAuthService;
+	
 	public void postRedcapData(SpecimenVO specimen) {
 		List<RedcapDataVO> list  = getSpecimenRedcapData(specimen);
-		doPostRedcapData(list, "redcap.lab.report.token");
+		String username = securityService.findLoggedInUsername();
+		redcapAuthService.getUserProjectToken(username, labReportPID);
+		doPostRedcapData(list, env.getProperty("redcap.lab.report.token"));
 	}
 	
-	public void postRedcapData(List<RedcapDataVO> list, String project ) {
-		doPostRedcapData(list, project);
+	public void postRedcapData(List<RedcapDataVO> list, String projectToken ) {
+		doPostRedcapData(list, projectToken);
 	}
 
-	public void doPostRedcapData(List<RedcapDataVO> list, String project) {
+	public void doPostRedcapData(List<RedcapDataVO> list, String projectToken) {
 
 		JSONArray arr = new JSONArray();
 		JSONObject records = new JSONObject();
@@ -96,7 +106,7 @@ public class RedcapLink {
 		}
 
 		arr.put(records);
-		ArrayList<NameValuePair> params = getProjectParams(project);
+		ArrayList<NameValuePair> params = getProjectParams(projectToken);
 		params.add(new BasicNameValuePair("data", arr.toString()));
 
 		HttpPost post = new HttpPost(redcapApiUrl);
@@ -116,12 +126,12 @@ public class RedcapLink {
 		doPost(client, post);
 	}
 	
-	private ArrayList<NameValuePair> getProjectParams(String project) {
+	private ArrayList<NameValuePair> getProjectParams(String projectToken) {
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("content", "record"));
 		params.add(new BasicNameValuePair("format", "json"));
 		params.add(new BasicNameValuePair("type", "flat"));
-		params.add(new BasicNameValuePair("token", env.getProperty(project)));
+		params.add(new BasicNameValuePair("token", projectToken)); //env.getProperty(project)));
 		
 		return params;
 	}
@@ -698,7 +708,9 @@ public class RedcapLink {
 				}
 			}
 
-			specimenService.saveSpecimen(specimen);
+			if(StringUtils.isBlank(specimen.getEvent())) {
+				specimenService.saveSpecimen(specimen);
+			}
 			doPostRedcapData(redcapDataVOs, "redcap.lab.report.token");
 		}
 	}

@@ -40,6 +40,9 @@ import { RequestOptions } from '@angular/http';
 import { AuthRequestOptions } from './helpers/auth-request-options';
 import { LoginComponent } from './view/login/login.component';
 import { NgForm }   from '@angular/forms';
+import { NgIdleKeepaliveModule } from '@ng-idle/keepalive';
+import { MomentModule } from 'angular2-moment';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 @NgModule({
   declarations: [
@@ -74,7 +77,10 @@ import { NgForm }   from '@angular/forms';
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgIdleKeepaliveModule.forRoot(),
+    MomentModule,
+    ModalModule.forRoot()
   ],
   exports: [
     MatButtonModule,
@@ -109,4 +115,6 @@ import { NgForm }   from '@angular/forms';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+  
+}

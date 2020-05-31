@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.redcapAuth);
+    
     this.authService.login(this.redcapAuth).subscribe(data => {
       if(data.status === 200) {
         window.localStorage.setItem(TOKEN_NAME, data.accessToken);

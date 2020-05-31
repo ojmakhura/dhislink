@@ -80,6 +80,11 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findByEvent(event)
       var r: number = i % 12;
       let position = '';
 
+      if(r === 0) {
+        r = 12;
+        q--;
+      }
+
       if(q === 0) {
         position = 'A' + r;
       } else if(q === 1) {
@@ -97,8 +102,6 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findByEvent(event)
       } else if(q === 7) {
         position = 'H' + r;
       }
-      console.log(i + ' ' + q + ' ' + r)
-      console.log(position)
 
       return position;
     }

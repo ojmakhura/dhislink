@@ -42,7 +42,7 @@ export class AuthenticationService {
         || refreshPayload.username === 'undefined') {
       this.redirectToLogin().pipe(
         map(res=> {
-          console.log(res);
+          this.router.navigate(['/login']);
         })
       );
     }
@@ -74,10 +74,20 @@ export class AuthenticationService {
   }
 
   setCurrentUser() {
+    
     localStorage.setItem(CURRENT_USER, this.getToken());
   }
 
   getCurrentUser(): string {
+    this.http.get<UserDetails>(this.url + '/me').subscribe(
+      data => {
+
+        if(!data || !data.username) {
+          return data.username;
+        }      
+      }   
+    );
+    
     return localStorage.getItem(CURRENT_USER);
   }
 

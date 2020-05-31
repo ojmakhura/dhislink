@@ -76,17 +76,17 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
     @PostMapping("/saveone")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public RedcapDataVO saveRedcapData(RedcapDataVO redcapDataVO) {
+    public RedcapDataVO saveRedcapData(@RequestBody RedcapDataVO redcapDataVO) {
     	
     	return redcapDataService.saveRedcapData(redcapDataVO);
     }
     
     @PostMapping("/savebatch")
-    @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
-    public void saveBatch(@RequestBody BatchVO batch, @RequestBody Long projectId) {
+    public void saveBatch(@RequestBody BatchVO batch) {
     	
-    	logger.info("Saving " + batch.toString() + " for project " + projectId);
+    	logger.info("Saving " + batch.toString() + " for project " + 345);
+    	
     }
     
     @GetMapping("/extraction/specimen/{batchId}")
@@ -192,33 +192,15 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     		} else if(rd.getFieldName().equals("test_det_datetime")) {
     			
-    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");    			
-    			try {
-					batch.setDetectionDateTime(format.parse(rd.getValue()));
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    			
+    			batch.setDetectionDateTime(rd.getValue());
+				    			
     		} else if(rd.getFieldName().equals("test_assay_datetime")) {
     			
-    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");    			
-    			try {
-					batch.setResultingDateTime(format.parse(rd.getValue()));
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    			
+    			batch.setResultingDateTime(rd.getValue());
+				    			
     		} else if(rd.getFieldName().equals("test_verify_datetime")) {
     			
-    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");    			
-    			try {
-					batch.setVerificationDateTime(format.parse(rd.getValue()));
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+    			batch.setVerificationDateTime(rd.getValue());
     			
     		} else if(rd.getFieldName().equals("detection_lab")) {
     			
@@ -310,10 +292,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		
     		items.set(idx, specimen);
     	}
-    	
-    	redcapLink.updateStaging(items);
-    	logger.info(items.toString());
-    	
+    	    	
     	return batch;
     }
     
