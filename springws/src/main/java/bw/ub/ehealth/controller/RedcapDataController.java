@@ -66,13 +66,9 @@ public class RedcapDataController {
 	@Autowired
 	private RedcapLink redcapLink;
 	
-	/**
-     * TODO: Model Documentation for
-     * bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData
-     * @param redcapDataVO TODO: Model Documentation for
-bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(redcapDataVO)
-     * @return RedcapDataVO
-     */    
+    @Autowired
+    private DhisLink dhisLink;
+	
     @PostMapping("/saveone")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
@@ -92,48 +88,56 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
     	return data;
     }
     
+    @PostMapping("/authoriseresults")
+    @ResponseStatus(code = HttpStatus.OK)
+	public void publishResults(@RequestBody BatchVO batch) {
+		
+	}
+    
     @PostMapping("/savebatch")
     @ResponseStatus(code = HttpStatus.OK)
-    public void saveBatch(@RequestBody BatchVO batch, @RequestBody Long projectId, @RequestBody String page) {
+    public void saveBatch(@RequestBody @NotNull BatchVO batch) {
     	
     	List<RedcapDataVO> redcapData = new ArrayList<RedcapDataVO>();
     	
-    	if(page.equals("testing_detection")) {
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_id", batch.getBatchId()));  	
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_batch_id", batch.getBatchId()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_personnel", batch.getDetectionPersonnel()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_datetime", batch.getDetectionDateTime()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "detection_lab", batch.getLab().getCode()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_instrument", batch.getInstrument().getCode()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_batchsize", batch.getDetectionSize().toString()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "testing_detection_complete", batch.getDetectionStatus()));
+    	if(batch.getPage().equals("testing_detection")) {
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_id", batch.getBatchId()));  	
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_batch_id", batch.getBatchId()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_personnel", batch.getDetectionPersonnel()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_datetime", batch.getDetectionDateTime()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "detection_lab", batch.getLab().getCode()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_instrument", batch.getInstrument().getCode()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_batchsize", batch.getDetectionSize().toString()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "testing_detection_complete", batch.getDetectionStatus()));
 	    	
-    	} else if(page.equals("resulting")) {
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_batch_id", batch.getBatchId()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_personnel", batch.getResultingPersonnel()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_datetime", batch.getResultingDateTime()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_batchsize", batch.getDetectionSize().toString()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "resulting_complete", batch.getDetectionStatus()));
+    	} else if(batch.getPage().equals("resulting")) {
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_assay_batch_id", batch.getBatchId()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_assay_personnel", batch.getResultingPersonnel()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_assay_datetime", batch.getResultingDateTime()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_assay_batchsize", batch.getDetectionSize().toString()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "resulting_complete", batch.getDetectionStatus()));
 	    	
-    	} else if(page.equals("verification")) {
+    	} else if(batch.getPage().equals("verification")) {
     		 	
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_batch_id", batch.getBatchId()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_personnel", batch.getVerificationPersonnel()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_datetime", batch.getVerificationDateTime()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_batchsize", batch.getDetectionSize().toString()));
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "verification_complete", batch.getVerificationStatus()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_batch_id", batch.getBatchId()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_personnel", batch.getVerificationPersonnel()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_datetime", batch.getVerificationDateTime()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_batchsize", batch.getDetectionSize().toString()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "verification_complete", batch.getVerificationStatus()));
 	    	
     	}
     	
     	for(SpecimenVO specimen : batch.getBatchItems()) {
     		
     		int pos = decodePosition(specimen.getPosition());
-    		if(page.equals("testing_detection")) {
-	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_barcode_" + pos, specimen.getSpecimenBarcode());
+    		if(batch.getPage().equals("testing_detection")) {
+    			
+	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_barcode_" + pos, specimen.getSpecimenBarcode());
 	    		redcapData.add(data);
 	    		
-    		} else if(page.equals("resulting")) {
-	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_result_" + pos, specimen.getResults());
+    		} else if(batch.getPage().equals("resulting")) {
+    			
+	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_assay_result_" + pos, specimen.getResults());
 	    		redcapData.add(data);
 	    		
 	    		specimen.setResultsEnteredBy(batch.getResultingPersonnel());
@@ -141,15 +145,15 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
 	    		try {
 					specimen.setResultsEnteredDate(format.parse(batch.getResultingDateTime()));
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 	    		
-    		} else if(page.equals("verification")) {
-	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), projectId, "covid_rna_results" + pos, specimen.getCovidRnaResults());
+    		} else if(batch.getPage().equals("verification")) {
+    			
+	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "covid_rna_results" + pos, specimen.getCovidRnaResults());
 	    		redcapData.add(data);
 	    		
-	    		data = getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_result_" + pos, specimen.getTestVerifyResults());
+	    		data = getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_result_" + pos, specimen.getTestVerifyResults());
 	    		redcapData.add(data);
 	    		
 	    		specimen.setResultsVerifiedBy(batch.getVerificationPersonnel());
@@ -157,13 +161,16 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
 	    		try {
 					specimen.setResultsVerifiedDate(format.parse(batch.getVerificationDateTime()));
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
     		}    		
     	}
 		
-		redcapLink.postRedcapData(redcapData, projectId);
+    	// Save the data for this particular project
+    	
+		redcapLink.postRedcapData(redcapData, batch.getProjectId());
+		
+		// Update the staging area. This also updated the lab report
 		redcapLink.updateStaging(batch.getBatchItems());
     	
     }

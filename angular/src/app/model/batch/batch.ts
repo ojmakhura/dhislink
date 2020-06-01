@@ -4,6 +4,8 @@ import { Specimen } from '../specimen/specimen';
 
 export class Batch {
     batchId: string;
+    projectId: number;
+    page: string;
     lab: LocationVO;
     detectionPersonnel: string;
     resultingPersonnel: string;

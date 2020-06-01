@@ -36,10 +36,11 @@ export class LoginComponent implements OnInit {
     
     this.authService.login(this.redcapAuth).subscribe(data => {
       if(data.status === 200) {
+        this.redcapAuth.username = data.username;
         window.localStorage.setItem(TOKEN_NAME, data.accessToken);
-        window.localStorage.setItem(CURRENT_USER, this.redcapAuth.username);
+        window.localStorage.setItem(CURRENT_USER, data.username);
         window.localStorage.setItem(REFRESH_TOKEN, data.refreshToken);
-
+        
         if(window.localStorage.getItem(CURRENT_ROUTE)) {
           this.router.navigate([window.localStorage.getItem(CURRENT_ROUTE)]);
         } else {

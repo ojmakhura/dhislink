@@ -82,9 +82,7 @@ export class ResultingComponent implements OnInit {
     this.batch.resultingDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm:ss', 'en-US');
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
       
-      this.authService.getLoggeInUser().subscribe( res => {
-        this.batch.resultingPersonnel = res.username;
-      });
+      this.batch.verificationPersonnel = this.authService.getCurrentUser();
     }
   }
 

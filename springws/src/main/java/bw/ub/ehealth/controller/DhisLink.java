@@ -964,18 +964,32 @@ public class DhisLink implements Serializable {
 
 		return specimenService.findSpecimenByBarcode(barcode);
 	}
+	
+	public String getSpecimenFieldsString(SpecimenVO specimen) {
+
+		StringBuilder builder = new StringBuilder();
+		for(DDPObjectField field : getSpecimenFieldList(specimen)) {
+			if(builder.length() > 0) {
+				builder.append(",");
+			}
+			builder.append(field.toString());
+		}
+		String str = "[" + builder.toString() + "]";
+		
+		return str;
+	}
 
 	/**
 	 * Convert the specimen into a JSON string
 	 * @param specimen
 	 * @return
 	 */
-	public String getSpecimenFieldList(SpecimenVO specimen) {
+	public List<DDPObjectField> getSpecimenFieldList(SpecimenVO specimen) {
 
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 
 		if (specimen == null) {
-			return "[]";
+			return fields;
 		}
 				
 		/// Patient demographics
@@ -1277,17 +1291,7 @@ public class DhisLink implements Serializable {
 		newf = getVerificationFormFields(specimen.getSpecimenBarcode());
 		fields.addAll(newf);
 
-
-		StringBuilder builder = new StringBuilder();
-		for(DDPObjectField field : fields) {
-			if(builder.length() > 0) {
-				builder.append(",");
-			}
-			builder.append(field.toString());
-		}
-		String str = "[" + builder.toString() + "]";
-		
-		return str;
+		return fields;
 	}
 	
 	private DDPObjectField getCriteriaField(RedcapDataSearchCriteria criteria) {

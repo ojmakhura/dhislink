@@ -257,7 +257,7 @@ public class RedcapLink {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(specimen.getPatient().getDateOfBirth());
 				
-				tmp.setValue(cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DATE));
+				tmp.setValue(cal.get(Calendar.DATE) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.YEAR));
 				data.add(tmp);
 				
 				// Calculate the age
@@ -415,8 +415,7 @@ public class RedcapLink {
 					tmp.setFieldName("received_datetime");
 					tmp.setValue(rd.getValue());
 					
-					redcapDataVOs.add(tmp);
-					
+					redcapDataVOs.add(tmp);					
 				}
 				
 				criteria.setFieldName("receiving_personnel");

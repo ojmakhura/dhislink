@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
 import { DataSearchCriteria } from 'src/app/model/data/data-search-criteria';
 import { Observable } from 'rxjs';
@@ -27,8 +27,7 @@ export class RedcapDataService {
     
   }
 
-  saveBatch(batch: Batch): Observable<void>{
-    
+  saveBatch(batch: Batch, projectId: number, page: string): Observable<void>{
     return this.http.post<void>(this.url + 'savebatch', batch);
   }
 }

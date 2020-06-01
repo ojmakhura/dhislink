@@ -6,6 +6,7 @@ import * as jwt_decode from 'jwt-decode';
 import { UserDetails } from 'src/app/model/user/user-details';
 import { retry, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { async } from 'q';
 
 export const TOKEN_NAME: string = 'jwt_token';
 export const REFRESH_TOKEN: string = 'REFRESH_TOKEN';
@@ -34,20 +35,18 @@ export class AuthenticationService {
     refreshPayload.accessToken = this.getToken();
     refreshPayload.refreshToken = this.getRefreshToken();
     refreshPayload.username = this.getCurrentUser();
-
+    
     if(!refreshPayload.accessToken 
         || !refreshPayload.refreshToken 
         || refreshPayload.refreshToken === 'undefined'
+        || refreshPayload.refreshToken === 'null'
+        || refreshPayload.refreshToken === null
+        || refreshPayload.accessToken === 'null'
         || !refreshPayload.username
         || refreshPayload.username === 'undefined') {
-      this.redirectToLogin().pipe(
-        map(res=> {
-          this.router.navigate(['/login']);
-        })
-      );
-    }
 
-    console.log(refreshPayload);
+      this.router.navigate(['/login']);
+    }
 
     return this.http.post<AuthenticationResponse>(this.url + '/refresh', refreshPayload);
   }
@@ -79,15 +78,6 @@ export class AuthenticationService {
   }
 
   getCurrentUser(): string {
-    this.http.get<UserDetails>(this.url + '/me').subscribe(
-      data => {
-
-        if(!data || !data.username) {
-          return data.username;
-        }      
-      }   
-    );
-    
     return localStorage.getItem(CURRENT_USER);
   }
 
@@ -106,25 +96,33 @@ export class AuthenticationService {
   }
 
   isTokenExpired(token?: string): boolean {
+    let loggedIn: boolean = this.getLoggeInUser();
+
+    if(!loggedIn) {
+      return false;
+    }
+
     if(!token) token = this.getToken();
     if(!token) return true;
-
-    this.http.get<UserDetails>(this.url + '/me').subscribe(user => {
-      if(!user || !user.username) {
-        return true;
-      } else {
-        return false;
-      }
-    });
 
     const date = this.getTokenExpirationDate(token);
     if(date === undefined) return false;
     return !(date.valueOf() > new Date().valueOf());
   }
 
-  getLoggeInUser(): Observable<UserDetails> {
+  getLoggeInUser(): boolean {
+    this.user = undefined;
+    this.http.get<UserDetails>(this.url + '/me').subscribe(data => {
+      this.user = data;
+    });
 
-    return this.http.get<UserDetails>(this.url + '/me');
+    if(!this.user || !this.user.username) {
+      localStorage.setItem(CURRENT_USER, undefined);
+      return false;
+    }
+
+    localStorage.setItem(CURRENT_USER, this.user.username);
+    return true;
   }
 
   logout() {

@@ -11,6 +11,8 @@ export class JwtInterceptor implements HttpInterceptor {
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         
         window.localStorage.setItem('isIntercept', 'true');
+        let username = this.authenticationService.getCurrentUser();
+
         let token = this.authenticationService.getToken();
         
         if (token) {            
@@ -22,9 +24,8 @@ export class JwtInterceptor implements HttpInterceptor {
                 
               return this.handle401Error(request, next);
             } else {
-            
               return throwError(error);
-            }
+            }           
           }));
     }
 
@@ -48,15 +49,15 @@ export class JwtInterceptor implements HttpInterceptor {
                 switchMap((token: any) => {
                     this.isRefreshing = false;
                     this.refreshTokenSubject.next(token.jwt);
-                    
                     return next.handle(this.addToken(request, token.jwt));
-            }));
+                })
+            );
 
         } else {
             return this.refreshTokenSubject.pipe(
                 filter(token => token != null),
                 take(1),
-                switchMap(jwt => {                                
+                switchMap(jwt => {                     
                     return next.handle(this.addToken(request, jwt));
             }));
         }

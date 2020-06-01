@@ -128,7 +128,7 @@ public class DDPController {
     @ResponseBody
     public String pullSpecimen(@RequestBody DDPPostObject postObject) {
     	SpecimenVO specimen = dhisLink.getOneSpecimen(postObject.getId());
-        return dhisLink.getSpecimenFieldList(specimen);
+        return dhisLink.getSpecimenFieldsString(specimen);
     }
     
     /**
@@ -143,7 +143,7 @@ public class DDPController {
     public String getOneSpecimen(@PathVariable(name = "barcode") String barcode) {
     	
     	SpecimenVO specimen = dhisLink.getOneSpecimen(barcode);    	
-    	return dhisLink.getSpecimenFieldList(specimen);
+    	return dhisLink.getSpecimenFieldsString(specimen);
     }
 
     /**

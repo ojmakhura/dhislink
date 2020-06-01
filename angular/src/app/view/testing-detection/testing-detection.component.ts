@@ -70,9 +70,11 @@ export class TestingDetectionComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, 'detection')
-    
-    if(!this.authService.getCurrentUser() || this.authService.isTokenExpired(token)) {      
+    window.localStorage.setItem(CURRENT_ROUTE, '/detection')    
+    let loggedIn = async() => await this.authService.getCurrentUser();
+
+    if(!loggedIn || this.authService.isTokenExpired(token)) {
+      
       this.router.navigate(['/login']);
     }
   }
@@ -85,9 +87,11 @@ export class TestingDetectionComponent implements OnInit {
 
     this.batch.lab = this.locations.find(loc => loc.code == this.labControl.value)
     this.batch.instrument = this.instruments.find(loc => loc.code == this.instrumentControl.value);
+    this.batch.page = 'testing_detection';
+    this.batch.projectId = 345;
     console.log('Saving batch');
     
-    this.redcaDataService.saveBatch(this.batch).subscribe();
+    this.redcaDataService.saveBatch(this.batch, 345, 'testing_detection').subscribe();
   }
 
   newDetectionBatch() {
@@ -101,9 +105,7 @@ export class TestingDetectionComponent implements OnInit {
     this.batch.detectionDateTime = formatDate(new Date(), "yyyy-MM-dd HH:mm:ss", 'en-US');
     if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
       
-      this.authService.getLoggeInUser().subscribe( res => {
-        this.batch.detectionPersonnel = res.username;
-      });
+      this.batch.verificationPersonnel = this.authService.getCurrentUser();
     }
   }
 
@@ -125,6 +127,8 @@ export class TestingDetectionComponent implements OnInit {
     this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);
+    this.batch.instrumentBatchSize = this.batch.batchItems.length;
+    this.batch.detectionSize = this.specimen.data.length;
   }
 
   addSpecimen() {
@@ -138,6 +142,7 @@ export class TestingDetectionComponent implements OnInit {
           this.batch.batchItems.push(sp);
           this.specimen.data  = this.batch.batchItems;
           this.batch.instrumentBatchSize = this.batch.batchItems.length;
+          this.batch.detectionSize = this.specimen.data.length;
         });
       }
     }
@@ -157,7 +162,7 @@ export class TestingDetectionComponent implements OnInit {
 
         this.specimen.data  = this.batch.batchItems;
         this.batch.instrumentBatchSize = this.specimen.data.length;
-
+        this.batch.detectionSize = this.specimen.data.length;
       });
     }
   }

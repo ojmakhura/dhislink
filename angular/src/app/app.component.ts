@@ -26,9 +26,9 @@ export class AppComponent {
             private authService: AuthenticationService,
             private router: Router) {
     // sets an idle timeout of 5 seconds, for testing purposes.
-    idle.setIdle(5);
+    idle.setIdle(300);
     // sets a timeout period of 5 seconds. after 10 seconds of inactivity, the user will be considered timed out.
-    idle.setTimeout(5);
+    idle.setTimeout(100);
     // sets the default interrupts, in this case, things like clicks, scrolls, touches to the document
     idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
 
@@ -61,14 +61,14 @@ export class AppComponent {
     this.keepalive.interval(15);
 
     this.keepalive.onPing.subscribe(() => this.lastPing = new Date());
-    this.authService.getLoggeInUser().subscribe(userLoggedIn => {
-      if (userLoggedIn) {
-        idle.watch()
-        this.timedOut = false;
-      } else {
-        idle.stop();
-      }
-    });
+
+    if(this.authService.getLoggeInUser()) {
+
+      idle.watch()
+      this.timedOut = false;
+    } else {
+      idle.stop();
+    }
   }
 
   reset() {

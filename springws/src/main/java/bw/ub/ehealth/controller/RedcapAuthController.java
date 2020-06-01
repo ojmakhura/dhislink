@@ -73,6 +73,7 @@ public class RedcapAuthController {
 		if(!StringUtils.isBlank(jwt)) {
 			response.setAccessToken(jwt);
 			response.setStatus((long)HttpStatus.OK.value());
+			response.setUsername(authVO.getUsername());
 		} else {
 			return new ResponseEntity(HttpStatus.UNAUTHORIZED);
 		}

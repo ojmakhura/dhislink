@@ -81,9 +81,7 @@ export class VerificationComponent implements OnInit {
     this.batch.verificationDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm:ss', 'en-US');
     if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
       
-      this.authService.getLoggeInUser().subscribe( res => {
-        this.batch.verificationPersonnel = res.username;
-      });
+      this.batch.verificationPersonnel = this.authService.getCurrentUser();
     }
   }
 
