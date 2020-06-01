@@ -81,18 +81,25 @@ public class RedcapLink {
 	@Autowired
 	private RedcapAuthService redcapAuthService;
 	
-	public void postRedcapData(SpecimenVO specimen) {
-		List<RedcapDataVO> list  = getSpecimenRedcapData(specimen);
-		String username = securityService.findLoggedInUsername();
-		redcapAuthService.getUserProjectToken(username, labReportPID);
-		doPostRedcapData(list, env.getProperty("redcap.lab.report.token"));
+	public void postRedcapData(SpecimenVO specimen, Long projectId) {
+		List<RedcapDataVO> list  = getSpecimenRedcapData(specimen, projectId);
+		
+		doPostRedcapData(list, projectId);
 	}
 	
-	public void postRedcapData(List<RedcapDataVO> list, String projectToken ) {
-		doPostRedcapData(list, projectToken);
+	public void postRedcapData(List<RedcapDataVO> list, Long projectId) {
+		
+		doPostRedcapData(list, projectId);
 	}
 
-	public void doPostRedcapData(List<RedcapDataVO> list, String projectToken) {
+	private void doPostRedcapData(List<RedcapDataVO> list, Long projectId) {
+		
+		String username = securityService.findLoggedInUsername();
+		String projectToken = redcapAuthService.getUserProjectToken(username, labReportPID);
+		
+		if(StringUtils.isBlank(projectToken)) {
+			projectToken = redcapAuthService.getUserProjectToken("dhislink", labReportPID);
+		}
 
 		JSONArray arr = new JSONArray();
 		JSONObject records = new JSONObject();
@@ -131,7 +138,7 @@ public class RedcapLink {
 		params.add(new BasicNameValuePair("content", "record"));
 		params.add(new BasicNameValuePair("format", "json"));
 		params.add(new BasicNameValuePair("type", "flat"));
-		params.add(new BasicNameValuePair("token", projectToken)); //env.getProperty(project)));
+		params.add(new BasicNameValuePair("token", projectToken));
 		
 		return params;
 	}
@@ -191,7 +198,7 @@ public class RedcapLink {
 	 * @param specimen
 	 * @return
 	 */
-	public List<RedcapDataVO> getSpecimenRedcapData(SpecimenVO specimen) {
+	public List<RedcapDataVO> getSpecimenRedcapData(SpecimenVO specimen, Long projectId) {
 		
 		List<RedcapDataVO> data = new ArrayList<RedcapDataVO>();
 		
@@ -201,7 +208,7 @@ public class RedcapLink {
 						
 			if (!StringUtils.isBlank(specimen.getPatient().getFirstName())) {
 				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
+				tmp.setProjectId(projectId);
 				tmp.setRecord(specimen.getSpecimenBarcode());
 				tmp.setFieldName("patient_first_name");
 				tmp.setValue(specimen.getPatient().getFirstName());
@@ -210,7 +217,7 @@ public class RedcapLink {
 	
 			if (!StringUtils.isBlank(specimen.getPatient().getSurname())) {
 				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
+				tmp.setProjectId(projectId);
 				tmp.setRecord(specimen.getSpecimenBarcode());
 				tmp.setFieldName("patient_surname");
 				tmp.setValue(specimen.getPatient().getSurname());
@@ -219,7 +226,7 @@ public class RedcapLink {
 	
 			if (!StringUtils.isBlank(specimen.getPatient().getIdentityNo())) {
 				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
+				tmp.setProjectId(projectId);
 				tmp.setRecord(specimen.getSpecimenBarcode());
 				tmp.setFieldName("national_id");
 				tmp.setValue(specimen.getPatient().getIdentityNo());
@@ -228,7 +235,7 @@ public class RedcapLink {
 	
 			if (!StringUtils.isBlank(specimen.getPatient().getSex())) {
 				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
+				tmp.setProjectId(projectId);
 				tmp.setRecord(specimen.getSpecimenBarcode());
 				tmp.setFieldName("sex");
 				if(specimen.getPatient().getSex().equals("MALE")) {
@@ -244,7 +251,7 @@ public class RedcapLink {
 			
 			if(specimen.getPatient().getDateOfBirth() != null) {
 				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
+				tmp.setProjectId(projectId);
 				tmp.setRecord(specimen.getSpecimenBarcode());
 				tmp.setFieldName("date_birth");
 				Calendar cal = Calendar.getInstance();
@@ -255,7 +262,7 @@ public class RedcapLink {
 				
 				// Calculate the age
 				tmp = new RedcapDataVO();
-				tmp.setProjectId(labReportPID);
+				tmp.setProjectId(projectId);
 				tmp.setRecord(specimen.getSpecimenBarcode());
 				tmp.setFieldName("age");
 				
@@ -284,7 +291,7 @@ public class RedcapLink {
 		
 		if(specimen.getDispatchDate() != null ) {
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("date_dispatched");
 			tmp.setValue(specimen.getDispatchDate().toString());
@@ -293,7 +300,7 @@ public class RedcapLink {
 		
 		if(specimen.getDispatchDate() != null) {
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("date_specimen_collected");
 			tmp.setValue(specimen.getCollectionDateTime().toString());
@@ -302,7 +309,7 @@ public class RedcapLink {
 		
 		if (specimen.getLatitude() != null) {
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("gis_lat");
 			tmp.setValue(specimen.getLatitude());
@@ -311,7 +318,7 @@ public class RedcapLink {
 
 		if (specimen.getLongitude() != null) {
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("gis_long");
 			tmp.setValue(specimen.getLongitude());
@@ -320,14 +327,14 @@ public class RedcapLink {
 
 		if (!StringUtils.isBlank(specimen.getSpecimenBarcode())) {
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("specimen_barcode");
 			tmp.setValue(specimen.getSpecimenBarcode());
 			data.add(tmp);
 			
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("covid19_lab_report_complete");
 			tmp.setValue("0");
@@ -336,7 +343,7 @@ public class RedcapLink {
 		
 		if (!StringUtils.isBlank(specimen.getDispatchLocation())) {
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("dispatch_facility");
 			tmp.setValue(specimen.getDispatchLocation());
@@ -346,7 +353,7 @@ public class RedcapLink {
 		
 		if (!StringUtils.isBlank(specimen.getPatientFacility())) {
 			tmp = new RedcapDataVO();
-			tmp.setProjectId(labReportPID);
+			tmp.setProjectId(projectId);
 			tmp.setRecord(specimen.getSpecimenBarcode());
 			tmp.setFieldName("patient_facility");
 			tmp.setValue(specimen.getPatientFacility());
@@ -365,6 +372,9 @@ public class RedcapLink {
 	public void updateStaging(Collection<SpecimenVO> specimens) {
 		
 		for(SpecimenVO specimen : specimens) {
+			if(StringUtils.isBlank(specimen.getEvent())) {
+				continue;
+			}
 			RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
 			// Reception project
 			criteria.setProjectId(labReceptionPID);
@@ -708,10 +718,8 @@ public class RedcapLink {
 				}
 			}
 
-			if(StringUtils.isBlank(specimen.getEvent())) {
-				specimenService.saveSpecimen(specimen);
-			}
-			doPostRedcapData(redcapDataVOs, "redcap.lab.report.token");
+			specimenService.saveSpecimen(specimen);
+			doPostRedcapData(redcapDataVOs, labReportPID);
 		}
 	}
 }

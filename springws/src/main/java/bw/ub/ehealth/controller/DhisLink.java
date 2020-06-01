@@ -917,7 +917,7 @@ public class DhisLink implements Serializable {
 					sp = specimenService.saveSpecimen(sp);
 						
 					// We should set the information for the lab report project
-					redcapLink.postRedcapData(sp);
+					redcapLink.postRedcapData(sp, labReportPID);
 					RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
 					criteria.setFieldName("lab_rec_barcode_%");
 					criteria.setValue(sp.getSpecimenBarcode());

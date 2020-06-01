@@ -1,4 +1,3 @@
-import { InstrumentBatch } from './instrument-batch';
 import { LocationVO } from '../location/location-vo';
 import { Instrument } from '../instrument/instrument';
 import { Specimen } from '../specimen/specimen';

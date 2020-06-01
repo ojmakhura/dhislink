@@ -81,11 +81,90 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
     	return redcapDataService.saveRedcapData(redcapDataVO);
     }
     
+    private RedcapDataVO getRedcapDataObjet(String record, Long projectId, String fieldName, String value) {
+    	
+    	RedcapDataVO data = new RedcapDataVO();
+    	data.setFieldName(fieldName);
+    	data.setRecord(record);
+    	data.setValue(value);
+    	data.setProjectId(projectId);    	
+    	
+    	return data;
+    }
+    
     @PostMapping("/savebatch")
     @ResponseStatus(code = HttpStatus.OK)
-    public void saveBatch(@RequestBody BatchVO batch) {
+    public void saveBatch(@RequestBody BatchVO batch, @RequestBody Long projectId, @RequestBody String page) {
     	
-    	logger.info("Saving " + batch.toString() + " for project " + 345);
+    	List<RedcapDataVO> redcapData = new ArrayList<RedcapDataVO>();
+    	
+    	if(page.equals("testing_detection")) {
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_id", batch.getBatchId()));  	
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_batch_id", batch.getBatchId()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_personnel", batch.getDetectionPersonnel()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_datetime", batch.getDetectionDateTime()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "detection_lab", batch.getLab().getCode()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_instrument", batch.getInstrument().getCode()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_batchsize", batch.getDetectionSize().toString()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "testing_detection_complete", batch.getDetectionStatus()));
+	    	
+    	} else if(page.equals("resulting")) {
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_batch_id", batch.getBatchId()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_personnel", batch.getResultingPersonnel()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_datetime", batch.getResultingDateTime()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_batchsize", batch.getDetectionSize().toString()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "resulting_complete", batch.getDetectionStatus()));
+	    	
+    	} else if(page.equals("verification")) {
+    		 	
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_batch_id", batch.getBatchId()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_personnel", batch.getVerificationPersonnel()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_datetime", batch.getVerificationDateTime()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_batchsize", batch.getDetectionSize().toString()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), projectId, "verification_complete", batch.getVerificationStatus()));
+	    	
+    	}
+    	
+    	for(SpecimenVO specimen : batch.getBatchItems()) {
+    		
+    		int pos = decodePosition(specimen.getPosition());
+    		if(page.equals("testing_detection")) {
+	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), projectId, "test_det_barcode_" + pos, specimen.getSpecimenBarcode());
+	    		redcapData.add(data);
+	    		
+    		} else if(page.equals("resulting")) {
+	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), projectId, "test_assay_result_" + pos, specimen.getResults());
+	    		redcapData.add(data);
+	    		
+	    		specimen.setResultsEnteredBy(batch.getResultingPersonnel());
+	    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	    		try {
+					specimen.setResultsEnteredDate(format.parse(batch.getResultingDateTime()));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	    		
+    		} else if(page.equals("verification")) {
+	    		RedcapDataVO data = getRedcapDataObjet(batch.getBatchId(), projectId, "covid_rna_results" + pos, specimen.getCovidRnaResults());
+	    		redcapData.add(data);
+	    		
+	    		data = getRedcapDataObjet(batch.getBatchId(), projectId, "test_verify_result_" + pos, specimen.getTestVerifyResults());
+	    		redcapData.add(data);
+	    		
+	    		specimen.setResultsVerifiedBy(batch.getVerificationPersonnel());
+	    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	    		try {
+					specimen.setResultsVerifiedDate(format.parse(batch.getVerificationDateTime()));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}    		
+    	}
+		
+		redcapLink.postRedcapData(redcapData, projectId);
+		redcapLink.updateStaging(batch.getBatchItems());
     	
     }
     
@@ -124,15 +203,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.saveRedcapData(red
     	
     	logger.info("Saving " + data.toString());
     	
-    	if(projectId == labReportPID) {
-    		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.report.token");
-    	} else if(projectId == labExtractionPID) {
-    		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.extraction.token");
-    	} else if(projectId == labResultingPID) {
-    		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.resulting.token");
-    	} else if(projectId == labReceptionPID) {
-    		redcapLink.doPostRedcapData((List<RedcapDataVO>) data, "redcap.lab.reception.token");
-    	}
+    	redcapLink.postRedcapData((List<RedcapDataVO>) data, projectId);
      	
     	return data;
     }
@@ -296,6 +367,55 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	return batch;
     }
     
+    /**
+     * Decode the instrument position into the relative position of scanning 
+     * 
+     * @param encoded
+     * @return
+     */
+    public int decodePosition(String encoded) {
+    	
+    	int pos = 1;
+    	int q, r;
+    	r = Integer.parseInt(encoded.substring(1));
+    	
+    	char ch = encoded.charAt(0);
+    	
+    	if(ch == 'A') {
+    		
+    		q = 0;
+    		
+    	} else if (ch == 'B') {
+    		
+    		q = 1;
+    		
+    	} else if (ch == 'C') {
+    		
+    		q = 2;
+    	} else if (ch == 'D') {
+    		
+    		q = 3;
+    	} else if (ch == 'E') {
+    		
+    		q = 4;
+    	} else if (ch == 'F') {
+    		
+    		q = 5;
+    	} else if (ch == 'G') {
+    		
+    		q = 6;
+    	} else {
+    		q = 7;
+    	}
+    	
+    	return q * 12 + r;
+    }
+    
+    /**
+     * 
+     * @param i
+     * @return
+     */
     private String encodePosition(int i) {
     	
         int q = i / 12;

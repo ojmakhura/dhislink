@@ -72,8 +72,7 @@ export class TestingDetectionComponent implements OnInit {
     let token = this.authService.getToken();
     window.localStorage.setItem(CURRENT_ROUTE, 'detection')
     
-    if(!this.authService.getCurrentUser() || this.authService.isTokenExpired(token)) {
-      
+    if(!this.authService.getCurrentUser() || this.authService.isTokenExpired(token)) {      
       this.router.navigate(['/login']);
     }
   }
@@ -81,9 +80,7 @@ export class TestingDetectionComponent implements OnInit {
   saveDetectionBatch() {
     
     if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
-      this.authService.getLoggeInUser().subscribe( res => {
-        this.batch.detectionPersonnel = res.username;
-      });
+      this.now();
     }
 
     this.batch.lab = this.locations.find(loc => loc.code == this.labControl.value)
