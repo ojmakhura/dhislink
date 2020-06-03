@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import * as jwt_decode from 'jwt-decode';
@@ -48,7 +48,10 @@ export class AuthenticationService {
       this.router.navigate(['/login']);
     }
 
-    return this.http.post<AuthenticationResponse>(this.url + '/refresh', refreshPayload);
+    return this.http.post<AuthenticationResponse>(this.url + '/refresh', refreshPayload).pipe(catchError((error) => {
+      this.router.navigate(['/login']);
+      return  of(new AuthenticationResponse());
+    }));
   }
 
   redirectToLogin() {
@@ -112,7 +115,10 @@ export class AuthenticationService {
 
   getLoggeInUser(): boolean {
     this.user = undefined;
-    this.http.get<UserDetails>(this.url + '/me').subscribe(data => {
+    this.http.get<UserDetails>(this.url + '/me').pipe(catchError((error) => {
+      this.router.navigate(['/login']);
+      return  of(new UserDetails());
+    })).subscribe(data => {
       this.user = data;
     });
 
@@ -130,5 +136,9 @@ export class AuthenticationService {
     localStorage.removeItem(REFRESH_TOKEN);
     localStorage.removeItem(CURRENT_USER);
     localStorage.removeItem(CURRENT_ROUTE);
+  }
+
+  handleHttpError(error: HttpErrorResponse) {
+
   }
 }

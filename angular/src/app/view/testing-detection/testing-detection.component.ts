@@ -18,6 +18,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { formatDate } from '@angular/common';
 import { NgForm }   from '@angular/forms';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 
 @Component({
   selector: 'app-testing-detection',
@@ -91,7 +94,10 @@ export class TestingDetectionComponent implements OnInit {
     this.batch.projectId = 345;
     console.log('Saving batch');
     
-    this.redcaDataService.saveBatch(this.batch, 345, 'testing_detection').subscribe();
+    this.redcaDataService.saveBatch(this.batch, 345, 'testing_detection').pipe(catchError((error) => {
+      this.router.navigate(['/login']);
+      return  of(new AuthenticationResponse());
+    }));;
   }
 
   newDetectionBatch() {
