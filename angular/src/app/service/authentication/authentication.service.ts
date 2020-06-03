@@ -10,6 +10,7 @@ import { async } from 'q';
 
 export const TOKEN_NAME: string = 'jwt_token';
 export const REFRESH_TOKEN: string = 'REFRESH_TOKEN';
+export const FORM_DATA: string = 'FORM_DATA';
 export const CURRENT_ROUTE: string = 'currentRoute';
 export const CURRENT_USER: string = 'currentUser';
 
@@ -118,12 +119,13 @@ export class AuthenticationService {
     this.http.get<UserDetails>(this.url + '/me').pipe(catchError((error) => {
       this.router.navigate(['/login']);
       return  of(new UserDetails());
-    })).subscribe(data => {
+    })).subscribe(data => {   
       this.user = data;
+      localStorage.setItem(CURRENT_USER, this.user.username);
     });
 
     if(!this.user || !this.user.username) {
-      localStorage.setItem(CURRENT_USER, undefined);
+      localStorage.removeItem(CURRENT_USER);
       return false;
     }
 
@@ -136,6 +138,7 @@ export class AuthenticationService {
     localStorage.removeItem(REFRESH_TOKEN);
     localStorage.removeItem(CURRENT_USER);
     localStorage.removeItem(CURRENT_ROUTE);
+    localStorage.removeItem(FORM_DATA);
   }
 
   handleHttpError(error: HttpErrorResponse) {

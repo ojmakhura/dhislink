@@ -90,6 +90,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.permitAll()
 				.antMatchers("/ddpcontroller/auth/refresh")
 					.permitAll()
+				.antMatchers("/ddpcontroller/newspecimen")
+					.permitAll()
+				.antMatchers("/ddpcontroller/dhissynch")
+					.permitAll()
+				.antMatchers("/ddpcontroller/ddp")
+					.permitAll()
 				.anyRequest()
 					.authenticated();
 		

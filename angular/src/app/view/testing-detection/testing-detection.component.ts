@@ -74,9 +74,11 @@ export class TestingDetectionComponent implements OnInit {
   ngOnInit(): void {
     let token = this.authService.getToken();
     window.localStorage.setItem(CURRENT_ROUTE, '/detection')    
-    let loggedIn = async() => await this.authService.getCurrentUser();
-
+    let loggedIn = this.authService.getCurrentUser();
+    console.log(loggedIn);
+    
     if(!loggedIn || this.authService.isTokenExpired(token)) {
+      console.log('No one has logged in');
       
       this.router.navigate(['/login']);
     }
@@ -92,12 +94,14 @@ export class TestingDetectionComponent implements OnInit {
     this.batch.instrument = this.instruments.find(loc => loc.code == this.instrumentControl.value);
     this.batch.page = 'testing_detection';
     this.batch.projectId = 345;
-    console.log('Saving batch');
-    
-    this.redcaDataService.saveBatch(this.batch, 345, 'testing_detection').pipe(catchError((error) => {
+    this.batch.detectionBatchId = this.batch.batchId;
+    this.batch.assayBatchId = this.batch.batchId;
+    this.batch.verifyBatchId = this.batch.batchId;
+        
+    this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
       this.router.navigate(['/login']);
-      return  of(new AuthenticationResponse());
-    }));;
+      return of(new AuthenticationResponse());
+    })).subscribe();
   }
 
   newDetectionBatch() {
@@ -108,10 +112,13 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   now() {
-    this.batch.detectionDateTime = formatDate(new Date(), "yyyy-MM-dd HH:mm:ss", 'en-US');
+    this.batch.detectionDateTime = formatDate(new Date(), "yyyy-MM-dd HH:mm", 'en-US');
     if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
+      console.log('settign user ');
       
-      this.batch.verificationPersonnel = this.authService.getCurrentUser();
+      this.batch.detectionPersonnel = this.authService.getCurrentUser();
+      console.log(this.batch);
+      
     }
   }
 
@@ -127,14 +134,15 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    console.log(batch);
+    console.log(batch)
     this.batch = batch;
-    this.batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm:ss', 'en-US');
+    this.batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US');
     this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);
     this.batch.instrumentBatchSize = this.batch.batchItems.length;
     this.batch.detectionSize = this.specimen.data.length;
+
   }
 
   addSpecimen() {

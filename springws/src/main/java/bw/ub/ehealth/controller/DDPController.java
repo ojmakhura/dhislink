@@ -1,11 +1,15 @@
 package bw.ub.ehealth.controller;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -161,20 +165,18 @@ public class DDPController {
         params.put("program", program);
         params.put("programStage", programStage);
         params.put("status", "COMPLETED");
-        //params.put("trackedEntityInstance", "Sg78qJZCXAm");
         SpecimenVO last = specimenService.findLatestSpecimen();
         String date = "2020-05-20";
-        
+
         if(last != null) {
-        	Calendar cal = Calendar.getInstance();
-        	cal.setTime(last.getCreated());
-        	 date = cal.get(Calendar.YEAR) + "-" + 
-    				(cal.get(Calendar.MONTH) < 10 ? "0" + cal.get(Calendar.MONTH) : cal.get(Calendar.MONTH)) + "-" + 
-    				(cal.get(Calendar.DAY_OF_MONTH) < 10 ? "0" + cal.get(Calendar.DAY_OF_MONTH) : cal.get(Calendar.DAY_OF_MONTH));
+        	
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			Instant updated = last.getLastUpdated().toInstant();
+			date = formatter.format(updated).replace(' ', 'T');
         }
         	
         params.put("lastUpdatedStartDate", date);        
-        params.put("order", "eventDate:asc");
+        params.put("order", "lastUpdated:asc");
         params.put("pageSize", "" + pageSize);
         
         BigInteger numPulled = new BigInteger("0");

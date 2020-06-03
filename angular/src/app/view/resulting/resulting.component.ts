@@ -79,10 +79,10 @@ export class ResultingComponent implements OnInit {
   }
 
   now() {
-    this.batch.resultingDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm:ss', 'en-US');
+    this.batch.resultingDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-US');
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
       
-      this.batch.verificationPersonnel = this.authService.getCurrentUser();
+      this.batch.resultingPersonnel = this.authService.getCurrentUser();
     }
   }
 

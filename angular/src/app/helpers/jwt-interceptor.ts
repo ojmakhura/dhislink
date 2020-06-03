@@ -21,10 +21,13 @@ export class JwtInterceptor implements HttpInterceptor {
 
         return next.handle(request).pipe(catchError(error => {
             if (error instanceof HttpErrorResponse && error.status === 401) {
+                console.log(error);
                 
-              return this.handle401Error(request, next);
+                return this.handle401Error(request, next);
             } else {
-              return throwError(error);
+                console.log('other');
+                
+                return throwError(error);
             }           
           }));
     }

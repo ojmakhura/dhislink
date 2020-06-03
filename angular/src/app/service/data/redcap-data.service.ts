@@ -5,6 +5,7 @@ import { DataSearchCriteria } from 'src/app/model/data/data-search-criteria';
 import { Observable } from 'rxjs';
 import { Batch } from 'src/app/model/batch/batch';
 import { Specimen } from 'src/app/model/specimen/specimen';
+import { RedcapData } from 'src/app/model/data/redcap-data';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,9 @@ export class RedcapDataService {
     
   }
 
-  saveBatch(batch: Batch, projectId: number, page: string): Observable<void>{
-    return this.http.post<void>(this.url + 'savebatch', batch);
+  saveBatch(batch: Batch): Observable<RedcapData[]>{
+    console.log('Batch received for posting');
+    
+    return this.http.post<RedcapData[]>('http://localhost:8080/ddpcontroller/data/savebatch', batch);
   }
 }

@@ -199,7 +199,7 @@ public class SpecimenDaoImpl
 	@Override
 	protected Specimen handleFindLatestSpecimen() throws Exception {
 		
-		Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where sp.created = "
+		Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where sp.lastUpdated = "
     			+ "(select MAX(s1.lastUpdated) from bw.ub.ehealth.dhislink.specimen.Specimen s1)");
 		
 		try {

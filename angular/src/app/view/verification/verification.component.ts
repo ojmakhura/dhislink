@@ -78,7 +78,7 @@ export class VerificationComponent implements OnInit {
   }
 
   now() {
-    this.batch.verificationDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm:ss', 'en-US');
+    this.batch.verificationDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-US');
     if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
       
       this.batch.verificationPersonnel = this.authService.getCurrentUser();

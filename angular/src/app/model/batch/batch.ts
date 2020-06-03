@@ -20,6 +20,9 @@ export class Batch {
     detectionStatus: string;
     resultingStatus: string;
     verificationStatus: string;
+    detectionBatchId: string;
+    assayBatchId: string;
+    verifyBatchId: string;
 
     constructor() {
         this.lab = new LocationVO();
