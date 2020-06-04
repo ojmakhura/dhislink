@@ -25,7 +25,6 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    window.localStorage.removeItem(TOKEN_NAME);
   }
 
   getCurrentUser() : string {
@@ -35,7 +34,11 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     
     this.authService.login(this.redcapAuth).subscribe(data => {
+      
+      console.log('**************************************');
+      
       if(data.status === 200) {
+        console.log(data);
         this.redcapAuth.username = data.username;
         window.localStorage.setItem(TOKEN_NAME, data.accessToken);
         window.localStorage.setItem(CURRENT_USER, data.username);

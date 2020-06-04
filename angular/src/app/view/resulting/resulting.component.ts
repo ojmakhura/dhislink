@@ -17,6 +17,9 @@ import { Specimen } from 'src/app/model/specimen/specimen';
 import { MatSort } from '@angular/material/sort';
 import { formatDate } from '@angular/common';
 import { NgForm }   from '@angular/forms';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 
 @Component({
   selector: 'app-resulting',
@@ -33,6 +36,8 @@ export class ResultingComponent implements OnInit {
   selectedIndex: number = 0;
   instruments: Instrument[];
   barcode = '';
+  labControl = new FormControl('', Validators.required);
+  instrumentControl = new FormControl('', Validators.required);
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
   specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'testAssayResults'];
 
@@ -65,21 +70,43 @@ export class ResultingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+        
     let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, '/resulting')
-    
-    if(!this.authService.getCurrentUser() || this.authService.isTokenExpired(token)) {
-      
+    let user = this.authService.getCurrentUser();
+    //this.authService.getLoggeInUser();
+
+    window.localStorage.setItem(CURRENT_ROUTE, '/resulting');         
+    if(!user || this.authService.isTokenExpired(token)) {   
       this.router.navigate(['/login']);
     }
+  }
+  
+  ngAfterViewInit() {
+    
+    this.batches.paginator = this.batchesPaginator;
+    this.batches.sort = this.batchSort;
+
+    this.specimen.paginator = this.specimenPaginator;
+    
   }
 
   saveResultingBatch() {
     
+    this.batch.page = 'resulting';
+    this.batch.projectId = 345;
+    if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
+      this.now();
+    }
+    console.log(this.batch);
+    
+    this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
+      this.router.navigate(['/login']);
+      return of(new AuthenticationResponse());
+    })).subscribe();
   }
 
   now() {
-    this.batch.resultingDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-US');
+    this.batch.resultingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
       
       this.batch.resultingPersonnel = this.authService.getCurrentUser();
@@ -99,8 +126,12 @@ export class ResultingComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
+    console.log(batch);
     
     this.batch = batch;
     this.specimen.data = this.batch.batchItems;
+    this.labControl.setValue(batch.lab.code);
+    this.instrumentControl.setValue(batch.instrument.code);
+    this.batch.detectionSize = this.specimen.data.length;
   }
 }

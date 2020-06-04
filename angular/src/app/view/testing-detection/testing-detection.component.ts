@@ -21,6 +21,7 @@ import { NgForm }   from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
+import { logging } from 'protractor';
 
 @Component({
   selector: 'app-testing-detection',
@@ -72,16 +73,25 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, '/detection')    
-    let loggedIn = this.authService.getCurrentUser();
-    console.log(loggedIn);
     
-    if(!loggedIn || this.authService.isTokenExpired(token)) {
-      console.log('No one has logged in');
-      
+    let token = this.authService.getToken();
+    let user = this.authService.getCurrentUser();
+
+    window.localStorage.setItem(CURRENT_ROUTE, '/detection'); 
+    //this.authService.getLoggeInUser();
+    
+    if(!user || this.authService.isTokenExpired(token)) {   
       this.router.navigate(['/login']);
     }
+  }
+  
+  ngAfterViewInit() {
+    
+    this.batches.paginator = this.batchesPaginator;
+    this.batches.sort = this.batchSort;
+
+    this.specimen.paginator = this.specimenPaginator;
+    
   }
 
   saveDetectionBatch() {
@@ -117,7 +127,6 @@ export class TestingDetectionComponent implements OnInit {
       console.log('settign user ');
       
       this.batch.detectionPersonnel = this.authService.getCurrentUser();
-      console.log(this.batch);
       
     }
   }
@@ -134,7 +143,7 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    console.log(batch)
+    
     this.batch = batch;
     this.batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US');
     this.specimen.data = this.batch.batchItems;

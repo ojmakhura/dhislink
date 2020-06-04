@@ -1,68 +1,62 @@
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { AuthenticationService, REFRESH_TOKEN } from '../service/authentication/authentication.service';
+import { Observable, throwError, BehaviorSubject, Subject } from 'rxjs';
+import { AuthenticationService } from '../service/authentication/authentication.service';
 import { Injectable } from '@angular/core';
 import { catchError, filter, take, switchMap } from 'rxjs/operators'; 
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-    constructor(private authenticationService: AuthenticationService) { }
+    private refreshTokenInProgress = false;
+    private refreshTokenSubject: Subject<any> = new BehaviorSubject<any>(null);
 
+    constructor(public authService: AuthenticationService) { }
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        
-        window.localStorage.setItem('isIntercept', 'true');
-        let username = this.authenticationService.getCurrentUser();
-
-        let token = this.authenticationService.getToken();
-        
-        if (token) {            
-            request = this.addToken(request, token);
+        if (request.url.indexOf('refresh') !== -1) {
+            return next.handle(request);
         }
 
-        return next.handle(request).pipe(catchError(error => {
-            if (error instanceof HttpErrorResponse && error.status === 401) {
-                console.log(error);
-                
-                return this.handle401Error(request, next);
+        const accessExpired = this.authService.isTokenExpired();
+
+        if (accessExpired) {
+            return next.handle(request);
+        }
+        if (accessExpired) {
+            if (!this.refreshTokenInProgress) {
+                this.refreshTokenInProgress = true;
+                this.refreshTokenSubject.next(null);
+                return this.authService.refreshToken().pipe(
+                    switchMap((authResponse) => {
+                        console.log('Got response ', authResponse);
+                        
+                        this.authService.setAccessToken(authResponse.accessToken);
+                        this.authService.setRefreshToken(authResponse.refreshToken);
+                        this.refreshTokenInProgress = false;
+                        this.refreshTokenSubject.next(authResponse.refreshToken);
+                        return next.handle(this.injectToken(request));
+                    }),
+                );
             } else {
-                console.log('other');
-                
-                return throwError(error);
-            }           
-          }));
+                return this.refreshTokenSubject.pipe(
+                    filter(result => result !== null),
+                    take(1),
+                    switchMap((res) => {
+                        return next.handle(this.injectToken(request))
+                    })
+                );
+            }
+        }
+
+        if (!accessExpired) {
+            return next.handle(this.injectToken(request));
+        }
     }
 
-    private addToken(request: HttpRequest<any>, token: string) {
+    injectToken(request: HttpRequest<any>) {
+        const token = this.authService.getToken();
         return request.clone({
             setHeaders: {
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${token}`
             }
         });
-    }
-
-    private isRefreshing = false;
-    private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-
-    private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
-        if (!this.isRefreshing) {
-            this.isRefreshing = true;
-            this.refreshTokenSubject.next(null);
-            
-            return this.authenticationService.refreshToken().pipe(
-                switchMap((token: any) => {
-                    this.isRefreshing = false;
-                    this.refreshTokenSubject.next(token.jwt);
-                    return next.handle(this.addToken(request, token.jwt));
-                })
-            );
-
-        } else {
-            return this.refreshTokenSubject.pipe(
-                filter(token => token != null),
-                take(1),
-                switchMap(jwt => {                     
-                    return next.handle(this.addToken(request, jwt));
-            }));
-        }
     }
 }

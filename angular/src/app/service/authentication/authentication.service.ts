@@ -64,7 +64,7 @@ export class AuthenticationService {
     return localStorage.getItem(TOKEN_NAME);
   }
 
-  setToken(token: string): void {
+  setAccessToken(token: string): void {
     localStorage.setItem(TOKEN_NAME, token);
   }
 
@@ -76,9 +76,9 @@ export class AuthenticationService {
     localStorage.setItem(REFRESH_TOKEN, refreshToken);
   }
 
-  setCurrentUser() {
+  setCurrentUser(username: string) {
     
-    localStorage.setItem(CURRENT_USER, this.getToken());
+    localStorage.setItem(CURRENT_USER, username);
   }
 
   getCurrentUser(): string {
@@ -100,12 +100,7 @@ export class AuthenticationService {
   }
 
   isTokenExpired(token?: string): boolean {
-    let loggedIn: boolean = this.getLoggeInUser();
-
-    if(!loggedIn) {
-      return false;
-    }
-
+    
     if(!token) token = this.getToken();
     if(!token) return true;
 
@@ -115,6 +110,7 @@ export class AuthenticationService {
   }
 
   getLoggeInUser(): boolean {
+    let loggedIn = false
     this.user = undefined;
     this.http.get<UserDetails>(this.url + '/me').pipe(catchError((error) => {
       this.router.navigate(['/login']);
@@ -122,15 +118,15 @@ export class AuthenticationService {
     })).subscribe(data => {   
       this.user = data;
       localStorage.setItem(CURRENT_USER, this.user.username);
+      loggedIn = true;
     });
 
     if(!this.user || !this.user.username) {
       localStorage.removeItem(CURRENT_USER);
-      return false;
+      loggedIn = false;
     }
 
-    localStorage.setItem(CURRENT_USER, this.user.username);
-    return true;
+    return loggedIn;
   }
 
   logout() {

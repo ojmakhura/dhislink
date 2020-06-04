@@ -47,7 +47,6 @@ public class SecurityServiceImpl
     protected  String handleFindLoggedInUsername()
         throws Exception
     {
-    	logger.info(SecurityContextHolder.getContext().toString());
     	Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     	
     	if(userDetails instanceof UserDetailsImpl) {

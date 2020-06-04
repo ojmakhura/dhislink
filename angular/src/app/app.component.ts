@@ -17,6 +17,8 @@ export class AppComponent {
   idleState = 'Not started.';
   timedOut = false;
   lastPing?: Date = null;
+  user: string;
+  loggedIn: boolean = false;
 
   public modalRef: BsModalRef;
   @ViewChild('childModal', { static: false }) childModal: ModalDirective;
@@ -62,7 +64,7 @@ export class AppComponent {
 
     this.keepalive.onPing.subscribe(() => this.lastPing = new Date());
 
-    if(this.authService.getLoggeInUser()) {
+    if(this.authService.getCurrentUser()) {
 
       idle.watch()
       this.timedOut = false;
@@ -89,10 +91,27 @@ export class AppComponent {
   logout() {
     this.childModal.hide();
     this.authService.logout();
+    this.loggedIn = false;
+    this.user = ''
     
     this.reset();
     this.router.navigate(['/login']);
   }
 
+  getUser() {
+    
+    this.user = this.authService.getCurrentUser();
+
+    if(!this.user) {
+      this.user = '';
+      this.loggedIn = false;
+    } else {
+      this.loggedIn = true;
+    }    
+  }
+
+  changeForm(destination: string) {
+    this.router.navigate([destination]);
+  }
 }
 

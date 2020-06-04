@@ -14,7 +14,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { formatDate } from '@angular/common';
-import { NgForm }   from '@angular/forms';
+import { NgForm, FormControl, Validators }   from '@angular/forms';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 
 @Component({
   selector: 'app-verification',
@@ -31,30 +34,29 @@ export class VerificationComponent implements OnInit {
   selectedIndex: number = 0;
   instruments: Instrument[];
   barcode = '';
+  
+  labControl = new FormControl('', Validators.required);
+  instrumentControl = new FormControl('', Validators.required);
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
   specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'covidRnaResults', 'testVerifyResults'];
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
 
-  @ViewChild('SpecimenPaginator', {static: true}) specimenPaginator: MatPaginator;
+  @ViewChild(MatPaginator) specimenPaginator: MatPaginator;
 
 
   constructor(private router: Router, 
               private authService: AuthenticationService,
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
-              private specimenBarcode: SpecimenService) {
+              private specimenService: SpecimenService) {
                 
     this.batch = new Batch();
     this.batch.lab = new LocationVO();
 
     this.batches = new MatTableDataSource<Batch>();
-    this.batches.paginator = this.batchesPaginator;
-    this.batches.sort = this.batchSort;
-
     this.specimen = new MatTableDataSource<Specimen>();
-    this.specimen.paginator = this.specimenPaginator;
     
     this.searchCriteria = new BatchSearchCriteria();
     this.instruments = InstrumentList.allIntruments();
@@ -66,19 +68,54 @@ export class VerificationComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.authService.getToken();
-    window.localStorage.setItem(CURRENT_ROUTE, '/verification')
-
-    if(!this.authService.getCurrentUser() ||this.authService.isTokenExpired(token)) {      
+    let user = this.authService.getCurrentUser();
+    //this.authService.getLoggeInUser();
+    window.localStorage.setItem(CURRENT_ROUTE, '/verification'); 
+    
+    if(!user || this.authService.isTokenExpired(token)) {   
       this.router.navigate(['/login']);
     }
   }
 
-  saveVerificationBatch() {
+  ngAfterViewInit() {
+    
+    this.batches.paginator = this.batchesPaginator;
+    this.batches.sort = this.batchSort;
+
+    this.specimen.paginator = this.specimenPaginator;
     
   }
 
+  publish() {
+
+    if(!this.batch.authorisingPersonnel || this.batch.authorisingPersonnel.length == 0) {
+      this.batch.authorisingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');        
+      this.batch.authorisingPersonnel = this.authService.getCurrentUser();
+    }
+
+    this.batch.publishResults = true;
+    this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
+      this.router.navigate(['/login']);
+      return of(new AuthenticationResponse());
+    })).subscribe();
+  }
+
+  saveVerificationBatch() {
+    
+    this.batch.page = 'verification';
+    this.batch.projectId = 345;
+    if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
+      this.now();
+    }
+
+    this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
+      this.router.navigate(['/login']);
+      return of(new AuthenticationResponse());
+    })).subscribe();
+  }
+
   now() {
-    this.batch.verificationDateTime = formatDate(new Date(), 'dd-MM-yyyy HH:mm', 'en-US');
+    this.batch.verificationDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
     if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
       
       this.batch.verificationPersonnel = this.authService.getCurrentUser();
@@ -100,7 +137,19 @@ export class VerificationComponent implements OnInit {
   editBatch(batch: Batch) {
     
     this.batch = batch;
+    console.log(this.batch.batchItems);
     this.specimen.data = this.batch.batchItems;
+    console.log(this.specimen.data);
+    this.labControl.setValue(batch.lab.code);
+    this.instrumentControl.setValue(batch.instrument.code);
+  }
+
+  verified(): boolean {
+    if(this.batch.verificationStatus === '2') {
+      return false;
+    }
+
+    return true;
   }
 
 }

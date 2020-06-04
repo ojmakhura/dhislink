@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import bw.ub.ehealth.dhislink.security.DhislinkPasswordEncoder;
 import bw.ub.ehealth.security.JwtAuthenticationEntryPoint;
@@ -97,7 +98,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/ddpcontroller/ddp")
 					.permitAll()
 				.anyRequest()
-					.authenticated();
+					.authenticated()
+				.and()
+				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+				//.and()
+				//.formLogin().loginPage("/login");
 		
 		// Add out own custom JWT security filter
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

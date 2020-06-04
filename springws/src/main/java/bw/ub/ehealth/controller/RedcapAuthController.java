@@ -1,8 +1,10 @@
 package bw.ub.ehealth.controller;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -59,6 +61,7 @@ public class RedcapAuthController {
 	private RedcapAuthService redcapAuthService;
 	
 	private HashMap<String, String> refreshTokens = new HashMap<String, String>();
+	private HashMap<String, String> loginTokens = new HashMap<String, String>();
 	
 	@PostMapping("/signin")
 	@ResponseBody
@@ -79,7 +82,21 @@ public class RedcapAuthController {
 		}
 		
 		UUID refToken = Generators.randomBasedGenerator().generate();
+		
+		ArrayList<String> refreshes = new ArrayList<>();
+ 		for(Map.Entry<String, String> entry : refreshTokens.entrySet()) {
+			if(entry.getValue().equals(authVO.getUsername()))
+			{
+				refreshes.add(entry.getKey());
+			}
+		}
+		
+ 		for(String k : refreshes) {
+ 			refreshTokens.remove(k);
+ 		}
+ 		
 		refreshTokens.put(refToken.toString(), authVO.getUsername());
+		loginTokens.put(response.getUsername(), response.getAccessToken());
 		
 		response.setRefreshToken(refToken.toString());
 		
@@ -90,18 +107,17 @@ public class RedcapAuthController {
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK) 
 	public ResponseEntity<?> refreshToken(@RequestBody JwtAuthenticationResponse request) {
-		
-		logger.info(request.toString());
-				
+						
 		String username = request.getUsername();
-		
-		if(refreshTokens.get(request.getRefreshToken()) == null) {
+
+		if( refreshTokens.get(request.getRefreshToken()) == null) {
+			logger.info("Refresh token not found");
 			return new ResponseEntity(HttpStatus.UNAUTHORIZED);
 		}
 		
 		if(refreshTokens.get(request.getRefreshToken()).equals(request.getUsername())) {
 			RedcapAuthVO auth = redcapAuthService.findByUsername(username);
-			
+			logger.info("Redcap auth found at " + auth.toString());
 			if(auth != null) {
 				String jwt = tokenProvider.generateToken(new UserDetailsImpl(auth.getUsername(), auth.getPassword()));
 				JwtAuthenticationResponse response = new JwtAuthenticationResponse();
@@ -110,13 +126,12 @@ public class RedcapAuthController {
 				UUID refToken = Generators.randomBasedGenerator().generate();
 				
 				refreshTokens.remove(request.getRefreshToken());
-				refreshTokens.put(refToken.toString(), auth.getUsername());
-				
+				refreshTokens.put(refToken.toString(), auth.getUsername());				
 				response.setRefreshToken(refToken.toString());
 				
+				logger.info("Response set at " + response.toString());
 				return ResponseEntity.ok(response);
 			}
-			
 			
 		}
 		
@@ -129,7 +144,8 @@ public class RedcapAuthController {
 	public UserDetailsImpl getLoggedInUser() {
 		String username = securityService.findLoggedInUsername();
 		
-		if(StringUtils.isBlank(username)) {
+		if(StringUtils.isBlank(username) || !loginTokens.containsKey(username)) {
+			logger.info("Something went werong" + loginTokens.toString());
 			return null;
 		}
 		

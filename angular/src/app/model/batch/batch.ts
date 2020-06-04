@@ -23,6 +23,9 @@ export class Batch {
     detectionBatchId: string;
     assayBatchId: string;
     verifyBatchId: string;
+    authorisingPersonnel: string; 
+    authorisingDateTime: string;
+    publishResults: boolean;
 
     constructor() {
         this.lab = new LocationVO();

@@ -9,6 +9,9 @@
                         <div class="form-group">  
                             <button class="btn btn-success" [disabled]="resultingForm.invalid">Save</button>
                         </div>
+                        <div class="form-group">  
+                            <button class="btn btn-success" [disabled]="verified()">Publish</button>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
@@ -71,11 +74,11 @@
                     </div>
                     <div class="form-group">          
                         <mat-form-field>
-                            <mat-label>Resulting Status</mat-label>
+                            <mat-label>Verification Status</mat-label>
                             <mat-select [(ngModel)]="batch.verificationStatus" 
                                     name="verificationStatus" id = "verificationStatus" 
                                     #detectionStatus="ngModel" required="true">
-                                <mat-option value="" selected></mat-option>
+                                <mat-option value=""></mat-option>
                                 <mat-option value="0" selected>Incomplete</mat-option>
                                 <mat-option value="1" selected>Unverified</mat-option>
                                 <mat-option value="2" selected>Complete</mat-option> 
@@ -139,8 +142,7 @@
                                 <mat-row *matRowDef="let row; columns: specimenColumns;"></mat-row>            
                             </mat-table>
                             <mat-paginator 
-                                #SpecimenPaginator="matPaginator" 
-                                [length]="specimen.data.length" 
+                                #specimenPaginator="matPaginator" 
                                 [pageSize]="10" 
                                 [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons>
                             </mat-paginator>
@@ -205,16 +207,16 @@
                         <mat-cell *matCellDef="let row"> {{ row.batchId }} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="resultingPersonnel">
-                        <mat-header-cell *matHeaderCellDef>Resulting Personnel</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.resultingPersonnel }} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef>Verification Personnel</mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{ row.verificationPersonnel }} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="resultingDateTime">
-                        <mat-header-cell *matHeaderCellDef>Resulting Datetime</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.resultingDateTime }} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef>Verification Datetime</mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{ row.verificationDateTime }} </mat-cell>
                     </ng-container>
                     <ng-container matColumnDef="resultingStatus">
-                        <mat-header-cell *matHeaderCellDef>Resulting Status</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.resultingStatus }} </mat-cell>
+                        <mat-header-cell *matHeaderCellDef>Verification Status</mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{ row.verificationStatus }} </mat-cell>
                     </ng-container>
 
                     <mat-header-row *matHeaderRowDef="searchColumns"></mat-header-row>

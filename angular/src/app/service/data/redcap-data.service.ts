@@ -31,6 +31,6 @@ export class RedcapDataService {
   saveBatch(batch: Batch): Observable<RedcapData[]>{
     console.log('Batch received for posting');
     
-    return this.http.post<RedcapData[]>('http://localhost:8080/ddpcontroller/data/savebatch', batch);
+    return this.http.post<RedcapData[]>(this.url + 'savebatch', batch);
   }
 }

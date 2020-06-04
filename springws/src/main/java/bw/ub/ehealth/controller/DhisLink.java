@@ -1280,7 +1280,7 @@ public class DhisLink implements Serializable {
 		return null;
 	}
 	
-	private List<DDPObjectField> getVerificationFormFields(String barcode) {
+	public List<DDPObjectField> getVerificationFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1345,12 +1345,12 @@ public class DhisLink implements Serializable {
 		
 	}
 	
-	private List<DDPObjectField> getResultingFormFields(String barcode) {
+	public List<DDPObjectField> getResultingFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
 		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
-		// Reception project
+		// resulting project
 		criteria.setProjectId(labResultingPID);
 		criteria.setFieldName("test_det_barcode_%");
 		criteria.setValue(barcode);
@@ -1409,7 +1409,7 @@ public class DhisLink implements Serializable {
 		
 	}
 
-	private List<DDPObjectField> getDetectionFormFields(String barcode) {
+	public List<DDPObjectField> getDetectionFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1470,7 +1470,7 @@ public class DhisLink implements Serializable {
 		
 	}
 	
-	private List<DDPObjectField> getExtractionFormFields(String barcode) {
+	public List<DDPObjectField> getExtractionFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1534,7 +1534,7 @@ public class DhisLink implements Serializable {
 		
 	}
 	
-	private List<DDPObjectField> getTporFormFields(String barcode) {
+	public List<DDPObjectField> getTporFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1595,7 +1595,7 @@ public class DhisLink implements Serializable {
 	 * @param barcode
 	 * @return
 	 */
-	private List<DDPObjectField> getReceptionFormFields(String barcode) {
+	public List<DDPObjectField> getReceptionFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
