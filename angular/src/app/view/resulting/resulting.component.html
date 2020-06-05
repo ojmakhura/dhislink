@@ -140,12 +140,12 @@
                                 <mat-header-row *matHeaderRowDef="specimenColumns"></mat-header-row>
                                 <mat-row *matRowDef="let row; columns: specimenColumns;"></mat-row>            
                             </mat-table>
-                            <mat-paginator 
+                            <!--mat-paginator 
                                 #SpecimenPaginator="matPaginator" 
                                 [length]="specimen.data.length" 
                                 [pageSize]="10" 
                                 [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons>
-                            </mat-paginator>
+                            </mat-paginator-->
                         </div>
                     </div>
                 </form>

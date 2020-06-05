@@ -43,7 +43,7 @@ export class VerificationComponent implements OnInit {
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
 
-  @ViewChild(MatPaginator) specimenPaginator: MatPaginator;
+  @ViewChild('SpecimenPaginator') specimenPaginator: MatPaginator;
 
 
   constructor(private router: Router, 
@@ -84,15 +84,9 @@ export class VerificationComponent implements OnInit {
 
   ngAfterViewInit() {
     
-    this.batches.paginator = this.batchesPaginator;
-    this.batches.sort = this.batchSort;
-
-    this.specimen.paginator = this.specimenPaginator;
-    if(localStorage.getItem(FORM_DATA)) {
-      let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
-      this.editBatch(batch);
-      localStorage.removeItem(FORM_DATA);
-    }
+    //this.batches.paginator = this.batchesPaginator;
+    //this.batches.sort = this.batchSort;
+    //this.specimen.paginator = this.specimenPaginator;
   }
 
   publish() {

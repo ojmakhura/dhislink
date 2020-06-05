@@ -88,10 +88,10 @@ export class TestingDetectionComponent implements OnInit {
   
   ngAfterViewInit() {
     
-    this.batches.paginator = this.batchesPaginator;
-    this.batches.sort = this.batchSort;
+    //this.batches.paginator = this.batchesPaginator;
+    //this.batches.sort = this.batchSort;
 
-    this.specimen.paginator = this.specimenPaginator;
+    //this.specimen.paginator = this.specimenPaginator;
   }
 
   saveDetectionBatch() {

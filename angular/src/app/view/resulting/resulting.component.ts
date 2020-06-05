@@ -85,9 +85,9 @@ export class ResultingComponent implements OnInit {
   
   ngAfterViewInit() {
     
-    this.batches.paginator = this.batchesPaginator;
-    this.batches.sort = this.batchSort;
-    this.specimen.paginator = this.specimenPaginator; 
+    //this.batches.paginator = this.batchesPaginator;
+    //this.batches.sort = this.batchSort;
+    //this.specimen.paginator = this.specimenPaginator; 
     
   }
 
