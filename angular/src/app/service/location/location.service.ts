@@ -8,7 +8,7 @@ import { LocationVO } from 'src/app/model/location/location-vo';
 })
 export class LocationService {
 
-  private url= 'http://localhost:8080/ddpcontroller/location/';
+  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/location/';
 
   constructor(private http: HttpClient) { }
 

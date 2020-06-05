@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,7 @@ import bw.ub.ehealth.dhislink.vo.DDPObjectField;
 
 @RestController
 @RequestMapping("/ddpcontroller/data")
+@CrossOrigin()
 public class RedcapDataController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedcapDataController.class);
@@ -190,7 +192,6 @@ public class RedcapDataController {
 		redcapLink.updateStaging(batch.getBatchItems());
 		
 		if(batch.getPublishResults()) {
-			logger.info("Found %d specimen and they are %s for synch", verifiedSpecimen.size(), verifiedSpecimen.toString());
 			dhisLink.getDhisPayload(verifiedSpecimen);
 		}
 		return redcapData;
@@ -228,8 +229,6 @@ public class RedcapDataController {
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
     public Collection<RedcapDataVO> saveRedcapData(@RequestBody Collection<RedcapDataVO> data, @RequestBody Long projectId) {
-    	
-    	logger.info("Saving " + data.toString());
     	
     	redcapLink.postRedcapData((List<RedcapDataVO>) data, projectId);
      	
@@ -356,8 +355,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	
     	batch.setInstrumentBatchSize((long)t2.size());
     	ArrayList<SpecimenVO> items = new ArrayList<>();
-    	batch.setBatchItems(items);
-    	
+    	    	
     	for(int i = 0; i < t2.size(); i++) {
     		items.add(new SpecimenVO());
     	}
@@ -369,10 +367,15 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		int idx = Integer.parseInt(pos) - 1;
     		SpecimenVO specimen = specimenService.findSpecimenByBarcode(rd.getValue());
     		
-    		if(specimen == null) {
-    			specimen = new SpecimenVO();
-    			specimen.setSpecimenBarcode(rd.getValue());
-    			specimen.setPatient(new PatientVO());
+    		if(specimen == null 
+    				|| StringUtils.isBlank(specimen.getResultsEnteredBy())
+    				|| StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
+    			
+    			if(specimen == null) {
+	    			specimen = new SpecimenVO();
+	    			specimen.setSpecimenBarcode(rd.getValue());
+	    			specimen.setPatient(new PatientVO());
+    			}
     			
     			List<DDPObjectField> fields = dhisLink.getResultingFormFields(rd.getValue());
     			for(DDPObjectField field : fields) {
@@ -382,13 +385,12 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     					    					
     					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     					try {
-    						specimen.setReceivingDateTime(format.parse(field.getValue()));
+    						specimen.setResultsEnteredDate(format.parse(field.getValue()));
     					} catch (ParseException e) {
     						e.printStackTrace();
     					}
     					
     				} else if(field.getField().equals("test_assay_result")) {
-    					
     					specimen.setTestAssayResults(field.getValue());
     					
     				} 
@@ -397,12 +399,12 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			fields = dhisLink.getVerificationFormFields(rd.getValue());
     			for(DDPObjectField field : fields) {
     				if(field.getField().equals("test_verify_personnel")) {
-    					specimen.setResultsEnteredBy(field.getValue());
+    					specimen.setResultsVerifiedBy(field.getValue());
     				} else if(field.getField().equals("test_verify_datetime")) {
     					    					
     					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     					try {
-    						specimen.setReceivingDateTime(format.parse(field.getValue()));
+    						specimen.setResultsVerifiedDate(format.parse(field.getValue()));
     					} catch (ParseException e) {
     						e.printStackTrace();
     					}
@@ -423,7 +425,8 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		
     		items.set(idx, specimen);
     	}
-    	    	
+    	batch.setBatchItems(items);
+    	
     	return batch;
     }
     

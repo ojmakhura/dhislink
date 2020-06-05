@@ -92,7 +92,6 @@ public class RedcapLink {
 	}
 	
 	public void postRedcapData(List<RedcapDataVO> list, Long projectId) {
-		logger.info("Posting data " + list.toString());
 		doPostRedcapData(list, projectId);
 	}
 
@@ -105,10 +104,8 @@ public class RedcapLink {
 		}
 		
 		String projectToken = redcapAuthService.getUserProjectToken(username, projectId);
-		logger.info(String.format("Found user token %s in project %d and user %s", projectToken, projectId, username));
 		
 		if(StringUtils.isBlank(projectToken)) {
-			logger.info("Using DHISLINK token " + projectToken);
 			projectToken = redcapAuthService.getUserProjectToken("dhislink", projectId);
 		}
 
@@ -165,8 +162,6 @@ public class RedcapLink {
 		try
 		{
 			resp = client.execute(post);
-			logger.info(resp.toString());
-			logger.info("--------------------------------------------------------------");
 		}
 		catch (final Exception e)
 		{
@@ -193,7 +188,6 @@ public class RedcapLink {
 			{
 				while((line = reader.readLine()) != null)
 				{
-					logger.info(">>>>>>>>>>>>>>>>>>> " + line);
 					result.append(line);
 				}
 			}
@@ -715,8 +709,6 @@ public class RedcapLink {
 			}
 
 			specimenService.saveSpecimen(specimen);
-			
-			logger.info("After updating === > " + reportData.toString());
 			
 			doPostRedcapData(reportData, labReportPID);
 		}

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService, CURRENT_ROUTE } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService, CURRENT_ROUTE, FORM_DATA } from 'src/app/service/authentication/authentication.service';
 import { Batch } from 'src/app/model/batch/batch';
 import { LocationVO } from 'src/app/model/location/location-vo';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
@@ -51,22 +51,24 @@ export class ResultingComponent implements OnInit {
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
               private specimenBarcode: SpecimenService) {
-                
-    this.batch = new Batch();
-    this.batch.lab = new LocationVO();
-
-    this.batches = new MatTableDataSource<Batch>();
-    this.batches.paginator = this.batchesPaginator;
-    this.batches.sort = this.batchSort;
-
-    this.specimen = new MatTableDataSource<Specimen>();
-    this.specimen.paginator = this.specimenPaginator;
-
-    this.searchCriteria = new BatchSearchCriteria();
-    this.instruments = InstrumentList.allIntruments();    
+           
     locationService.findAll().subscribe(results => {
       this.locations = results;
     });
+
+    this.specimen = new MatTableDataSource<Specimen>();
+    this.searchCriteria = new BatchSearchCriteria();
+    this.batches = new MatTableDataSource<Batch>();
+    this.instruments = InstrumentList.allIntruments();
+
+    if(localStorage.getItem(FORM_DATA)) {
+      let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
+      this.editBatch(batch);
+      localStorage.removeItem(FORM_DATA);
+    } else {
+      this.batch = new Batch();
+      this.batch.lab = new LocationVO();
+    }
   }
 
   ngOnInit(): void {
@@ -85,8 +87,7 @@ export class ResultingComponent implements OnInit {
     
     this.batches.paginator = this.batchesPaginator;
     this.batches.sort = this.batchSort;
-
-    this.specimen.paginator = this.specimenPaginator;
+    this.specimen.paginator = this.specimenPaginator; 
     
   }
 
@@ -97,7 +98,6 @@ export class ResultingComponent implements OnInit {
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
       this.now();
     }
-    console.log(this.batch);
     
     this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
       this.router.navigate(['/login']);
@@ -126,12 +126,21 @@ export class ResultingComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    console.log(batch);
     
     this.batch = batch;
     this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);
     this.batch.detectionSize = this.specimen.data.length;
+  }
+
+  toVerification() {
+    localStorage.setItem(FORM_DATA, JSON.stringify(this.batch));
+    this.router.navigate(['/verification']);
+  }
+
+  toDetection() {
+    localStorage.setItem(FORM_DATA, JSON.stringify(this.batch));
+    this.router.navigate(['/detection']);
   }
 }

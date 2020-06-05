@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +42,7 @@ import bw.ub.ehealth.security.JwtTokenProvider;
 
 @RestController
 @RequestMapping("/ddpcontroller/auth")
+@CrossOrigin(origins = "https://ehealth.ub.bw/redcap/", maxAge = 3600)
 public class RedcapAuthController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedcapAuthController.class);
@@ -111,13 +113,11 @@ public class RedcapAuthController {
 		String username = request.getUsername();
 
 		if( refreshTokens.get(request.getRefreshToken()) == null) {
-			logger.info("Refresh token not found");
 			return new ResponseEntity(HttpStatus.UNAUTHORIZED);
 		}
 		
 		if(refreshTokens.get(request.getRefreshToken()).equals(request.getUsername())) {
 			RedcapAuthVO auth = redcapAuthService.findByUsername(username);
-			logger.info("Redcap auth found at " + auth.toString());
 			if(auth != null) {
 				String jwt = tokenProvider.generateToken(new UserDetailsImpl(auth.getUsername(), auth.getPassword()));
 				JwtAuthenticationResponse response = new JwtAuthenticationResponse();
@@ -129,7 +129,6 @@ public class RedcapAuthController {
 				refreshTokens.put(refToken.toString(), auth.getUsername());				
 				response.setRefreshToken(refToken.toString());
 				
-				logger.info("Response set at " + response.toString());
 				return ResponseEntity.ok(response);
 			}
 			
@@ -145,7 +144,6 @@ public class RedcapAuthController {
 		String username = securityService.findLoggedInUsername();
 		
 		if(StringUtils.isBlank(username) || !loginTokens.containsKey(username)) {
-			logger.info("Something went werong" + loginTokens.toString());
 			return null;
 		}
 		

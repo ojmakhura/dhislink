@@ -1,5 +1,12 @@
 <div class="component">
     <h2>Verification</h2>
+    <div class="row">
+        <div>
+            <button type="button" class="btn" (click)="toResulting()" >
+                <mat-icon aria-hidden="false" >keyboard_arrow_left</mat-icon>
+            </button>
+        </div>
+    </div>
     <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
         <!-- Editing a location -->
         <mat-tab label="Edit">
@@ -18,7 +25,7 @@
                             <mat-form-field>
                                 <mat-label>Batch Id</mat-label>
                                 <input matInput disabled
-                                [(ngModel)]="batch.batchId" name="batchId" id = "batchId" #batchId="ngModel" required="true">
+                                [(ngModel)]="batch.batchId" name="batchId" id = "batchId" #batchId="ngModel">
                             </mat-form-field>
                         </div>
                         <div class="form-group">        
@@ -26,7 +33,7 @@
                                 <mat-form-field>
                                     <mat-label>Lab</mat-label>
                                     <input matInput
-                                        [(ngModel)]="batch.lab.name" name="lab" id = "lab" #lab="ngModel" required="true" disabled="true">
+                                        [(ngModel)]="batch.lab.name" name="lab" id = "lab" #lab="ngModel" disabled="true">
                                 </mat-form-field>
                             </div>  
                         </div>
@@ -49,17 +56,19 @@
                                     name="verificationDateTime" id = "verificationDateTime" 
                                     #verificationDateTime="ngModel" required="true">                                
                             </mat-form-field>
-                            <button class="btn btn-success" (click)="now()">now</button>
+                            <button type="button" class="btn btn-success" (click)="now()">Now</button>
                         </div>
                     </div>
                     <div class="row"> 
                         <div class="form-group">          
                             <mat-form-field>
-                                <mat-label>Instrument</mat-label>                             
-                                <input matInput disabled = "true"
-                                    [(ngModel)]="batch.instrument.name" 
-                                    name="instrument" id = "instrument" 
-                                    #instrument="ngModel">
+                                <mat-label>Instrument</mat-label>        
+                                <mat-select [formControl]="instrumentControl" disabled="true">
+                                    <mat-option value="new Instrument('', '')" selected></mat-option>  
+                                    <mat-option *ngFor="let instrument of instruments" [value]="instrument.code">
+                                        {{ instrument.name }}
+                                    </mat-option>
+                                </mat-select>   
                             </mat-form-field>
                         </div>
                         <div class="form-group">

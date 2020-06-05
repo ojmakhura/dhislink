@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService, CURRENT_ROUTE } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService, CURRENT_ROUTE, FORM_DATA } from 'src/app/service/authentication/authentication.service';
 import { Batch } from 'src/app/model/batch/batch';
 import { LocationService } from 'src/app/service/location/location.service';
 import { LocationVO } from 'src/app/model/location/location-vo';
@@ -21,7 +21,6 @@ import { NgForm }   from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
-import { logging } from 'protractor';
 
 @Component({
   selector: 'app-testing-detection',
@@ -55,21 +54,23 @@ export class TestingDetectionComponent implements OnInit {
               private redcaDataService: RedcapDataService,
               private specimenService: SpecimenService) {
                 
-    this.batch = new Batch();
-    this.batch.lab = new LocationVO();
     this.batches = new MatTableDataSource<Batch>();
-    this.batches.paginator = this.batchesPaginator;
-    this.batches.sort = this.batchSort;
-
     this.specimen = new MatTableDataSource<Specimen>();
-    this.specimen.paginator = this.specimenPaginator;
-
     this.searchCriteria = new BatchSearchCriteria();
     this.instruments = InstrumentList.allIntruments();
     
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
     });
+
+    if(localStorage.getItem(FORM_DATA)) {
+      let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
+      this.editBatch(batch);
+      localStorage.removeItem(FORM_DATA);
+    } else {
+      this.batch = new Batch();
+      this.batch.lab = new LocationVO();
+    }
   }
 
   ngOnInit(): void {
@@ -91,7 +92,6 @@ export class TestingDetectionComponent implements OnInit {
     this.batches.sort = this.batchSort;
 
     this.specimen.paginator = this.specimenPaginator;
-    
   }
 
   saveDetectionBatch() {
@@ -188,5 +188,10 @@ export class TestingDetectionComponent implements OnInit {
         this.batch.detectionSize = this.specimen.data.length;
       });
     }
+  }
+
+  toResulting() {
+    localStorage.setItem(FORM_DATA, JSON.stringify(this.batch));
+    this.router.navigate(['/resulting']);
   }
 }

@@ -1,17 +1,24 @@
 <div class="component">
     <h2>Detection</h2>
+    <div class="row">
+        <div>
+            <button type="button" class="btn" (click)="toResulting()" >
+                <mat-icon aria-hidden="false" >keyboard_arrow_right</mat-icon>
+            </button>
+        </div>
+    </div>
     <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
             <!-- Editing a location -->
             <mat-tab label="Edit">
                 <div class="col">
-                    <form #saveForm="ngForm" (ngSubmit)="saveDetectionBatch()">
+                    <form #saveForm="ngForm">
                         
                         <div class="row">  
                             <div class="form-group">  
                                 <button class="btn btn-success" [disabled]="saveForm.invalid">Save</button>
                             </div>
                             <div class="form-group">  
-                                <button type="button" class="btn btn-success" (click)="newDetectionBatch()">New</button>
+                                <button class="btn btn-success" (click)="newDetectionBatch()">New</button>
                             </div>
                         </div>
                         <div class="row">
@@ -54,7 +61,7 @@
                                         name="detectionDateTime" id = "detectionDateTime" 
                                         #detectionDateTime="ngModel" required="true">                                
                                 </mat-form-field>
-                                <button (click)="now()">Now</button>
+                                <button type="button" class="btn btn-success" (click)="now()">Now</button>
                             </div>
                         </div>
                         <div class="row"> 
@@ -183,7 +190,7 @@
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let row">
                                 <div class = "form-group">
-                                    <button class="btn btn-info" (click)="editBatch(row)">
+                                    <button type="button" class="btn btn-info" (click)="editBatch(row)">
                                         <mat-icon>edit</mat-icon>
                                     </button>
                                 </div>    

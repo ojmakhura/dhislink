@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class SpecimenService {
 
-  private url= 'http://localhost:8080/ddpcontroller/specimen/';
+  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/specimen/';
   
   constructor(private http: HttpClient) { }
 

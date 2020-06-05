@@ -30,7 +30,7 @@ export class AppComponent {
     // sets an idle timeout of 5 seconds, for testing purposes.
     idle.setIdle(300);
     // sets a timeout period of 5 seconds. after 10 seconds of inactivity, the user will be considered timed out.
-    idle.setTimeout(100);
+    idle.setTimeout(240);
     // sets the default interrupts, in this case, things like clicks, scrolls, touches to the document
     idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
 
@@ -94,7 +94,6 @@ export class AppComponent {
     this.loggedIn = false;
     this.user = ''
     
-    this.reset();
     this.router.navigate(['/login']);
   }
 

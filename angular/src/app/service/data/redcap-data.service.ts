@@ -12,7 +12,7 @@ import { RedcapData } from 'src/app/model/data/redcap-data';
 })
 export class RedcapDataService {
 
-  private url= 'http://localhost:8080/ddpcontroller/data/';
+  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/data/';
 
   constructor(private http: HttpClient) { }
 

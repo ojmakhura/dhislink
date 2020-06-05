@@ -8,18 +8,18 @@ import { retry, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { async } from 'q';
 
-export const TOKEN_NAME: string = 'jwt_token';
+export const TOKEN_NAME: string = 'JWT_TOKEN';
 export const REFRESH_TOKEN: string = 'REFRESH_TOKEN';
 export const FORM_DATA: string = 'FORM_DATA';
-export const CURRENT_ROUTE: string = 'currentRoute';
-export const CURRENT_USER: string = 'currentUser';
+export const CURRENT_ROUTE: string = 'CURRENT_ROUTE';
+export const CURRENT_USER: string = 'CURRENT_USER';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
 
-  private url= 'http://localhost:8080/ddpcontroller/auth';
+  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/auth';
   user: UserDetails;
 
   constructor (private router: Router,private http: HttpClient) {

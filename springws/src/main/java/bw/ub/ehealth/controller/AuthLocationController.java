@@ -3,6 +3,7 @@ package bw.ub.ehealth.controller;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +13,7 @@ import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
 
 @RestController
 @RequestMapping("/ddpcontroller/location/auth")
+@CrossOrigin()
 public class AuthLocationController {
 	@Autowired
 	private AuthLocationService authLocationService;
