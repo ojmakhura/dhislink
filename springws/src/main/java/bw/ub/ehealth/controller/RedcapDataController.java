@@ -192,6 +192,7 @@ public class RedcapDataController {
 		redcapLink.updateStaging(batch.getBatchItems());
 		
 		if(batch.getPublishResults()) {
+			//logger.info(String.format("%d specimen data sent to DHIS2 and they are %s", verifiedSpecimen.size(), verifiedSpecimen.toString()));
 			dhisLink.getDhisPayload(verifiedSpecimen);
 		}
 		return redcapData;

@@ -7,19 +7,14 @@ import { UserDetails } from 'src/app/model/user/user-details';
 import { retry, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { async } from 'q';
-
-export const TOKEN_NAME: string = 'JWT_TOKEN';
-export const REFRESH_TOKEN: string = 'REFRESH_TOKEN';
-export const FORM_DATA: string = 'FORM_DATA';
-export const CURRENT_ROUTE: string = 'CURRENT_ROUTE';
-export const CURRENT_USER: string = 'CURRENT_USER';
+import { BASE_URL, TOKEN_NAME, REFRESH_TOKEN, CURRENT_USER, CURRENT_ROUTE, FORM_DATA } from 'src/app/helpers/dhis-link-constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
 
-  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/auth';
+  private url= BASE_URL + 'auth';
   user: UserDetails;
 
   constructor (private router: Router,private http: HttpClient) {

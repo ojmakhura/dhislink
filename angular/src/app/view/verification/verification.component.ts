@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService, CURRENT_ROUTE, FORM_DATA } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
 import { Batch } from 'src/app/model/batch/batch';
 import { LocationVO } from 'src/app/model/location/location-vo';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
@@ -18,6 +18,7 @@ import { NgForm, FormControl, Validators }   from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
+import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
 
 @Component({
   selector: 'app-verification',
@@ -89,18 +90,33 @@ export class VerificationComponent implements OnInit {
     //this.specimen.paginator = this.specimenPaginator;
   }
 
+  /**
+   * This publishes the verified results to DHIS2
+   */
   publish() {
+    
+    if(this.batch.verificationStatus != '2' && 
+      !this.batch.authorisingPersonnel) {
+        alert('Could not publish results. Either verification is not complete or authorising personel is noit set.')
+    } else {
+      this.batch.publishResults = true;
 
-    if(!this.batch.authorisingPersonnel || this.batch.authorisingPersonnel.length == 0) {
-      this.batch.authorisingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');        
-      this.batch.authorisingPersonnel = this.authService.getCurrentUser();
+      let data: any;
+      this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
+        this.router.navigate(['/login']);
+        return of(new AuthenticationResponse());
+      })).subscribe(results => {
+        data = results;
+      });
+
+      return data;
     }
 
-    this.batch.publishResults = true;
-    this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
-      this.router.navigate(['/login']);
-      return of(new AuthenticationResponse());
-    })).subscribe();
+  }
+
+  authorise() {
+    this.batch.authorisingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');        
+    this.batch.authorisingPersonnel = this.authService.getCurrentUser();
   }
 
   saveVerificationBatch() {
@@ -151,7 +167,9 @@ export class VerificationComponent implements OnInit {
   }
 
   verified(): boolean {
-    if(this.batch.verificationStatus === '2') {
+    if(this.batch.verificationStatus === '2' && 
+      this.batch.authorisingPersonnel) {
+      
       return false;
     }
 

@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { HttpClient } from '@angular/common/http';
+import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpecimenService {
 
-  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/specimen/';
+  private url= BASE_URL + 'specimen/';
   
   constructor(private http: HttpClient) { }
 

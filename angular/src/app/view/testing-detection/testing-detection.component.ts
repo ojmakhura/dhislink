@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService, CURRENT_ROUTE, FORM_DATA } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
 import { Batch } from 'src/app/model/batch/batch';
 import { LocationService } from 'src/app/service/location/location.service';
 import { LocationVO } from 'src/app/model/location/location-vo';
@@ -21,6 +21,7 @@ import { NgForm }   from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
+import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
 
 @Component({
   selector: 'app-testing-detection',

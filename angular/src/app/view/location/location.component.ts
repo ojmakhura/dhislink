@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { LocationVO } from 'src/app/model/location/location-vo';
 import { Router } from '@angular/router';
-import { AuthenticationService, CURRENT_ROUTE } from 'src/app/service/authentication/authentication.service';
+import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
 import { LocationService } from 'src/app/service/location/location.service';
 import { MatTabGroup } from '@angular/material/tabs';
+import { CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
 
 @Component({
   selector: 'app-location',

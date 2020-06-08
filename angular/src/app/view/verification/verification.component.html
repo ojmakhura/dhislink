@@ -17,7 +17,7 @@
                             <button class="btn btn-success" [disabled]="resultingForm.invalid">Save</button>
                         </div>
                         <div class="form-group">  
-                            <button class="btn btn-success" [disabled]="verified()">Publish</button>
+                            <button class="btn btn-success" [disabled]="verified()" (click)="publish()">Publish</button>
                         </div>
                     </div>
                     <div class="row">
@@ -59,6 +59,27 @@
                             <button type="button" class="btn btn-success" (click)="now()">Now</button>
                         </div>
                     </div>
+                    <div class="row">  
+                        <div class="form-group">
+                            <mat-form-field>
+                                <mat-label>Authorising Personnel</mat-label>
+                                <input matInput  disabled = "true"
+                                    [(ngModel)]="batch.authorisingPersonnel" 
+                                    name="authorisingPersonnel" id = "authorisingPersonnel" 
+                                    #authorisingPersonnel="ngModel" required="false">
+                            </mat-form-field>
+                        </div>
+                        <div class="form-group">
+                            <mat-form-field>
+                                <mat-label>Authorising Datetime</mat-label>                                
+                                <input matInput disabled = "true"
+                                    [(ngModel)]="batch.authorisingDateTime" 
+                                    name="authorisingDateTime" id = "authorisingDateTime" 
+                                    #authorisingDateTime="ngModel">                                
+                            </mat-form-field>
+                            <button type="button" class="btn btn-success" (click)="authorise()">Now</button>
+                        </div>
+                    </div>
                     <div class="row"> 
                         <div class="form-group">          
                             <mat-form-field>
@@ -86,7 +107,7 @@
                             <mat-label>Verification Status</mat-label>
                             <mat-select [(ngModel)]="batch.verificationStatus" 
                                     name="verificationStatus" id = "verificationStatus" 
-                                    #detectionStatus="ngModel" required="true">
+                                    #verificationStatus="ngModel" required="true">
                                 <mat-option value=""></mat-option>
                                 <mat-option value="0" selected>Incomplete</mat-option>
                                 <mat-option value="1" selected>Unverified</mat-option>
@@ -225,7 +246,18 @@
                     </ng-container>
                     <ng-container matColumnDef="resultingStatus">
                         <mat-header-cell *matHeaderCellDef>Verification Status</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.verificationStatus }} </mat-cell>
+                        <mat-cell *matCellDef="let row">     
+                            <mat-form-field>
+                                <mat-select [(ngModel)]="row.verificationStatus" 
+                                        name="verificationStatus" id = "verificationStatus" 
+                                        #verificationStatus="ngModel" disabled="true">
+                                    <mat-option value=""></mat-option>
+                                    <mat-option value="0" selected>Incomplete</mat-option>
+                                    <mat-option value="1" selected>Unverified</mat-option>
+                                    <mat-option value="2" selected>Complete</mat-option> 
+                                </mat-select>
+                            </mat-form-field>
+                        </mat-cell>
                     </ng-container>
 
                     <mat-header-row *matHeaderRowDef="searchColumns"></mat-header-row>

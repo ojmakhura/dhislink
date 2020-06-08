@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from "@angular/router";
 import { 
-  AuthenticationService, 
-  TOKEN_NAME, 
-  CURRENT_ROUTE,
-  CURRENT_USER, 
-  REFRESH_TOKEN} from '../../service/authentication/authentication.service';
+  AuthenticationService } from '../../service/authentication/authentication.service';
 import { RedcapAuth } from '../../model/authentication/redcap-auth';
 import { NgForm }   from '@angular/forms';
+import { CURRENT_USER, TOKEN_NAME, REFRESH_TOKEN, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
 
 @Component({
   selector: 'app-login',

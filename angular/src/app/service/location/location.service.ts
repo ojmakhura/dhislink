@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocationVO } from 'src/app/model/location/location-vo';
+import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocationService {
 
-  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/location/';
+  private url= BASE_URL + 'location/';
 
   constructor(private http: HttpClient) { }
 

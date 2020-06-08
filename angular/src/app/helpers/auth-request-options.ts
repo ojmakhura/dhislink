@@ -1,6 +1,6 @@
 import { Headers, Http, BaseRequestOptions } from '@angular/http';
-import { TOKEN_NAME } from '../service/authentication/authentication.service';
 import { Injectable } from '@angular/core';
+import { TOKEN_NAME } from './dhis-link-constants';
 
 const AUTH_HEADER_KEY = 'Authorization';
 const AUTH_PREFIX = 'Bearer';

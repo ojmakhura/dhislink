@@ -6,14 +6,14 @@ import { Observable } from 'rxjs';
 import { Batch } from 'src/app/model/batch/batch';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { RedcapData } from 'src/app/model/data/redcap-data';
+import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RedcapDataService {
 
-  private url= 'https://ehealth.ub.bw:8080/ddpcontroller/data/';
-
+  private url= BASE_URL + 'data/';
   constructor(private http: HttpClient) { }
 
   search(criteria: BatchSearchCriteria): Observable<Batch[]> {

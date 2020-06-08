@@ -216,7 +216,18 @@
                     </ng-container>
                     <ng-container matColumnDef="resultingStatus">
                         <mat-header-cell *matHeaderCellDef>Resulting Status</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.resultingStatus }} </mat-cell>
+                        <mat-cell *matCellDef="let row">         
+                            <mat-form-field>
+                                <mat-select [(ngModel)]="row.resultingStatus" 
+                                        name="resultingStatus" id = "resultingStatus" 
+                                        #resultingStatus="ngModel" disabled="true">
+                                    <mat-option value=""></mat-option>
+                                    <mat-option value="0" selected>Incomplete</mat-option>
+                                    <mat-option value="1" selected>Unverified</mat-option>
+                                    <mat-option value="2" selected>Complete</mat-option> 
+                                </mat-select>
+                            </mat-form-field>
+                        </mat-cell>
                     </ng-container>
 
                     <mat-header-row *matHeaderRowDef="searchColumns"></mat-header-row>

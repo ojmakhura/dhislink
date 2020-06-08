@@ -209,8 +209,19 @@
                             <mat-cell *matCellDef="let row"> {{ row.detectionDateTime }} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="detectionStatus">
-                            <mat-header-cell *matHeaderCellDef>Detection Status</mat-header-cell>
-                            <mat-cell *matCellDef="let row"> {{ row.detectionStatus }} </mat-cell>
+                            <mat-header-cell *matHeaderCellDef>Detection Status</mat-header-cell>  
+                            <mat-cell *matCellDef="let row">       
+                                <mat-form-field>
+                                    <mat-select [(ngModel)]="row.detectionStatus" 
+                                            name="detectionStatus" id = "detectionStatus" 
+                                            #detectionStatus="ngModel" disabled="true">
+                                        <mat-option value="" selected></mat-option>
+                                        <mat-option value="0" selected>Incomplete</mat-option>
+                                        <mat-option value="1" selected>Unverified</mat-option>
+                                        <mat-option value="2" selected>Complete</mat-option> 
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
                         </ng-container>
     
                         <mat-header-row *matHeaderRowDef="searchColumns"></mat-header-row>
