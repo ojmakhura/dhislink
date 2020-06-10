@@ -12,9 +12,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
@@ -48,6 +50,7 @@ import bw.ub.ehealth.dhislink.vo.DataValue;
 import bw.ub.ehealth.dhislink.vo.Event;
 import bw.ub.ehealth.dhislink.vo.EventList;
 import bw.ub.ehealth.dhislink.vo.OrganisationUnit;
+import bw.ub.ehealth.dhislink.vo.OrganisationUnitList;
 import bw.ub.ehealth.dhislink.vo.Program;
 import bw.ub.ehealth.dhislink.vo.Sex;
 import bw.ub.ehealth.dhislink.vo.SpecimenType;
@@ -126,7 +129,7 @@ public class DhisLink implements Serializable {
 	@Bean
 	public RestTemplate restTemplate() {
 		
-		return builder.basicAuthentication("demo", "Demo@2020").build();
+		return builder.basicAuthentication("redcapLink", ")>Ys<+6V|DBCo81").build();
 	}
 
 	public CurrentUser getCurrentUser() {
@@ -152,7 +155,12 @@ public class DhisLink implements Serializable {
 		}
 		String finalUrl = dhis2Url + "/events?" + builder.toString();
 		logger.info(finalUrl);
-		EventList eventList = restTemplate().getForObject(finalUrl, EventList.class);
+		
+		return eventQueryExecute(finalUrl);
+	}
+	
+	public List<Event> eventQueryExecute(String queryUrl) {
+		EventList eventList = restTemplate().getForObject(queryUrl, EventList.class);
 		return (List<Event>) eventList.getEvents();
 	}
 
@@ -700,7 +708,7 @@ public class DhisLink implements Serializable {
 	 * @param event
 	 * @return
 	 */
-	private SpecimenVO eventToSpecimen(Event event) {
+	private SpecimenVO eventToSpecimen(Event event, boolean skipResulted) {
 
 		Map<String, DataValue> values = getDataValueMap((List<DataValue>) event.getDataValues());
 		/**
@@ -708,8 +716,20 @@ public class DhisLink implements Serializable {
 		 * or if the specimen has 
 		 */
 		DataValue labResults = values.get(env.getProperty("lab.results").trim());
-		if ((labResults != null && !labResults.getValue().trim().equals("PENDING")) 
-				|| values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
+		
+		boolean resultsCheckOk = false;
+		
+		if(skipResulted) { 
+			resultsCheckOk = true;
+		} else {
+			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || !labResults.getValue().equals("PENDING")) {
+				resultsCheckOk = true;
+			} else {
+				resultsCheckOk = false;
+			}
+		}
+		
+		if (!resultsCheckOk || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
 			return null;
 		}
 
@@ -858,8 +878,12 @@ public class DhisLink implements Serializable {
 	 * @return
 	 */
 	public List<SpecimenVO> getSpecimen(Map<String, String> parameters) {
-		
 		List<Event> events = this.getEvents(parameters);
+		return getSpecimen(events, true);
+	}
+	
+	public List<SpecimenVO> getSpecimen(List<Event> events, boolean skipResulted) {
+				
 		logger.info("Found " + events.size() + " events.");
 		this.numPulled = events.size();
 		
@@ -875,7 +899,7 @@ public class DhisLink implements Serializable {
 
 		for (Event event : events) {
 		
-			SpecimenVO s = eventToSpecimen(event);
+			SpecimenVO s = eventToSpecimen(event, skipResulted);
 
 			if (s == null) {
 				continue;
@@ -887,7 +911,26 @@ public class DhisLink implements Serializable {
 		}
 		
 		// Get the patient map
+		// We have to fetch a batch of organisation units
 		Map<String, PatientVO> pmap = getPatientMap(teis);
+		Map<String, OrganisationUnit> orgUnits = new HashMap<String, OrganisationUnit>();
+		Set<String> orgIds = new HashSet<>();
+		
+		for(SpecimenVO sp : tmp) {
+			if (specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode()) == null) {
+				if(!StringUtils.isBlank(sp.getDispatchLocation())) {
+					orgIds.add(sp.getDispatchLocation());
+				}
+				
+				if(!StringUtils.isBlank(sp.getPatientFacility())) {
+					orgIds.add(sp.getPatientFacility());					
+				}
+			}
+		}
+		
+		for(OrganisationUnit unit : getOrganisationUnits(orgIds)) {
+			orgUnits.put(unit.getId(), unit);
+		}
 		
 		for(SpecimenVO sp : tmp) {
 			String barcode = sp.getSpecimenBarcode();
@@ -923,15 +966,13 @@ public class DhisLink implements Serializable {
 					// Only get the facilities if this is a new specimen
 					OrganisationUnit unit = null;
 					if(!StringUtils.isBlank(sp.getDispatchLocation())) {
-						getOrganisationUnit(sp.getDispatchLocation());
+						unit = orgUnits.get(sp.getDispatchLocation());
 						sp.setDispatchLocation(unit != null ? unit.getName() : null);
 					}
 					
 					if(!StringUtils.isBlank(sp.getPatientFacility())) {
-						if(unit == null || !sp.getPatientFacility().equals(unit.getId())) {
-							unit = getOrganisationUnit(sp.getPatientFacility());
-						}
-						
+
+						unit = orgUnits.get(sp.getPatientFacility());
 						sp.setPatientFacility(unit != null ? unit.getName() : null);
 					}
 					
@@ -972,9 +1013,20 @@ public class DhisLink implements Serializable {
 	 * @param id
 	 * @return
 	 */
-	public OrganisationUnit getOrganisationUnit(String id) {
-
-		return restTemplate().getForObject(dhis2Url + "/organisationUnits/" + id, OrganisationUnit.class);
+	public List<OrganisationUnit> getOrganisationUnits(Set<String> ids) {
+		if(ids.size() == 0) {
+			return new ArrayList<>();
+		}
+		StringBuilder builder = new StringBuilder();
+		for(String id : ids) {
+			if(builder.length() > 0) {
+				builder.append(",");
+			}
+			
+			builder.append(id);
+		}
+		OrganisationUnitList orgList = restTemplate().getForObject(dhis2Url + "/organisationUnits?filter=id:in:[" + builder.toString() + "]", OrganisationUnitList.class);
+		return (List<OrganisationUnit>) orgList.getOrganisationUnits();
 	}
 
 	/**

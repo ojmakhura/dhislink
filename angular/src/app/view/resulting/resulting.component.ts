@@ -102,8 +102,11 @@ export class ResultingComponent implements OnInit {
     
     this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
       this.router.navigate(['/login']);
-      return of(new AuthenticationResponse());
-    })).subscribe();
+      return of([]);
+    })).subscribe( data => {
+      this.specimen.data = data;
+      
+    });
   }
 
   now() {
@@ -117,6 +120,7 @@ export class ResultingComponent implements OnInit {
   searchBatches() {
     this.redcaDataService.search(this.searchCriteria).subscribe(results => {      
       this.batches.data = results;
+      
       this.searchCriteria = new BatchSearchCriteria();
     });
   }

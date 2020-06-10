@@ -50,12 +50,12 @@ public class RedcapAuthDaoImpl
     protected RedcapAuth handleUserAuthentication(String username, String password)
     {
     	String salt = this.findUsernameSalt(username);
-    	logger.info(String.format("The salt for user %s is %s", username, salt));
+
     	String queryStr = "select ra from bw.ub.ehealth.dhislink.redacap.auth.RedcapAuth ra "
     			+ "where username = :username and password = :password";
     	Query query = entityManager.createQuery(queryStr);
     	query.setParameter("username", username);
-    	logger.info(String.format("Encoded passowrd for %s is %s", username, encoder.encode(password + salt)));
+
     	query.setParameter("password", encoder.encode(password + salt));
 
     	try {

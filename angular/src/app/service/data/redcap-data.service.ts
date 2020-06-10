@@ -28,9 +28,8 @@ export class RedcapDataService {
     
   }
 
-  saveBatch(batch: Batch): Observable<RedcapData[]>{
-    console.log('Batch received for posting');
+  saveBatch(batch: Batch): Observable<Specimen[]>{
     
-    return this.http.post<RedcapData[]>(this.url + 'savebatch', batch);
+    return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
   }
 }

@@ -56,6 +56,9 @@ public class DDPController {
     @Value("${dhis2.api.program.stage}")
     private String programStage;
     
+    @Value("${lab.results}")
+    private String resultsField;
+    
     @Value("${lab.report.pid}")
     private Long labReportPID;
 
@@ -167,6 +170,7 @@ public class DDPController {
         params.put("program", program);
         params.put("programStage", programStage);
         params.put("status", "COMPLETED");
+        //params.put("filter", resultsField + ":EQ:PENDING");
         SpecimenVO last = specimenService.findLatestSpecimen();
         String date = "2020-05-20";
 

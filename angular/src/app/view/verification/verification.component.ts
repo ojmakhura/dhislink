@@ -97,7 +97,7 @@ export class VerificationComponent implements OnInit {
     
     if(this.batch.verificationStatus != '2' && 
       !this.batch.authorisingPersonnel) {
-        alert('Could not publish results. Either verification is not complete or authorising personel is noit set.')
+        alert('Could not publish results. Either verification is not complete or authorising personel is not set.')
     } else {
       this.batch.publishResults = true;
 

@@ -2,10 +2,14 @@ package bw.ub.ehealth.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -37,6 +41,7 @@ import bw.ub.ehealth.dhislink.specimen.service.SpecimenService;
 import bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO;
 import bw.ub.ehealth.dhislink.vo.BatchSearchCriteria;
 import bw.ub.ehealth.dhislink.vo.DDPObjectField;
+import bw.ub.ehealth.dhislink.vo.Event;
 
 @RestController
 @RequestMapping("/ddpcontroller/data")
@@ -56,6 +61,9 @@ public class RedcapDataController {
 
     @Value("${lab.resulting.pid}")
     private Long labResultingPID;
+    
+	@Value("${dhis2.api.url}")
+	private String dhis2Url;
     
 	@Autowired
 	private RedcapDataService redcapDataService;
@@ -97,10 +105,39 @@ public class RedcapDataController {
 		
 	}
     
+    private Map<String, SpecimenVO> getSpecimenMap(List<SpecimenVO> specimen) {
+    	HashMap<String, SpecimenVO> map = new HashMap<>();
+    	
+    	for(SpecimenVO sp : specimen) {
+    		map.put(sp.getSpecimenBarcode(), sp);
+    	}
+    	
+    	return map;
+    }
+    
+    private List<SpecimenVO> queryDhisSpecimenBarcodes(List<String> barcodes) {
+    	
+    	String queryBase = dhis2Url + "/events?programStage=nIaEdUY97YD&program=HR4C8VTwGuo&filter=kkD26RljqPY:IN:";
+    	StringBuilder builder = new StringBuilder();
+    	
+    	for(String barcode : barcodes) {
+    		if(builder.length() > 0) {
+    			builder.append(";");
+    		}
+    		builder.append(barcode);
+    	}
+    	builder.insert(0, queryBase);
+    	    	
+    	List<Event> events = dhisLink.eventQueryExecute(builder.toString());
+    	List<SpecimenVO> found = dhisLink.getSpecimen(events, false);
+    	    	
+    	return found;
+    }
+    
     @PostMapping("/savebatch")
     @ResponseStatus(code = HttpStatus.OK)
     @ResponseBody
-    public List<RedcapDataVO> saveBatch(@RequestBody BatchVO batch) {
+    public List<SpecimenVO> saveBatch(@RequestBody BatchVO batch) {
     	
     	List<RedcapDataVO> redcapData = new ArrayList<RedcapDataVO>();
     	List<SpecimenVO> verifiedSpecimen = new ArrayList<SpecimenVO>();
@@ -138,7 +175,26 @@ public class RedcapDataController {
 	    	
     	}
     	
+    	/// Detect barcodes that do not have data in the stagins
+		List<String> missing = new ArrayList<>();
+
+		for (SpecimenVO specimen : batch.getBatchItems()) {
+			if (specimen.getId() == null) {
+				missing.add(specimen.getSpecimenBarcode());
+			}
+		}
+
+		// Find the specimen from DHIS2
+		List<SpecimenVO> found = queryDhisSpecimenBarcodes(missing);
+		Map<String, SpecimenVO> foundMap = getSpecimenMap(found);
+    	
     	for(SpecimenVO specimen : batch.getBatchItems()) {
+    		
+    		if(foundMap.containsKey(specimen.getSpecimenBarcode())) {
+    			String position = specimen.getPosition();
+    			specimen = foundMap.get(specimen.getSpecimenBarcode());
+    			specimen.setPosition(position);
+    		}
     		
     		int pos = decodePosition(specimen.getPosition());
     		if(batch.getPage().equals("testing_detection")) {
@@ -175,14 +231,28 @@ public class RedcapDataController {
 	    			}
 	    		}
 	    		
-	    		specimen.setResultsVerifiedBy(batch.getVerificationPersonnel());
-	    		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-	    		try {
-					specimen.setResultsVerifiedDate(format.parse(batch.getVerificationDateTime()));
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-    		}    		
+	    		if(!StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
+		    		specimen.setResultsVerifiedBy(batch.getVerificationPersonnel());
+		    		
+		    		try {
+		    			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+		    			specimen.setResultsVerifiedDate(format.parse(batch.getVerificationDateTime()));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+    			}
+	    		
+	    		if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+		    		specimen.setResultsAuthorisedBy(batch.getAuthorisingPersonnel());
+		    		
+		    		try {
+		    			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+		    			specimen.setResultsAuthorisedDate(format.parse(batch.getAuthorisingDateTime()));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+	    		}
+    		}
     	}
 
     	// Save the data for this particular project    	
@@ -195,7 +265,21 @@ public class RedcapDataController {
 			//logger.info(String.format("%d specimen data sent to DHIS2 and they are %s", verifiedSpecimen.size(), verifiedSpecimen.toString()));
 			dhisLink.getDhisPayload(verifiedSpecimen);
 		}
-		return redcapData;
+		
+		List<SpecimenVO> tmp = new ArrayList<>();
+		
+		for (SpecimenVO specimen : batch.getBatchItems()) {
+			if(foundMap.containsKey(specimen.getSpecimenBarcode())) {
+    			String position = specimen.getPosition();
+    			specimen = foundMap.get(specimen.getSpecimenBarcode());
+    			specimen.setPosition(position);
+    			tmp.add(specimen);
+    		} else {
+    			tmp.add(specimen);
+    		}
+		}
+		
+		return tmp;
     }
     
     @GetMapping("/extraction/specimen/{batchId}")
@@ -260,7 +344,6 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     private Map<String, List<RedcapDataVO>> getRedcapDataBatchMap(Collection<RedcapDataVO> data) {
     	
     	Map<String, List<RedcapDataVO>> map = new HashMap<String, List<RedcapDataVO>>();
-    	List<RedcapDataVO> batchIds = new ArrayList<RedcapDataVO>();
     	
     	// First find the batch ids
     	for(RedcapDataVO d : data) {
@@ -360,15 +443,19 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	for(int i = 0; i < t2.size(); i++) {
     		items.add(new SpecimenVO());
     	}
+
+    	
     	    	
     	// Get the specimen information
     	for(RedcapDataVO rd : t2) {
     		String pos = rd.getFieldName().substring(17);
     		
     		int idx = Integer.parseInt(pos) - 1;
+    		
     		SpecimenVO specimen = specimenService.findSpecimenByBarcode(rd.getValue());
     		
     		if(specimen == null 
+    				|| StringUtils.isBlank(specimen.getTestAssayResults())
     				|| StringUtils.isBlank(specimen.getResultsEnteredBy())
     				|| StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
     			
@@ -394,7 +481,8 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     				} else if(field.getField().equals("test_assay_result")) {
     					specimen.setTestAssayResults(field.getValue());
     					
-    				} 
+    				}
+    				
     			}
     			
     			fields = dhisLink.getVerificationFormFields(rd.getValue());
@@ -421,6 +509,16 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     				} 
     			}
     		}
+    		
+    		if(StringUtils.isBlank(batch.getAuthorisingPersonnel()) && 
+    				!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+    			batch.setAuthorisingPersonnel(specimen.getResultsAuthorisedBy());
+    			
+    			Instant authDate = specimen.getResultsAuthorisedDate().toInstant();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+    			batch.setAuthorisingDateTime(formatter.format(authDate));
+    		}
+    		
     		specimen.setPosition(encodePosition(Integer.parseInt(pos)));
     		specimen.setCovidRnaResults(specimen.getTestAssayResults());
     		
