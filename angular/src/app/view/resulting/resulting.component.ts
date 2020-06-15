@@ -37,6 +37,7 @@ export class ResultingComponent implements OnInit {
   selectedIndex: number = 0;
   instruments: Instrument[];
   barcode = '';
+  loading: boolean = false;
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
@@ -93,7 +94,7 @@ export class ResultingComponent implements OnInit {
   }
 
   saveResultingBatch() {
-    
+    this.loading = true;
     this.batch.page = 'resulting';
     this.batch.projectId = 345;
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
@@ -105,8 +106,9 @@ export class ResultingComponent implements OnInit {
       return of([]);
     })).subscribe( data => {
       this.specimen.data = data;
-      
+      this.loading = false;
     });
+    
   }
 
   now() {
@@ -118,11 +120,13 @@ export class ResultingComponent implements OnInit {
   }
 
   searchBatches() {
-    this.redcaDataService.search(this.searchCriteria).subscribe(results => {      
-      this.batches.data = results;
-      
+    this.loading = true;
+    this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {      
+      this.batches.data = results;      
       this.searchCriteria = new BatchSearchCriteria();
+      this.loading = false;
     });
+    
   }
 
   clearSearch() {

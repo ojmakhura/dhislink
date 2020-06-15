@@ -40,6 +40,7 @@ export class TestingDetectionComponent implements OnInit {
   barcode = '';
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
+  loading: boolean = false;
 
   searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'detectionStatus'];
   specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no'];
@@ -96,7 +97,7 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   saveDetectionBatch() {
-    
+    this.loading = true;
     if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
       this.now();
     }
@@ -112,7 +113,12 @@ export class TestingDetectionComponent implements OnInit {
     this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
       this.router.navigate(['/login']);
       return of(new AuthenticationResponse());
-    })).subscribe();
+    })).subscribe( 
+      data => {
+        this.loading = false;
+      }
+    );
+    
   }
 
   newDetectionBatch() {
@@ -133,9 +139,11 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   searchBatches() {
+    this.loading = true;
     this.redcaDataService.search(this.searchCriteria).subscribe(results => {      
       this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
+      this.loading = false;
     });
   }
 

@@ -4,9 +4,8 @@ import { Observable, of, throwError } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import * as jwt_decode from 'jwt-decode';
 import { UserDetails } from 'src/app/model/user/user-details';
-import { retry, catchError, map } from 'rxjs/operators';
+import { retry, catchError, } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { async } from 'q';
 import { BASE_URL, TOKEN_NAME, REFRESH_TOKEN, CURRENT_USER, CURRENT_ROUTE, FORM_DATA } from 'src/app/helpers/dhis-link-constants';
 
 @Injectable({
@@ -23,7 +22,7 @@ export class AuthenticationService {
 
   login(loginPayload) : Observable<AuthenticationResponse> {
 
-    return this.http.post<AuthenticationResponse>(this.url + '/signin', loginPayload);
+    return this.http.post<AuthenticationResponse>(this.url + '/signin', loginPayload).pipe();
   }
 
   refreshToken(): Observable<AuthenticationResponse> {
@@ -125,6 +124,13 @@ export class AuthenticationService {
   }
 
   logout() {
+    let payload = new AuthenticationResponse();
+    payload.accessToken = this.getToken();
+    payload.refreshToken = this.getRefreshToken();
+    payload.username = this.getCurrentUser();
+
+    this.http.get(this.url + '/logout').pipe();
+
     localStorage.removeItem(TOKEN_NAME);
     localStorage.removeItem(REFRESH_TOKEN);
     localStorage.removeItem(CURRENT_USER);

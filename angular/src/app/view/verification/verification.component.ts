@@ -15,10 +15,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { formatDate } from '@angular/common';
 import { NgForm, FormControl, Validators }   from '@angular/forms';
-import { catchError } from 'rxjs/operators';
+import { catchError, first } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
+import { error } from 'protractor';
 
 @Component({
   selector: 'app-verification',
@@ -35,6 +36,7 @@ export class VerificationComponent implements OnInit {
   selectedIndex: number = 0;
   instruments: Instrument[];
   barcode = '';
+  loading: boolean = false;
   
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
@@ -94,7 +96,7 @@ export class VerificationComponent implements OnInit {
    * This publishes the verified results to DHIS2
    */
   publish() {
-    
+    this.loading = true;
     if(this.batch.verificationStatus != '2' && 
       !this.batch.authorisingPersonnel) {
         alert('Could not publish results. Either verification is not complete or authorising personel is not set.')
@@ -102,16 +104,17 @@ export class VerificationComponent implements OnInit {
       this.batch.publishResults = true;
 
       let data: any;
-      this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
-        this.router.navigate(['/login']);
-        return of(new AuthenticationResponse());
-      })).subscribe(results => {
-        data = results;
-      });
+      this.redcaDataService.saveBatch(this.batch).pipe().subscribe(results => {
+          data = results;
+        }, error => {
+          this.router.navigate(['/login']);
+          return of(new AuthenticationResponse());
+        }
+      );
 
       return data;
     }
-
+    this.loading = false;
   }
 
   authorise() {
@@ -120,7 +123,7 @@ export class VerificationComponent implements OnInit {
   }
 
   saveVerificationBatch() {
-
+    this.loading = true;
     if(this.authService.getCurrentUser() === this.batch.resultingPersonnel) {
       alert('Cannot verify the results you entered.');
     } else {
@@ -134,8 +137,13 @@ export class VerificationComponent implements OnInit {
       this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
         this.router.navigate(['/login']);
         return of(new AuthenticationResponse());
-      })).subscribe();
+      })).subscribe(
+        data => {
+          this.loading = false;
+        }
+      );
     }
+    
   }
 
   now() {
@@ -147,11 +155,14 @@ export class VerificationComponent implements OnInit {
   }
 
   searchBatches() {
-    this.redcaDataService.search(this.searchCriteria).subscribe(results => {      
+    this.loading = true;
+    this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {      
       
       this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
+      this.loading = false;
     });
+    
   }
 
   clearSearch() {

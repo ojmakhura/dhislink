@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -21,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,6 +75,12 @@ public class RedcapAuthController {
 		securityService.login(authVO.getUsername(), authVO.getPassword());
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
+		if(authentication.getPrincipal() instanceof String && 
+				((String)authentication.getPrincipal()).equalsIgnoreCase("anonymousUser")) {
+
+			return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+		}
+		
 		String jwt = tokenProvider.generateToken((@NotNull UserDetailsImpl) authentication.getPrincipal());
 		JwtAuthenticationResponse response = new JwtAuthenticationResponse();
 		
@@ -103,6 +112,36 @@ public class RedcapAuthController {
 		response.setRefreshToken(refToken.toString());
 		
 		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/logout")
+	@ResponseStatus(code = HttpStatus.OK) 
+	public void logout(HttpServletRequest request, HttpServletResponse response) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		if(authentication.getPrincipal() instanceof String && 
+				((String)authentication.getPrincipal()).equalsIgnoreCase("anonymousUser")) {
+			return;
+		}
+		
+		String username = ((UserDetailsImpl) authentication.getPrincipal()).getUsername();
+		loginTokens.remove(username);
+		
+		ArrayList<String> refreshes = new ArrayList<>();
+ 		for(Map.Entry<String, String> entry : refreshTokens.entrySet()) {
+			if(entry.getValue().equals(username))
+			{
+				refreshes.add(entry.getKey());
+			}
+		}
+		
+ 		for(String k : refreshes) {
+ 			refreshTokens.remove(k);
+ 		}
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
 	}
 	
 	@PostMapping("/refresh")

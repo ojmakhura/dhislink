@@ -42,7 +42,7 @@ export class LocationComponent implements OnInit {
 
     if(this.searchText && this.searchText.length > 0) {
 
-      this.locationService.searchByName(this.searchText).subscribe(data => {
+      this.locationService.searchByName(this.searchText).pipe().subscribe(data => {
         this.locations = data;
       });
     } else {
@@ -59,15 +59,9 @@ export class LocationComponent implements OnInit {
 
   save() {
     console.log(this.locationVO);
-    //if(!this.locationVO.id || this.locationVO.id === undefined) {
-      
-      this.locationService.createLocation(this.locationVO).subscribe(loc => {
-        console.log(loc);
+      this.locationService.createLocation(this.locationVO).pipe().subscribe(loc => {
+        
       });
-    //} else {
-      
-    //  this.locationService.updateLocation(this.locationVO);
-    //}
   }
 
   new() {

@@ -69,14 +69,13 @@ public class SecurityServiceImpl
     		
     		userDetails.setUsername(auth.getUsername());
     		userDetails.setPassword(auth.getPassword());
-    	}
-    	
-    	UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password + auth.getPasswordSalt(), userDetails.getAuthorities());
-    	
-    	Authentication authentication = authenticationManager.authenticate(token);
-    	    	
-    	if(authentication.isAuthenticated()) {
-    		SecurityContextHolder.getContext().setAuthentication(authentication);
+    		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password + auth.getPasswordSalt(), userDetails.getAuthorities());
+        	
+        	Authentication authentication = authenticationManager.authenticate(token);
+        	    	
+        	if(authentication.isAuthenticated()) {
+        		SecurityContextHolder.getContext().setAuthentication(authentication);
+        	}
     	}
     }
 }

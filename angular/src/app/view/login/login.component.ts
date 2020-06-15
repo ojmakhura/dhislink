@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
   invalidLogin: boolean = false;
   redcapAuth: RedcapAuth;
   hide = true;
+  loading = false;
 
   constructor(private router: Router, private authService: AuthenticationService ) {
     this.redcapAuth = new RedcapAuth();
@@ -30,8 +31,9 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     
-    this.authService.login(this.redcapAuth).subscribe(data => {
-            
+    this.loading = true;
+    this.authService.login(this.redcapAuth).pipe().subscribe(data => {
+      
       if(data.status === 200) {
         this.redcapAuth.username = data.username;
         window.localStorage.setItem(TOKEN_NAME, data.accessToken);
@@ -43,10 +45,18 @@ export class LoginComponent implements OnInit {
         } else {
           this.router.navigate(['/detection']);
         }
+        this.invalidLogin = false;
       }else {
         this.invalidLogin = true;
         alert("Login failed!");
       }
+    }, error => {
+      if(error.status === 500 || error.status === 401) {
+        this.invalidLogin = true;
+      } else {
+        alert('Unknown error has occurred. Please contact the administrator.');
+      }
+      this.loading = false;
     });
   }
 

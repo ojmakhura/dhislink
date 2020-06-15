@@ -14,7 +14,7 @@ export class LocationService {
   constructor(private http: HttpClient) { }
 
   createLocation(locationVO: LocationVO ): Observable<LocationVO> {
-    console.log(locationVO);
+    
     return this.http.post<LocationVO>(this.url + 'new', locationVO);
   }
 
