@@ -3,15 +3,20 @@ package bw.ub.ehealth.controller;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
@@ -45,6 +50,7 @@ import bw.ub.ehealth.dhislink.vo.DataValue;
 import bw.ub.ehealth.dhislink.vo.Event;
 import bw.ub.ehealth.dhislink.vo.EventList;
 import bw.ub.ehealth.dhislink.vo.OrganisationUnit;
+import bw.ub.ehealth.dhislink.vo.OrganisationUnitList;
 import bw.ub.ehealth.dhislink.vo.Program;
 import bw.ub.ehealth.dhislink.vo.Sex;
 import bw.ub.ehealth.dhislink.vo.SpecimenType;
@@ -123,7 +129,7 @@ public class DhisLink implements Serializable {
 	@Bean
 	public RestTemplate restTemplate() {
 		
-		return builder.basicAuthentication("demo", "Demo@2020").build();
+		return builder.basicAuthentication("redcapLink", ")>Ys<+6V|DBCo81").build();
 	}
 
 	public CurrentUser getCurrentUser() {
@@ -149,7 +155,12 @@ public class DhisLink implements Serializable {
 		}
 		String finalUrl = dhis2Url + "/events?" + builder.toString();
 		logger.info(finalUrl);
-		EventList eventList = restTemplate().getForObject(finalUrl, EventList.class);
+		
+		return eventQueryExecute(finalUrl);
+	}
+	
+	public List<Event> eventQueryExecute(String queryUrl) {
+		EventList eventList = restTemplate().getForObject(queryUrl, EventList.class);
 		return (List<Event>) eventList.getEvents();
 	}
 
@@ -294,6 +305,14 @@ public class DhisLink implements Serializable {
 		/// Get kin contact
 		if (attrMap.get(env.getProperty("patient.kin.phone")) != null) {
 			patientVO.setKinContact(attrMap.get(env.getProperty("patient.kin.phone")).getValue());
+		}
+		
+		if(StringUtils.isBlank(patientVO.getFirstName()) && !StringUtils.isBlank(patientVO.getSurname())) {
+			patientVO.setFirstName(patientVO.getSurname());
+		}
+		
+		if(!StringUtils.isBlank(patientVO.getFirstName()) && StringUtils.isBlank(patientVO.getSurname())) {
+			patientVO.setSurname(patientVO.getFirstName());
 		}
 
 		return patientVO;
@@ -689,7 +708,7 @@ public class DhisLink implements Serializable {
 	 * @param event
 	 * @return
 	 */
-	private SpecimenVO eventToSpecimen(Event event) {
+	private SpecimenVO eventToSpecimen(Event event, boolean skipResulted) {
 
 		Map<String, DataValue> values = getDataValueMap((List<DataValue>) event.getDataValues());
 		/**
@@ -697,8 +716,20 @@ public class DhisLink implements Serializable {
 		 * or if the specimen has 
 		 */
 		DataValue labResults = values.get(env.getProperty("lab.results").trim());
-		if ((labResults != null && !labResults.getValue().trim().equals("PENDING")) 
-				|| values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
+		
+		boolean resultsCheckOk = false;
+		
+		if(skipResulted) { 
+			resultsCheckOk = true;
+		} else {
+			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || !labResults.getValue().equals("PENDING")) {
+				resultsCheckOk = true;
+			} else {
+				resultsCheckOk = false;
+			}
+		}
+		
+		if (!resultsCheckOk || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
 			return null;
 		}
 
@@ -709,15 +740,11 @@ public class DhisLink implements Serializable {
 		specimen.setLastUpdated(event.getLastUpdated());
 
 		if (values.get(env.getProperty("lab.submitter.facility").trim()) != null) {
-			OrganisationUnit unit = getOrganisationUnit(
-					values.get(env.getProperty("lab.submitter.facility").trim()).getValue());
-			specimen.setDispatchLocation(unit != null ? unit.getName() : null);
+			specimen.setDispatchLocation(values.get(env.getProperty("lab.submitter.facility").trim()).getValue());
 		}
 		
 		if (values.get(env.getProperty("lab.specimen.facility").trim()) != null) {
-			OrganisationUnit unit = getOrganisationUnit(
-					values.get(env.getProperty("lab.specimen.facility").trim()).getValue());
-			specimen.setPatientFacility(unit != null ? unit.getName() : null);
+			specimen.setPatientFacility(values.get(env.getProperty("lab.specimen.facility").trim()).getValue());
 		}
 		
 		if (values.get(env.getProperty("lab.submitter.city").trim()) != null) {
@@ -757,7 +784,7 @@ public class DhisLink implements Serializable {
 
 		try {
 			if (values.get(env.getProperty("lab.specimen.date.collection").trim()) != null) {
-				// yyyy-MM-dd'T'HH:mm:ss.SSS
+				
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
 				String date = values.get(env.getProperty("lab.specimen.date.collection").trim()) == null ? ""
 						: values.get(env.getProperty("lab.specimen.date.collection").trim()).getValue();
@@ -851,8 +878,12 @@ public class DhisLink implements Serializable {
 	 * @return
 	 */
 	public List<SpecimenVO> getSpecimen(Map<String, String> parameters) {
-		
 		List<Event> events = this.getEvents(parameters);
+		return getSpecimen(events, true);
+	}
+	
+	public List<SpecimenVO> getSpecimen(List<Event> events, boolean skipResulted) {
+				
 		logger.info("Found " + events.size() + " events.");
 		this.numPulled = events.size();
 		
@@ -868,7 +899,7 @@ public class DhisLink implements Serializable {
 
 		for (Event event : events) {
 		
-			SpecimenVO s = eventToSpecimen(event);
+			SpecimenVO s = eventToSpecimen(event, skipResulted);
 
 			if (s == null) {
 				continue;
@@ -880,7 +911,26 @@ public class DhisLink implements Serializable {
 		}
 		
 		// Get the patient map
+		// We have to fetch a batch of organisation units
 		Map<String, PatientVO> pmap = getPatientMap(teis);
+		Map<String, OrganisationUnit> orgUnits = new HashMap<String, OrganisationUnit>();
+		Set<String> orgIds = new HashSet<>();
+		
+		for(SpecimenVO sp : tmp) {
+			if (specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode()) == null) {
+				if(!StringUtils.isBlank(sp.getDispatchLocation())) {
+					orgIds.add(sp.getDispatchLocation());
+				}
+				
+				if(!StringUtils.isBlank(sp.getPatientFacility())) {
+					orgIds.add(sp.getPatientFacility());					
+				}
+			}
+		}
+		
+		for(OrganisationUnit unit : getOrganisationUnits(orgIds)) {
+			orgUnits.put(unit.getId(), unit);
+		}
 		
 		for(SpecimenVO sp : tmp) {
 			String barcode = sp.getSpecimenBarcode();
@@ -897,7 +947,7 @@ public class DhisLink implements Serializable {
 				if(StringUtils.isBlank(patientVO.getIdentityNo())) {
 					continue;
 				}
-				
+								
 				PatientVO p = patientService.findByIdentityNo(patientVO.getIdentityNo());
 				if (p != null) {
 					patientVO = p;
@@ -912,13 +962,37 @@ public class DhisLink implements Serializable {
 				
 				// Should not try to save the same specimen twice
 				if (specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode()) == null) {
+					
+					// Only get the facilities if this is a new specimen
+					OrganisationUnit unit = null;
+					if(!StringUtils.isBlank(sp.getDispatchLocation())) {
+						unit = orgUnits.get(sp.getDispatchLocation());
+						sp.setDispatchLocation(unit != null ? unit.getName() : null);
+					}
+					
+					if(!StringUtils.isBlank(sp.getPatientFacility())) {
 
+						unit = orgUnits.get(sp.getPatientFacility());
+						sp.setPatientFacility(unit != null ? unit.getName() : null);
+					}
+					
 					sp.setPatient(patientVO);
 					sp = specimenService.saveSpecimen(sp);
 						
 					// We should set the information for the lab report project
-					redcapLink.postRedcapData(sp);
-					sp.setDhis2Synched(true);
+					redcapLink.postRedcapData(sp, labReportPID);
+					RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
+					criteria.setFieldName("lab_rec_barcode_%");
+					criteria.setValue(sp.getSpecimenBarcode());
+					criteria.setProjectId(labReceptionPID);
+					
+					Collection<RedcapDataVO> data = redcapDataService.searchByCriteria(criteria);
+					
+					if(data == null) {
+						sp.setDhis2Synched(true);
+					} else {
+						sp.setDhis2Synched(false);
+					}
 					specimenService.saveSpecimen(sp);
 					
 				} else {
@@ -939,9 +1013,20 @@ public class DhisLink implements Serializable {
 	 * @param id
 	 * @return
 	 */
-	public OrganisationUnit getOrganisationUnit(String id) {
-
-		return restTemplate().getForObject(dhis2Url + "/organisationUnits/" + id, OrganisationUnit.class);
+	public List<OrganisationUnit> getOrganisationUnits(Set<String> ids) {
+		if(ids.size() == 0) {
+			return new ArrayList<>();
+		}
+		StringBuilder builder = new StringBuilder();
+		for(String id : ids) {
+			if(builder.length() > 0) {
+				builder.append(",");
+			}
+			
+			builder.append(id);
+		}
+		OrganisationUnitList orgList = restTemplate().getForObject(dhis2Url + "/organisationUnits?filter=id:in:[" + builder.toString() + "]", OrganisationUnitList.class);
+		return (List<OrganisationUnit>) orgList.getOrganisationUnits();
 	}
 
 	/**
@@ -953,34 +1038,41 @@ public class DhisLink implements Serializable {
 
 		return specimenService.findSpecimenByBarcode(barcode);
 	}
+	
+	public String getSpecimenFieldsString(SpecimenVO specimen) {
+
+		StringBuilder builder = new StringBuilder();
+		for(DDPObjectField field : getSpecimenFieldList(specimen)) {
+			if(builder.length() > 0) {
+				builder.append(",");
+			}
+			builder.append(field.toString());
+		}
+		String str = "[" + builder.toString() + "]";
+		
+		return str;
+	}
 
 	/**
 	 * Convert the specimen into a JSON string
 	 * @param specimen
 	 * @return
 	 */
-	public String getSpecimenFieldList(SpecimenVO specimen) {
+	public List<DDPObjectField> getSpecimenFieldList(SpecimenVO specimen) {
 
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 
 		if (specimen == null) {
-			return "[]";
+			return fields;
 		}
 				
 		/// Patient demographics
 		if(specimen.getPatient() != null ) {
 			if (specimen.getPatient().getDateOfBirth() != null) {
 				
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(specimen.getPatient().getDateOfBirth());
-
-				int day = cal.get(Calendar.DAY_OF_MONTH);
-				int month = cal.get(Calendar.MONTH);
-				int year = cal.get(Calendar.YEAR);
-				
-				String date = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year;
-				
-				fields.add(new DDPObjectField("date_birth", date, null));
+				Instant dob = specimen.getPatient().getDateOfBirth().toInstant();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				fields.add(new DDPObjectField("date_birth", formatter.format(dob), null));
 			}
 	
 			if(!StringUtils.isBlank(specimen.getPatient().getFirstName())) { 
@@ -1038,11 +1130,9 @@ public class DhisLink implements Serializable {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(specimen.getPatient().getDepartureDate());
 
-				int day = cal.get(Calendar.DAY_OF_MONTH);
-				int month = cal.get(Calendar.MONTH);
-				int year = cal.get(Calendar.YEAR);
-				
-				String date = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year;
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				Instant depDate = specimen.getPatient().getDepartureDate().toInstant();
+				String date = formatter.format(depDate);
 				
 				fields.add(new DDPObjectField("patient_departure_date", date, null));
 			}
@@ -1073,7 +1163,10 @@ public class DhisLink implements Serializable {
 			int hour = cal.get(Calendar.HOUR_OF_DAY);
 			int mins = cal.get(Calendar.MINUTE);
 			
-			String time = (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins) ;
+			//String time = (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins) ;
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());			
+			String time = formatter.format(specimen.getDispatchTime().toInstant());
 			
 			fields.add(new DDPObjectField("time_dispatched", time, null));
 		}
@@ -1112,33 +1205,18 @@ public class DhisLink implements Serializable {
 		}
 
 		if (specimen.getReceivingDateTime() != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(specimen.getReceivingDateTime());
 			
-			int day = cal.get(Calendar.DAY_OF_MONTH);
-			int month = cal.get(Calendar.MONTH);
-			int year = cal.get(Calendar.YEAR);
-
-			int hour = cal.get(Calendar.HOUR_OF_DAY);
-			int mins = cal.get(Calendar.MINUTE);
-			
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year +  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins) ;
+			Instant receivingDate = specimen.getReceivingDateTime().toInstant();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			String datetime = formatter.format(receivingDate);
 			fields.add(new DDPObjectField("receiving_datetime", datetime, null));
 		}
 
 		if (specimen.getCollectionDateTime() != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(specimen.getCollectionDateTime());
 			
-			int day = cal.get(Calendar.DAY_OF_MONTH);
-			int month = cal.get(Calendar.MONTH);
-			int year = cal.get(Calendar.YEAR);
-
-			int hour = cal.get(Calendar.HOUR_OF_DAY);
-			int mins = cal.get(Calendar.MINUTE);
-
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year 
-					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins) ;
+			Instant collectionDate = specimen.getCollectionDateTime().toInstant();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			String datetime = formatter.format(collectionDate);
 			fields.add(
 					new DDPObjectField("date_specimen_collected", datetime, null));
 		}
@@ -1181,18 +1259,10 @@ public class DhisLink implements Serializable {
 		}
 
 		if (specimen.getResultsEnteredDate() != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(specimen.getResultsEnteredDate());
 			
-			int day = cal.get(Calendar.DAY_OF_MONTH);
-			int month = cal.get(Calendar.MONTH);
-			int year = cal.get(Calendar.YEAR);
-			
-			int hour = cal.get(Calendar.HOUR_OF_DAY);
-			int mins = cal.get(Calendar.MINUTE);
-
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year
-					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins);
+			Instant verifiedInstant = specimen.getResultsEnteredDate().toInstant();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			String datetime = formatter.format(verifiedInstant);
 			fields.add(new DDPObjectField("results_entered_date", datetime, null));
 		}
 
@@ -1201,17 +1271,10 @@ public class DhisLink implements Serializable {
 		}
 
 		if (specimen.getResultsVerifiedDate() != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(specimen.getResultsVerifiedDate());
-			
-			int day = cal.get(Calendar.DAY_OF_MONTH);
-			int month = cal.get(Calendar.MONTH);
-			int year = cal.get(Calendar.YEAR);
-			int hour = cal.get(Calendar.HOUR_OF_DAY);
-			int mins = cal.get(Calendar.MINUTE);
-
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year
-					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins);
+						
+			Instant collectionDate = specimen.getResultsVerifiedDate().toInstant();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			String datetime = formatter.format(collectionDate);
 			
 			fields.add(new DDPObjectField("results_verified_date", datetime, null));
 		}
@@ -1222,19 +1285,9 @@ public class DhisLink implements Serializable {
 
 		if (specimen.getResultsAuthorisedDate() != null) {
 
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(specimen.getResultsAuthorisedDate());
-			
-			int day = cal.get(Calendar.DAY_OF_MONTH);
-			int month = cal.get(Calendar.MONTH);
-			int year = cal.get(Calendar.YEAR);
-
-			int hour = cal.get(Calendar.HOUR_OF_DAY);
-			int mins = cal.get(Calendar.MINUTE);
-
-			String datetime = (day < 10 ? "0" + day : day) + "-" + (month < 10 ? "0" + month : month) + "-" + year
-					+  " " + (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins);
-			
+			Instant authDate = specimen.getResultsAuthorisedDate().toInstant();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			String datetime = formatter.format(authDate);
 			fields.add(new DDPObjectField("results_authorised_date", datetime, null));
 		}
 
@@ -1266,17 +1319,7 @@ public class DhisLink implements Serializable {
 		newf = getVerificationFormFields(specimen.getSpecimenBarcode());
 		fields.addAll(newf);
 
-
-		StringBuilder builder = new StringBuilder();
-		for(DDPObjectField field : fields) {
-			if(builder.length() > 0) {
-				builder.append(",");
-			}
-			builder.append(field.toString());
-		}
-		String str = "[" + builder.toString() + "]";
-		
-		return str;
+		return fields;
 	}
 	
 	private DDPObjectField getCriteriaField(RedcapDataSearchCriteria criteria) {
@@ -1289,7 +1332,7 @@ public class DhisLink implements Serializable {
 		return null;
 	}
 	
-	private List<DDPObjectField> getVerificationFormFields(String barcode) {
+	public List<DDPObjectField> getVerificationFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1354,12 +1397,12 @@ public class DhisLink implements Serializable {
 		
 	}
 	
-	private List<DDPObjectField> getResultingFormFields(String barcode) {
+	public List<DDPObjectField> getResultingFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
 		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
-		// Reception project
+		// resulting project
 		criteria.setProjectId(labResultingPID);
 		criteria.setFieldName("test_det_barcode_%");
 		criteria.setValue(barcode);
@@ -1418,7 +1461,7 @@ public class DhisLink implements Serializable {
 		
 	}
 
-	private List<DDPObjectField> getDetectionFormFields(String barcode) {
+	public List<DDPObjectField> getDetectionFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1437,7 +1480,8 @@ public class DhisLink implements Serializable {
 			
 			fields.add(new DDPObjectField("test_det_batch_id", rd.getRecord(), null));
 			fields.add(new DDPObjectField("test_det_barcode", rd.getValue(), null));
-						
+			fields.add(new DDPObjectField("det_batch_pos", pos, null));
+									
 			criteria = new RedcapDataSearchCriteria();
 			criteria.setProjectId(labResultingPID);
 			criteria.setRecord(rd.getRecord());
@@ -1478,7 +1522,7 @@ public class DhisLink implements Serializable {
 		
 	}
 	
-	private List<DDPObjectField> getExtractionFormFields(String barcode) {
+	public List<DDPObjectField> getExtractionFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1542,7 +1586,7 @@ public class DhisLink implements Serializable {
 		
 	}
 	
-	private List<DDPObjectField> getTporFormFields(String barcode) {
+	public List<DDPObjectField> getTporFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
@@ -1603,7 +1647,7 @@ public class DhisLink implements Serializable {
 	 * @param barcode
 	 * @return
 	 */
-	private List<DDPObjectField> getReceptionFormFields(String barcode) {
+	public List<DDPObjectField> getReceptionFormFields(String barcode) {
 		
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;

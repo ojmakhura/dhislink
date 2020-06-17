@@ -1,11 +1,15 @@
 package bw.ub.ehealth.controller;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -15,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +42,7 @@ import bw.ub.ehealth.dhislink.vo.TrackedEntityInstance;
 
 @RestController
 @RequestMapping("/ddpcontroller")
+@CrossOrigin()
 public class DDPController {
 
     private Logger logger = LoggerFactory.getLogger(DDPController.class);
@@ -49,6 +55,9 @@ public class DDPController {
 
     @Value("${dhis2.api.program.stage}")
     private String programStage;
+    
+    @Value("${lab.results}")
+    private String resultsField;
     
     @Value("${lab.report.pid}")
     private Long labReportPID;
@@ -128,7 +137,7 @@ public class DDPController {
     @ResponseBody
     public String pullSpecimen(@RequestBody DDPPostObject postObject) {
     	SpecimenVO specimen = dhisLink.getOneSpecimen(postObject.getId());
-        return dhisLink.getSpecimenFieldList(specimen);
+        return dhisLink.getSpecimenFieldsString(specimen);
     }
     
     /**
@@ -143,7 +152,7 @@ public class DDPController {
     public String getOneSpecimen(@PathVariable(name = "barcode") String barcode) {
     	
     	SpecimenVO specimen = dhisLink.getOneSpecimen(barcode);    	
-    	return dhisLink.getSpecimenFieldList(specimen);
+    	return dhisLink.getSpecimenFieldsString(specimen);
     }
 
     /**
@@ -161,20 +170,19 @@ public class DDPController {
         params.put("program", program);
         params.put("programStage", programStage);
         params.put("status", "COMPLETED");
-        //params.put("trackedEntityInstance", "Sg78qJZCXAm");
+        //params.put("filter", resultsField + ":EQ:PENDING");
         SpecimenVO last = specimenService.findLatestSpecimen();
         String date = "2020-05-20";
-        
+
         if(last != null) {
-        	Calendar cal = Calendar.getInstance();
-        	cal.setTime(last.getCreated());
-        	 date = cal.get(Calendar.YEAR) + "-" + 
-    				(cal.get(Calendar.MONTH) < 10 ? "0" + cal.get(Calendar.MONTH) : cal.get(Calendar.MONTH)) + "-" + 
-    				(cal.get(Calendar.DAY_OF_MONTH) < 10 ? "0" + cal.get(Calendar.DAY_OF_MONTH) : cal.get(Calendar.DAY_OF_MONTH));
+        	
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			Instant updated = last.getLastUpdated().toInstant();
+			date = formatter.format(updated).replace(' ', 'T');
         }
         	
         params.put("lastUpdatedStartDate", date);        
-        params.put("order", "eventDate:asc");
+        params.put("order", "lastUpdated:asc");
         params.put("pageSize", "" + pageSize);
         
         BigInteger numPulled = new BigInteger("0");

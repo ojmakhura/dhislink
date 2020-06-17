@@ -38,8 +38,9 @@ public class RedcapDataServiceImpl
     {
     	
     	List<RedcapDataVO> vos = new ArrayList<RedcapDataVO>();
-
-    	for(RedcapData e : getRedcapDataDao().findByCriteria(searchCriteria)) {
+    	List<RedcapData> entities = (List<RedcapData>) getRedcapDataDao().findByCriteria(searchCriteria);
+    	
+    	for(RedcapData e : entities) {
     		vos.add(getRedcapDataDao().toRedcapDataVO(e));
     	}
     	

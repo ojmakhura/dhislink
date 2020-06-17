@@ -34,7 +34,8 @@ public class SpecimenDaoImpl
     protected Specimen handleFindByBarcode(String barcode)
     {
     	
-    	Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where specimenBarcode = '" + barcode + "'");
+    	Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where specimenBarcode = :barcode ");
+    	query.setParameter("barcode", barcode);
     	
     	try {
 			return (Specimen) query.getSingleResult();
@@ -198,7 +199,7 @@ public class SpecimenDaoImpl
 	@Override
 	protected Specimen handleFindLatestSpecimen() throws Exception {
 		
-		Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where sp.created = "
+		Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where sp.lastUpdated = "
     			+ "(select MAX(s1.lastUpdated) from bw.ub.ehealth.dhislink.specimen.Specimen s1)");
 		
 		try {

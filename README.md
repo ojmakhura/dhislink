@@ -7,4 +7,8 @@ be found in the repository itself.
 Currently, we are not using the redcap api to search so we have to use the full stack RedcapData objects to interact with the redca_data table directly. It doesn't have a primary key 
 so we use composite keys. make sure you put @Id on the getters of the attributes similar to the ones in RedcapDataId class.
 
-You should also run the two sql files in the scripts directory. 
+You should also run the two sql files in the scripts directory.
+
+## Project 4 portal
+Build with:
+ng build --prod --base-href /redcap/dhislink/ --deploy-url=https://ehealth.ub.bw/redcap/dhislink/
