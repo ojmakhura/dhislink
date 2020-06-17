@@ -39,7 +39,7 @@ export class AppComponent {
       console.log(this.idleState);
       this.reset();
     });
-    
+
     idle.onTimeout.subscribe(() => {
       this.idleState = 'Timed out!';
       this.timedOut = true;
@@ -111,6 +111,11 @@ export class AppComponent {
 
   changeForm(destination: string) {
     this.router.navigate([destination]);
+  }
+
+  isLogggedIn() {
+    this.getUser();
+    return this.loggedIn;
   }
 }
 
