@@ -246,9 +246,26 @@ public class DDPController {
     @ResponseStatus(value = HttpStatus.OK)
     public String sendDhisResults() {
     	
+    	StringBuilder builder = new StringBuilder();
     	// Make sure the staging area is updated
-    	redcapLink.updateStaging(specimenService.findUnsynchedSpecimen()); 
-    	return dhisLink.getDhisPayload(specimenService.findUnsynchedSpecimen());
+    	Collection<SpecimenVO> updateable = specimenService.findUnsynchedSpecimen();
+    	redcapLink.updateStaging(updateable);
+    	Collection<SpecimenVO> tmp = null;
+    	
+    	for(SpecimenVO specimen : updateable) {
+    		if(tmp == null) {
+    			tmp = new ArrayList<>();
+    		}
+    		
+    		tmp.add(specimen);
+    		
+    		if(tmp.size() == 50) {
+    			builder.append(dhisLink.getDhisPayload(tmp));
+    			tmp.clear();
+    		}
+    	}
+    	
+    	return builder.toString();
     }
     
     /**
