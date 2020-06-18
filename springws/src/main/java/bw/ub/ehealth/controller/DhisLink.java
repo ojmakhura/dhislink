@@ -1850,7 +1850,12 @@ public class DhisLink implements Serializable {
 
 				val = new DataValue();
 				val.setDataElement(env.getProperty("lab.results.date.entered"));
-				val.setValue(sp.getResultsEnteredDate().toString());
+				
+				Instant dob = sp.getResultsEnteredDate().toInstant();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				String date = formatter.format(dob);
+				
+				val.setValue(date);
 				event.getDataValues().add(val);
 			}
 
@@ -1864,7 +1869,12 @@ public class DhisLink implements Serializable {
 			if (sp.getResultsVerifiedDate() != null) {
 				val = new DataValue();
 				val.setDataElement(env.getProperty("lab.result.date.verified"));
-				val.setValue(sp.getResultsVerifiedDate().toString());
+				
+				Instant dob = sp.getResultsVerifiedDate().toInstant();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				String date = formatter.format(dob);
+				
+				val.setValue(date);
 				event.getDataValues().add(val);
 			}
 
@@ -1878,16 +1888,24 @@ public class DhisLink implements Serializable {
 			if (sp.getResultsAuthorisedDate() != null) {
 				val = new DataValue();
 				val.setDataElement(env.getProperty("lab.results.date.authorised"));
-				val.setValue(sp.getResultsAuthorisedDate().toString());
+				
+				Instant dob = sp.getResultsAuthorisedDate().toInstant();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				String date = formatter.format(dob);
+				
+				val.setValue(date);
 				event.getDataValues().add(val);
 			}
 
 			if (sp.getReceivingDateTime() != null) {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-				String datetime = format.format(sp.getReceivingDateTime());
 				val = new DataValue();
 				val.setDataElement(env.getProperty("lab.specimen.date.received"));
-				val.setValue(datetime.toString());
+				
+				Instant dob = sp.getReceivingDateTime().toInstant();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				String date = formatter.format(dob);
+				
+				val.setValue(date);
 				event.getDataValues().add(val);
 			}
 
