@@ -86,6 +86,9 @@ public class DhisLink implements Serializable {
 	@Value("${dhis2.api.program}")
     private String program;
 	
+	@Value("${lab.specimen.barcode}")
+    private String barcodeField;
+	
 	@Value("${dhis2.mohw.org.unit}")
     private String mohwOrgUnit;
 
@@ -1794,17 +1797,18 @@ public class DhisLink implements Serializable {
 			if(builder.length() > 0) {
 				builder.append(";");
 			}
-			builder.append(sp.getEvent());
-			spMap.put(sp.getEvent(), sp);
+			builder.append(sp.getSpecimenBarcode());
+			spMap.put(sp.getSpecimenBarcode(), sp);
 		}
 		
-		String evIds = builder.toString();
+		String barcodes = builder.toString();
 
 		builder = new StringBuilder();
 		builder.append(dhis2Url);
 		builder.append("/events?programStage=" + programStage);
 		builder.append("&program=" + program);
-		builder.append("&event=" + evIds);
+		builder.append("&filter=" + barcodeField + ":IN:" + barcodes);
+		//builder.append("&event=" + evIds);
 		logger.info("Final url is " + builder.toString());
 		
 		EventList eventList = restTemplate().getForObject(builder.toString(), EventList.class);
@@ -1814,7 +1818,9 @@ public class DhisLink implements Serializable {
 		builder.append("\"events\" : [\n");
 		
 		for(Event event : eventList.getEvents()) {
-			SpecimenVO sp = spMap.get(event.getEvent());
+			SpecimenVO s = eventToSpecimen(event, false);
+			SpecimenVO sp = spMap.get(s.getSpecimenBarcode());
+			sp.setEvent(s.getEvent());
 			Map<String, DataValue> values = getDataValueMap((List<DataValue>) event.getDataValues());
 			 
 			// Add the result values to the event

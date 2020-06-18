@@ -259,7 +259,7 @@ public class DDPController {
     		
     		tmp.add(specimen);
     		
-    		if(tmp.size() == 50) {
+    		if(tmp.size() == 100) {
     			builder.append(dhisLink.getDhisPayload(tmp));
     			tmp.clear();
     		}
