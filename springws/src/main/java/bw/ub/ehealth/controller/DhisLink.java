@@ -1738,7 +1738,7 @@ public class DhisLink implements Serializable {
 		builder.append("\"orgUnit\": \""+ event.getOrgUnit() + "\",\n");
 		builder.append("\"programStage\": \"" + event.getProgramStage()+ "\",\n");
 		
-		if(event.getCompletedDate() != null) {
+		if(event.getCompletedDate() == null) {
 			builder.append("\"completedDate\": \"null\",\n");
 		} else {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");						
@@ -1819,6 +1819,10 @@ public class DhisLink implements Serializable {
 		
 		for(Event event : eventList.getEvents()) {
 			SpecimenVO s = eventToSpecimen(event, false);
+			if(s == null) {
+				logger.debug(String.format("The event could not be converted to specimen : %s\n", event.toString()));
+				continue;
+			}
 			SpecimenVO sp = spMap.get(s.getSpecimenBarcode());
 			sp.setEvent(s.getEvent());
 			Map<String, DataValue> values = getDataValueMap((List<DataValue>) event.getDataValues());
@@ -1852,7 +1856,7 @@ public class DhisLink implements Serializable {
 				val.setDataElement(env.getProperty("lab.results.date.entered"));
 				
 				Instant dob = sp.getResultsEnteredDate().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
 				
 				val.setValue(date);
@@ -1871,7 +1875,7 @@ public class DhisLink implements Serializable {
 				val.setDataElement(env.getProperty("lab.result.date.verified"));
 				
 				Instant dob = sp.getResultsVerifiedDate().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
 				
 				val.setValue(date);
@@ -1890,7 +1894,7 @@ public class DhisLink implements Serializable {
 				val.setDataElement(env.getProperty("lab.results.date.authorised"));
 				
 				Instant dob = sp.getResultsAuthorisedDate().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
 				
 				val.setValue(date);
@@ -1902,7 +1906,7 @@ public class DhisLink implements Serializable {
 				val.setDataElement(env.getProperty("lab.specimen.date.received"));
 				
 				Instant dob = sp.getReceivingDateTime().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
 				
 				val.setValue(date);
