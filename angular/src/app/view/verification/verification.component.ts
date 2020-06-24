@@ -156,6 +156,7 @@ export class VerificationComponent implements OnInit {
 
   searchBatches() {
     this.loading = true;
+    this.searchCriteria.includeSpecimen = true;
     this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {      
       
       this.batches.data = results;

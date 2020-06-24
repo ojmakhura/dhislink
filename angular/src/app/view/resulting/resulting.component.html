@@ -126,9 +126,10 @@
                                 </ng-container>
                                 <ng-container matColumnDef="testAssayResults">
                                     <mat-header-cell *matHeaderCellDef>Assay Results</mat-header-cell>
-                                    <mat-cell *matCellDef="let row">
+                                    <mat-cell *matCellDef="let row"> {{ row.testAssayResults }} </mat-cell>
+                                    <!--mat-cell *matCellDef="let row">
                                         <mat-form-field>
-                                            <mat-select [(ngModel)]="row.testAssayResults" 
+                                            <mat-select [(ngModel)]="row.testAssayResults" (selectionChange)="selectChangeHandler(row, $event)"
                                                     name="testAssayResults" id = "testAssayResults" 
                                                     #testAssayResults="ngModel" required="true">
                                                 <mat-option value=""></mat-option>
@@ -138,7 +139,7 @@
                                                 <mat-option value="4" selected>No Results</mat-option> 
                                             </mat-select>
                                         </mat-form-field>
-                                    </mat-cell>
+                                    </mat-cell-->
                                 </ng-container>
                                 <mat-header-row *matHeaderRowDef="specimenColumns"></mat-header-row>
                                 <mat-row *matRowDef="let row; columns: specimenColumns;"></mat-row>            

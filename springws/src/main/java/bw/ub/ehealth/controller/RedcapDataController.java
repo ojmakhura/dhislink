@@ -42,6 +42,7 @@ import bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO;
 import bw.ub.ehealth.dhislink.vo.BatchSearchCriteria;
 import bw.ub.ehealth.dhislink.vo.DDPObjectField;
 import bw.ub.ehealth.dhislink.vo.Event;
+import io.jsonwebtoken.lang.Collections;
 
 @RestController
 @RequestMapping("/ddpcontroller/data")
@@ -117,6 +118,10 @@ public class RedcapDataController {
     
     private List<SpecimenVO> queryDhisSpecimenBarcodes(List<String> barcodes) {
     	
+    	if(Collections.isEmpty(barcodes)) {
+    		return new ArrayList<>();
+    	}
+    	
     	String queryBase = dhis2Url + "/events?programStage=nIaEdUY97YD&program=HR4C8VTwGuo&filter=kkD26RljqPY:IN:";
     	StringBuilder builder = new StringBuilder();
     	
@@ -138,7 +143,7 @@ public class RedcapDataController {
     @ResponseStatus(code = HttpStatus.OK)
     @ResponseBody
     public List<SpecimenVO> saveBatch(@RequestBody BatchVO batch) {
-    	
+    	//logger.debug(batch.toString());
     	List<RedcapDataVO> redcapData = new ArrayList<RedcapDataVO>();
     	List<SpecimenVO> verifiedSpecimen = new ArrayList<SpecimenVO>();
     	
@@ -180,12 +185,23 @@ public class RedcapDataController {
 
 		for (SpecimenVO specimen : batch.getBatchItems()) {
 			if (specimen.getId() == null) {
+				// Record this somewhere
 				missing.add(specimen.getSpecimenBarcode());
+				
+				// Save the specimen in the staging area
+				
+				if(specimen.getPatient() != null && specimen.getPatient().getIdentityNo() == null) {
+		    		specimen.setPatient(null);
+		    	}
+				specimenService.saveSpecimen(specimen);
 			}
 		}
 
 		// Find the specimen from DHIS2
-		List<SpecimenVO> found = queryDhisSpecimenBarcodes(missing);
+		List<SpecimenVO> found = new ArrayList<>();
+		if(batch.getPublishResults()) {
+			found = queryDhisSpecimenBarcodes(missing);
+		}
 		Map<String, SpecimenVO> foundMap = getSpecimenMap(found);
     	
     	for(SpecimenVO specimen : batch.getBatchItems()) {
@@ -263,7 +279,7 @@ public class RedcapDataController {
 		
 		if(batch.getPublishResults()) {
 			//logger.info(String.format("%d specimen data sent to DHIS2 and they are %s", verifiedSpecimen.size(), verifiedSpecimen.toString()));
-			dhisLink.getDhisPayload(verifiedSpecimen);
+			//dhisLink.getDhisPayload(verifiedSpecimen);
 		}
 		
 		List<SpecimenVO> tmp = new ArrayList<>();
@@ -281,7 +297,7 @@ public class RedcapDataController {
 		
 		return tmp;
     }
-    
+        
     @GetMapping("/extraction/specimen/{batchId}")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK)
@@ -304,10 +320,22 @@ public class RedcapDataController {
     			specimen.setPatient(new PatientVO());
     		}
     		
+    		if(specimen.getPatient() == null || specimen.getPatient().getId() == null) {
+    			specimen.setPatient(new PatientVO());
+    		}
+    		
     		specimens.add(specimen);
     	}
     	
     	return specimens;
+    }
+    
+    @PostMapping("/publish/specimen")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK)
+    public SpecimenVO synchSpecimen(@RequestBody SpecimenVO specimen) {
+    	
+    	return null;
     }
     
     @PostMapping("/saveall")
@@ -444,8 +472,6 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		items.add(new SpecimenVO());
     	}
 
-    	
-    	    	
     	// Get the specimen information
     	for(RedcapDataVO rd : t2) {
     		String pos = rd.getFieldName().substring(17);
@@ -463,6 +489,10 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    			specimen = new SpecimenVO();
 	    			specimen.setSpecimenBarcode(rd.getValue());
 	    			specimen.setPatient(new PatientVO());
+    			}
+    			
+    			if(specimen.getPatient() == null) {
+    				specimen.setPatient(new PatientVO());
     			}
     			
     			List<DDPObjectField> fields = dhisLink.getResultingFormFields(rd.getValue());
@@ -508,6 +538,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     					
     				} 
     			}
+    			specimen.setDhis2Synched(false);
     		}
     		
     		if(StringUtils.isBlank(batch.getAuthorisingPersonnel()) && 
@@ -521,6 +552,10 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     		
     		specimen.setPosition(encodePosition(Integer.parseInt(pos)));
     		specimen.setCovidRnaResults(specimen.getTestAssayResults());
+    		
+    		if(specimen.getId() == null) {
+    			specimen = specimenService.saveSpecimen(specimen);
+    		}
     		
     		items.set(idx, specimen);
     	}

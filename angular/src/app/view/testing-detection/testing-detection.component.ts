@@ -22,6 +22,9 @@ import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
+import { Patient } from 'src/app/model/patient/patient';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
 
 @Component({
   selector: 'app-testing-detection',
@@ -41,32 +44,35 @@ export class TestingDetectionComponent implements OnInit {
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
   loading: boolean = false;
+  adding = false;
+  removing = false;
 
   searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'detectionStatus'];
-  specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no'];
+  specimenColumns: string[] = [' ', 'position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no'];
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
 
   @ViewChild('SpecimenPaginator', {static: true}) specimenPaginator: MatPaginator;
 
-  constructor(private router: Router, 
+  constructor(private router: Router,
               private authService: AuthenticationService,
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
-              private specimenService: SpecimenService) {
-                
+              private specimenService: SpecimenService,
+              public dialog: MatDialog) {
+
     this.batches = new MatTableDataSource<Batch>();
     this.specimen = new MatTableDataSource<Specimen>();
     this.searchCriteria = new BatchSearchCriteria();
     this.instruments = InstrumentList.allIntruments();
-    
+
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
     });
 
-    if(localStorage.getItem(FORM_DATA)) {
-      let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
+    if (localStorage.getItem(FORM_DATA)) {
+      const batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
       this.editBatch(batch);
       localStorage.removeItem(FORM_DATA);
     } else {
@@ -76,20 +82,20 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
-    let token = this.authService.getToken();
-    let user = this.authService.getCurrentUser();
 
-    window.localStorage.setItem(CURRENT_ROUTE, '/detection'); 
-    //this.authService.getLoggeInUser();
-    
-    if(!user || this.authService.isTokenExpired(token)) {   
+    const token = this.authService.getToken();
+    const user = this.authService.getCurrentUser();
+
+    window.localStorage.setItem(CURRENT_ROUTE, '/detection');
+    // this.authService.getLoggeInUser();
+
+    if (!user || this.authService.isTokenExpired(token)) {
       this.router.navigate(['/login']);
     }
   }
-  
+
   ngAfterViewInit() {
-    
+
     //this.batches.paginator = this.batchesPaginator;
     //this.batches.sort = this.batchSort;
 
@@ -98,27 +104,26 @@ export class TestingDetectionComponent implements OnInit {
 
   saveDetectionBatch() {
     this.loading = true;
-    if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
+    if (!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length === 0) {
       this.now();
     }
 
-    this.batch.lab = this.locations.find(loc => loc.code == this.labControl.value)
-    this.batch.instrument = this.instruments.find(loc => loc.code == this.instrumentControl.value);
+    this.batch.lab = this.locations.find(loc => loc.code === this.labControl.value)
+    this.batch.instrument = this.instruments.find(loc => loc.code === this.instrumentControl.value);
     this.batch.page = 'testing_detection';
     this.batch.projectId = 345;
     this.batch.detectionBatchId = this.batch.batchId;
     this.batch.assayBatchId = this.batch.batchId;
     this.batch.verifyBatchId = this.batch.batchId;
-        
+
     this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
       this.router.navigate(['/login']);
       return of(new AuthenticationResponse());
-    })).subscribe( 
+    })).subscribe(
       data => {
         this.loading = false;
       }
     );
-    
   }
 
   newDetectionBatch() {
@@ -130,17 +135,17 @@ export class TestingDetectionComponent implements OnInit {
 
   now() {
     this.batch.detectionDateTime = formatDate(new Date(), "yyyy-MM-dd HH:mm", 'en-US');
-    if(!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length == 0) {
-      console.log('settign user ');
-      
+    if (!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length === 0) {
+
       this.batch.detectionPersonnel = this.authService.getCurrentUser();
-      
+
     }
   }
 
   searchBatches() {
     this.loading = true;
-    this.redcaDataService.search(this.searchCriteria).subscribe(results => {      
+    this.searchCriteria.includeSpecimen = true;
+    this.redcaDataService.search(this.searchCriteria).subscribe(results => {
       this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
       this.loading = false;
@@ -152,7 +157,7 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    
+
     this.batch = batch;
     this.batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US');
     this.specimen.data = this.batch.batchItems;
@@ -164,17 +169,30 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   addSpecimen() {
-    if(this.batch.detectionStatus != 'Complete') {
-      if(!this.batch.batchItems.find(item => item.specimen_barcode == this.barcode) && 
+    this.adding = true;
+    if (this.batch.detectionStatus !== 'Complete') {
+      if (!this.batch.batchItems.find(item => item.specimen_barcode === this.barcode) &&
           this.batch.batchItems.length <= 96) {
-
+        const bc = this.barcode;
         this.specimenService.findSpecimenByBarcode(this.barcode).subscribe(result => {
+          console.log(result);
           let sp = result;
+          if (result === null) {
+            console.log(bc);
+            sp = new Specimen();
+            sp.specimen_barcode = bc;
+            sp.dhis2Synched = false;
+            sp.patient = new Patient();
+          }
+          
           sp.position = this.specimenService.encodePosition(this.batch.batchItems.length);
           this.batch.batchItems.push(sp);
+          console.log(this.batch);
+          
           this.specimen.data  = this.batch.batchItems;
           this.batch.instrumentBatchSize = this.batch.batchItems.length;
           this.batch.detectionSize = this.specimen.data.length;
+          this.adding = false;
         });
       }
     }
@@ -183,24 +201,73 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   fetchBatchData() {
-    
-    if(!this.batch.detectionStatus) {
-      this.redcaDataService.fetchExtractionSpecimen(this.batch.batchId).subscribe(results => {
-        
-        this.batch.batchItems = results;
-        for(let i = 0; i < results.length; i++) {
-          results[i].position = this.specimenService.encodePosition(i);
-        }
 
-        this.specimen.data  = this.batch.batchItems;
-        this.batch.instrumentBatchSize = this.specimen.data.length;
-        this.batch.detectionSize = this.specimen.data.length;
+    this.searchCriteria.batchId = this.batch.batchId;
+    this.searchCriteria.includeSpecimen = false;
+    this.searchCriteria.lab = null;
+    this.searchCriteria.specimenBarcode = null;
+
+    if (!this.batch.detectionStatus) {
+      this.redcaDataService.search(this.searchCriteria).subscribe(results => {
+        if (results.length === 1) {
+          console.log('Got saved batch');
+          this.editBatch(results[0]);
+        } else {
+          this.redcaDataService.fetchExtractionSpecimen(this.batch.batchId).subscribe(results => {
+
+            this.batch.batchItems = results;
+            for (let i = 0; i < results.length; i++) {
+              results[i].position = this.specimenService.encodePosition(i);
+            }
+
+            this.specimen.data  = this.batch.batchItems;
+            this.batch.instrumentBatchSize = this.specimen.data.length;
+            this.batch.detectionSize = this.specimen.data.length;
+          });
+        }
       });
+
     }
   }
 
   toResulting() {
     localStorage.setItem(FORM_DATA, JSON.stringify(this.batch));
     this.router.navigate(['/resulting']);
+  }
+
+  openDialog(action, obj) {
+
+    this.removing = true;
+    this.searchCriteria.batchId = this.batch.batchId;
+    this.searchCriteria.includeSpecimen = false;
+    this.searchCriteria.lab = null;
+    this.searchCriteria.specimenBarcode = null;
+
+    // We don't want to remove from a saved batch
+    this.redcaDataService.search(this.searchCriteria).subscribe(results => {
+      console.log(results);
+      if (results.length > 0) {
+        alert('Cannot remove specimen from saved batch.');
+      } else {
+
+        obj.action = action;
+        const dialogRef = this.dialog.open(DialogBoxComponent, {
+          width: '250px',
+          data: obj
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+          if (result.event === 'Delete') {
+            this.deleteRowData(result.data);
+          }
+        });
+      }
+    });
+  }
+
+  deleteRowData(rowObj) {
+    this.specimen.data = this.specimen.data.filter((value, key) => {
+      return value.id !== rowObj.id;
+    });
   }
 }

@@ -13,7 +13,7 @@ import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
 })
 export class RedcapDataService {
 
-  private url= BASE_URL + 'data/';
+  private url = BASE_URL + 'data/';
   constructor(private http: HttpClient) { }
 
   search(criteria: BatchSearchCriteria): Observable<Batch[]> {
@@ -32,4 +32,6 @@ export class RedcapDataService {
     
     return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
   }
+
+
 }

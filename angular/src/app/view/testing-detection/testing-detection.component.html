@@ -11,7 +11,7 @@
             <!-- Editing a location -->
             <mat-tab label="Edit">
                 <div class="col">
-                    <form #saveForm="ngForm">
+                    <form #saveForm="ngForm" (ngSubmit)="saveDetectionBatch()">
                         
                         <div class="row">  
                             <div class="form-group">  
@@ -109,11 +109,24 @@
                                         <mat-label>Barcode</mat-label>
                                         <input matInput placeholder="Scan Barcode" [(ngModel)]="barcode" name="barcode" id="barcode">
                                     </mat-form-field>
-                                    <button type="button" class="btn btn-success" (click)="addSpecimen()">Add</button>
+                                    <button type="button" class="btn btn-success" (click)="addSpecimen()">
+                                        <span *ngIf="adding" class="spinner-border spinner-border-sm mr-1"></span>
+                                        Add
+                                    </button>
                                 </form>
                             </div>
                             <div class="mat-elevation-z8 specimen-list"> 
                                 <mat-table [dataSource]="specimen" class="table table-bordered table-striped" style="width: 100%;">
+                                    <ng-container matColumnDef=" ">
+                                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                        <mat-cell *matCellDef="let row">
+                                            <div class = "form-group">
+                                                <button type="button" class="btn btn-info" (click)="openDialog('Delete', row)">
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                            </div>    
+                                        </mat-cell>
+                                    </ng-container>
                                     <ng-container matColumnDef="position">
                                         <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
                                         <mat-cell *matCellDef="let row"> {{ row.position }} </mat-cell>

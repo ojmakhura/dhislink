@@ -94,10 +94,12 @@ export class ResultingComponent implements OnInit {
   }
 
   saveResultingBatch() {
+    console.log(this.batch);
+    
     this.loading = true;
     this.batch.page = 'resulting';
     this.batch.projectId = 345;
-    if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
+    if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length === 0) {
       this.now();
     }
     
@@ -105,15 +107,24 @@ export class ResultingComponent implements OnInit {
       this.router.navigate(['/login']);
       return of([]);
     })).subscribe( data => {
+      console.log(data);
+      
       this.specimen.data = data;
       this.loading = false;
     });
     
   }
 
+  selectChangeHandler(specimen: Specimen, event: any) {
+    console.log(event);
+    console.log(specimen);
+    
+    
+  }
+
   now() {
     this.batch.resultingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
-    if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length == 0) {
+    if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length === 0) {
       
       this.batch.resultingPersonnel = this.authService.getCurrentUser();
     }
@@ -121,10 +132,13 @@ export class ResultingComponent implements OnInit {
 
   searchBatches() {
     this.loading = true;
-    this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {      
-      this.batches.data = results;      
+    this.searchCriteria.includeSpecimen = true;
+    this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {
+      this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
       this.loading = false;
+      console.log(results);
+      
     });
     
   }

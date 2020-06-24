@@ -58,6 +58,10 @@ public class SpecimenServiceImpl
     {
     	Specimen specimen = getSpecimenDao().createOrUpdate(getSpecimenDao().specimenVOToEntity(specimenVO));
     	
+    	if(specimen.getPatient() != null && specimen.getPatient().getIdentityNo() == null) {
+    		specimen.setPatient(null);
+    	}
+    	
     	return getSpecimenDao().toSpecimenVO(specimen);
     }
 

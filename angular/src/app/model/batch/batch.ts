@@ -34,3 +34,8 @@ export class Batch {
     }
 
 }
+
+export class StatusItem {
+    code: string;
+    description: string;
+}

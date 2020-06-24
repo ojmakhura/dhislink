@@ -157,6 +157,7 @@ public class DhisLink implements Serializable {
 			builder.append(entry.getKey() + "=" + entry.getValue());
 		}
 		String finalUrl = dhis2Url + "/events?" + builder.toString();
+		logger.debug(finalUrl);
 		logger.info(finalUrl);
 		
 		return eventQueryExecute(finalUrl);
@@ -1933,7 +1934,7 @@ public class DhisLink implements Serializable {
 			
 			boolean synchReceiving = sp.getReceivingDateTime() != null;
 			
-			if (synchResults || synchReceiving) {
+			/*if (synchResults || synchReceiving) {
 
 				String payload = getEventPayloadString(event);
 				
@@ -1957,7 +1958,7 @@ public class DhisLink implements Serializable {
 					logger.info(e.getResponseBodyAsString());
 					e.printStackTrace();
 				}
-			}
+			}*/
 
 			sp.setDhis2Synched(true);
 			specimenService.saveSpecimen(sp);

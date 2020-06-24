@@ -42,5 +42,5 @@ export class Specimen {
     testAssayResults: string;
     testVerifyResults: string;
     covidRnaResults: string;
-    position: string
+    position: string;
 }
