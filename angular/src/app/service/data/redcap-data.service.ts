@@ -4,9 +4,11 @@ import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
 import { DataSearchCriteria } from 'src/app/model/data/data-search-criteria';
 import { Observable } from 'rxjs';
 import { Batch } from 'src/app/model/batch/batch';
-import { Specimen } from 'src/app/model/specimen/specimen';
+import { Specimen, DhislinkCode } from 'src/app/model/specimen/specimen';
 import { RedcapData } from 'src/app/model/data/redcap-data';
 import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
+import { FormArray } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -17,21 +19,54 @@ export class RedcapDataService {
   constructor(private http: HttpClient) { }
 
   search(criteria: BatchSearchCriteria): Observable<Batch[]> {
+    console.log(criteria);
     
     return this.http.post<Batch[]>(this.url + 'search/batch', criteria);
-    
   }
 
   fetchExtractionSpecimen(batchId: string): Observable<Specimen[]> {
 
     return this.http.get<Specimen[]>(this.url + 'extraction/specimen/' + batchId);
-    
   }
 
-  saveBatch(batch: Batch): Observable<Specimen[]>{
-    
+  fetchBatchSpecimen(criteria: DataSearchCriteria): Observable<Specimen[]> {
+    console.log(localStorage, JSON.stringify(criteria));
+    return this.http.post<Specimen[]>(this.url + 'batch/specimen', criteria);
+  }
+
+  fetchBatchSpecimenAsFormArray(criteria: DataSearchCriteria): Observable<FormArray> {
+     return this.fetchBatchSpecimen(criteria).pipe(map((specimens: Specimen[]) => {
+      // Maps all the albums into a formGroup defined in tge album.model.ts
+      const fgs = specimens.map(Specimen.asResultingFormGroup);
+      return new FormArray(fgs);
+    }));
+  }
+
+  saveBatch(batch: Batch): Observable<Specimen[]> {
+
     return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
   }
 
+  getDescription(code: string): string {
+    let description = '';
 
+    if (code === '1') {
+      description = 'Positive';
+    } else if (code === '2') {
+      description = 'Negative';
+    }
+
+    return description;
+  }
+
+  getResultCodes() {
+
+    return [
+        new DhislinkCode('', ''),
+        new DhislinkCode('1', 'Positive'),
+        new DhislinkCode('2', 'Negative'),
+        new DhislinkCode('3', 'Inconclusive'),
+        new DhislinkCode('4', 'No Results')
+      ];
+  }
 }

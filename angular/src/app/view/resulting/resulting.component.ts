@@ -48,12 +48,12 @@ export class ResultingComponent implements OnInit {
 
   @ViewChild('SpecimenPaginator', {static: true}) specimenPaginator: MatPaginator;
 
-  constructor(private router: Router, 
+  constructor(private router: Router,
               private authService: AuthenticationService,
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
               private specimenBarcode: SpecimenService) {
-           
+
     locationService.findAll().subscribe(results => {
       this.locations = results;
     });
@@ -74,58 +74,58 @@ export class ResultingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-        
+
     let token = this.authService.getToken();
     let user = this.authService.getCurrentUser();
     //this.authService.getLoggeInUser();
 
-    window.localStorage.setItem(CURRENT_ROUTE, '/resulting');         
-    if(!user || this.authService.isTokenExpired(token)) {   
+    window.localStorage.setItem(CURRENT_ROUTE, '/resulting');
+    if(!user || this.authService.isTokenExpired(token)) {
       this.router.navigate(['/login']);
     }
   }
-  
+
   ngAfterViewInit() {
-    
+
     //this.batches.paginator = this.batchesPaginator;
     //this.batches.sort = this.batchSort;
-    //this.specimen.paginator = this.specimenPaginator; 
-    
+    //this.specimen.paginator = this.specimenPaginator;
+
   }
 
   saveResultingBatch() {
     console.log(this.batch);
-    
+
     this.loading = true;
     this.batch.page = 'resulting';
     this.batch.projectId = 345;
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length === 0) {
       this.now();
     }
-    
+
     this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
       this.router.navigate(['/login']);
       return of([]);
     })).subscribe( data => {
       console.log(data);
-      
+
       this.specimen.data = data;
       this.loading = false;
     });
-    
+
   }
 
   selectChangeHandler(specimen: Specimen, event: any) {
     console.log(event);
     console.log(specimen);
-    
-    
+
+
   }
 
   now() {
     this.batch.resultingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
     if(!this.batch.resultingPersonnel || this.batch.resultingPersonnel.length === 0) {
-      
+
       this.batch.resultingPersonnel = this.authService.getCurrentUser();
     }
   }
@@ -138,9 +138,7 @@ export class ResultingComponent implements OnInit {
       this.searchCriteria = new BatchSearchCriteria();
       this.loading = false;
       console.log(results);
-      
     });
-    
   }
 
   clearSearch() {
@@ -149,12 +147,14 @@ export class ResultingComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
+    console.log('Editing batch: ', batch);
     
     this.batch = batch;
     this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);
     this.batch.detectionSize = this.specimen.data.length;
+    console.log('Going: Editing batch: ', batch);
   }
 
   toVerification() {

@@ -157,6 +157,7 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
+    console.log('Editing batch: ', batch);
 
     this.batch = batch;
     this.batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US');

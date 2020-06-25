@@ -3,13 +3,14 @@ import { Observable } from 'rxjs';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { HttpClient } from '@angular/common/http';
 import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
+import { FormArray } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SpecimenService {
 
-  private url= BASE_URL + 'specimen/';
+  private url = BASE_URL + 'specimen/';
   
   constructor(private http: HttpClient) { }
 
@@ -106,4 +107,5 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findByEvent(event)
 
       return position;
     }
+
 }

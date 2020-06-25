@@ -1,4 +1,5 @@
 import { Patient } from '../patient/patient';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 export class Specimen {
     id: number;
@@ -19,7 +20,7 @@ export class Specimen {
     specimen_type: string;
     time_dispatched: Date;
     patient: Patient;
-    results: string;
+    results: DhislinkCode;
     testType: string;
     riskFactors: string;
     test_assay_personnel: string;
@@ -35,12 +36,33 @@ export class Specimen {
     lastUpdated: Date;
     created: Date;
     event: string;
-    dhis2Synched: Boolean  = false;
+    dhis2Synched: boolean  = false;
     receiving_lab: string;
     patient_facility: string;
     covid_number: string;
-    testAssayResults: string;
-    testVerifyResults: string;
-    covidRnaResults: string;
+    testAssayResults: DhislinkCode;
+    testVerifyResults: DhislinkCode;
+    covidRnaResults: DhislinkCode;
     position: string;
+
+    static asResultingFormGroup(specimen: Specimen): FormGroup {
+      const fg = new FormGroup({
+        position: new FormControl(specimen.position, Validators.required),
+        specimen_barcode: new FormControl(specimen.specimen_barcode, Validators.required),
+        patient_first_name: new FormControl(specimen.patient.patient_first_name),
+        patient_surname: new FormControl(specimen.patient.patient_surname),
+        identity_no: new FormControl(specimen.patient.identity_no),
+        testAssayResults: new FormControl(specimen.testAssayResults, Validators.required)
+      });
+  
+      return fg;
+    }
 }
+
+export class DhislinkCode {
+
+    constructor(code: string, description: string) {
+
+    }
+}
+

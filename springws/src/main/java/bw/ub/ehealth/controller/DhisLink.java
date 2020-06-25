@@ -107,6 +107,9 @@ public class DhisLink implements Serializable {
     @Value("${lab.resulting.pid}")
     private Long labResultingPID;
     
+    @Value("${app.local}")
+    private Boolean isLocal;
+    
 	@Autowired
 	private PatientService patientService;
 
@@ -724,9 +727,11 @@ public class DhisLink implements Serializable {
 		boolean resultsCheckOk = false;
 		
 		if(skipResulted) { 
+			logger.debug("Skipping resulted is true");
 			resultsCheckOk = true;
 		} else {
-			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || !labResults.getValue().equals("PENDING")) {
+			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || labResults.getValue().equals("PENDING")) {
+				logger.debug("");
 				resultsCheckOk = true;
 			} else {
 				resultsCheckOk = false;
@@ -734,6 +739,7 @@ public class DhisLink implements Serializable {
 		}
 		
 		if (!resultsCheckOk || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
+			logger.debug("Results check failed");
 			return null;
 		}
 
@@ -1934,7 +1940,7 @@ public class DhisLink implements Serializable {
 			
 			boolean synchReceiving = sp.getReceivingDateTime() != null;
 			
-			/*if (synchResults || synchReceiving) {
+			if ((synchResults || synchReceiving) && !isLocal) {
 
 				String payload = getEventPayloadString(event);
 				
@@ -1958,7 +1964,7 @@ public class DhisLink implements Serializable {
 					logger.info(e.getResponseBodyAsString());
 					e.printStackTrace();
 				}
-			}*/
+			}
 
 			sp.setDhis2Synched(true);
 			specimenService.saveSpecimen(sp);

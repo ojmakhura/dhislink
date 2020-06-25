@@ -148,7 +148,7 @@ export class VerificationComponent implements OnInit {
 
   now() {
     this.batch.verificationDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
-    if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
+    if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length === 0) {
       
       this.batch.verificationPersonnel = this.authService.getCurrentUser();
     }
@@ -157,7 +157,7 @@ export class VerificationComponent implements OnInit {
   searchBatches() {
     this.loading = true;
     this.searchCriteria.includeSpecimen = true;
-    this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {      
+    this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {
       
       this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
