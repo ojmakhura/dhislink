@@ -44,6 +44,7 @@ import { NgIdleKeepaliveModule } from '@ng-idle/keepalive';
 import { MomentModule } from 'angular2-moment';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { DialogBoxComponent } from './view/dialog-box/dialog-box.component';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { DialogBoxComponent } from './view/dialog-box/dialog-box.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    RxReactiveFormsModule,
     NgIdleKeepaliveModule.forRoot(),
     MomentModule,
     ModalModule.forRoot()

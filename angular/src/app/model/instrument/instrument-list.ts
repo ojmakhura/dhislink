@@ -15,6 +15,6 @@ export class InstrumentList {
     }
 
     static getInstrument(code: string): Instrument {
-        return InstrumentList.allIntruments().find(inst => inst.code == code);
+        return InstrumentList.allIntruments().find(inst => inst.code === code);
     }
 }

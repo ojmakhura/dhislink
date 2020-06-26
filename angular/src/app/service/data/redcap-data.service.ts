@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
 import { DataSearchCriteria } from 'src/app/model/data/data-search-criteria';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Batch } from 'src/app/model/batch/batch';
 import { Specimen, DhislinkCode } from 'src/app/model/specimen/specimen';
 import { RedcapData } from 'src/app/model/data/redcap-data';
 import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
-import { FormArray } from '@angular/forms';
+import { FormArray, FormGroup } from '@angular/forms';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -34,19 +34,19 @@ export class RedcapDataService {
     return this.http.post<Specimen[]>(this.url + 'batch/specimen', criteria);
   }
 
-  fetchBatchSpecimenAsFormArray(criteria: DataSearchCriteria): Observable<FormArray> {
+  /*fetchBatchSpecimenAsFormArray(criteria: DataSearchCriteria): Observable<FormArray> {
      return this.fetchBatchSpecimen(criteria).pipe(map((specimens: Specimen[]) => {
-      // Maps all the albums into a formGroup defined in tge album.model.ts
       const fgs = specimens.map(Specimen.asResultingFormGroup);
       return new FormArray(fgs);
     }));
-  }
+  }*/
 
   saveBatch(batch: Batch): Observable<Specimen[]> {
 
-    return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
+    return of([]);
+    //return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
   }
-
+  
   getDescription(code: string): string {
     let description = '';
 
