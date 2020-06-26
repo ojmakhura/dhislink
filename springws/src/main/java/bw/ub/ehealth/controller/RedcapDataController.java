@@ -403,6 +403,34 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     	return map;
     }
     
+    private String getInstrumentName(String code) {
+    	
+    	String name = "";
+    	if(code.equals("122")) {
+    		name = "NHL ROCHE Z480 (122)";
+    	} else if(code.equals("221")) {
+
+    		name = "BHHRL ABI 7500 S/N 750S8180106 (221)";
+    	} else if(code.equals("222")) {
+
+    		name = "BHHRL m2000rt S/N 275020775 (222)";
+    	} else if(code.equals("321")) {
+    		name = "UB ABI 7500 (321)";
+    		
+    	} else if(code.equals("421")) {
+
+    		name = "BNVL ABI 7500 FAST (421)";
+    	} else if(code.equals("521")) {
+
+    		name = "BVI ABI 7500 (521)";
+    	} else if(code.equals("999")) {
+
+    		name = "Other detection machine(specify) (999))";
+    	}
+    	
+    	return name;
+    }
+    
     private BatchVO getBatchFromRedcapData(List<RedcapDataVO> data, boolean includeSpecimen) {
     	BatchVO batch = new BatchVO();
     	List<RedcapDataVO> t2 = new ArrayList<RedcapDataVO>();
@@ -472,6 +500,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     			InstrumentVO inst = new InstrumentVO();
     			inst.setCode(rd.getValue());
+    			inst.setName(getInstrumentName(rd.getValue()));
     			batch.setInstrument(inst);
     			
     		} else if(rd.getFieldName().contains("test_det_barcode_")) {

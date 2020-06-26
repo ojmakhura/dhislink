@@ -731,9 +731,10 @@ public class DhisLink implements Serializable {
 			resultsCheckOk = true;
 		} else {
 			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || labResults.getValue().equals("PENDING")) {
-				logger.debug("");
+				logger.debug("Everything is great");
 				resultsCheckOk = true;
 			} else {
+				logger.debug(labResults.toString());
 				resultsCheckOk = false;
 			}
 		}
