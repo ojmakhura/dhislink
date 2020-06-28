@@ -14,7 +14,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { formatDate } from '@angular/common';
-import { NgForm, FormControl, Validators }   from '@angular/forms';
+import { NgForm, FormControl, Validators, FormGroup }   from '@angular/forms';
 import { catchError, first } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
@@ -28,20 +28,23 @@ import { error } from 'protractor';
 })
 export class VerificationComponent implements OnInit {
 
-  batch: Batch;
+  //batch: Batch;
   batches: MatTableDataSource<Batch>;
-  specimen: MatTableDataSource<Specimen>;
+  //specimen: MatTableDataSource<Specimen>;
   locations: LocationVO[];
   searchCriteria: BatchSearchCriteria;
-  selectedIndex: number = 0;
+  selectedIndex = 0;
   instruments: Instrument[];
   barcode = '';
-  loading: boolean = false;
-  
+  loading = false;
+
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
   specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'covidRnaResults', 'testVerifyResults'];
+
+  // ----------------------------
+  verificationForm: FormGroup;
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
@@ -49,47 +52,46 @@ export class VerificationComponent implements OnInit {
   @ViewChild('SpecimenPaginator') specimenPaginator: MatPaginator;
 
 
-  constructor(private router: Router, 
+  constructor(private router: Router,
               private authService: AuthenticationService,
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
               private specimenService: SpecimenService) {
-    
-    this.batches = new MatTableDataSource<Batch>();
-    this.specimen = new MatTableDataSource<Specimen>();    
-    this.searchCriteria = new BatchSearchCriteria();
-    this.instruments = InstrumentList.allIntruments();
-    
+
     locationService.findAll().subscribe(results => {
       this.locations = results;
     });
-
-    if(localStorage.getItem(FORM_DATA)) {
-      let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
-      this.editBatch(batch);
-      localStorage.removeItem(FORM_DATA);
-    } else {
-      this.batch = new Batch();
-      this.batch.lab = new LocationVO();
-    }
   }
 
   ngOnInit(): void {
     let token = this.authService.getToken();
     let user = this.authService.getCurrentUser();
     //this.authService.getLoggeInUser();
-    window.localStorage.setItem(CURRENT_ROUTE, '/verification'); 
-    
-    if(!user || this.authService.isTokenExpired(token)) {   
+    window.localStorage.setItem(CURRENT_ROUTE, '/verification');
+
+    if(!user || this.authService.isTokenExpired(token)) {
       this.router.navigate(['/login']);
     }
-  }
 
-  ngAfterViewInit() {
-    
-    //this.batches.paginator = this.batchesPaginator;
-    //this.batches.sort = this.batchSort;
-    //this.specimen.paginator = this.specimenPaginator;
+    this.batches = new MatTableDataSource<Batch>();
+    //this.specimen = new MatTableDataSource<Specimen>();
+    this.searchCriteria = new BatchSearchCriteria();
+    this.instruments = InstrumentList.allIntruments();
+
+    /*if(localStorage.getItem(FORM_DATA)) {
+      let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
+      this.editBatch(batch);
+      localStorage.removeItem(FORM_DATA);
+    } else {
+      this.batch = new Batch();
+      this.batch.lab = new LocationVO();
+    }*/
+
+    if (localStorage.getItem(FORM_DATA)) {
+      const batch = JSON.parse(localStorage.getItem(FORM_DATA));
+      this.editBatch(batch);
+      localStorage.removeItem(FORM_DATA);
+    }
   }
 
   /**
@@ -97,44 +99,53 @@ export class VerificationComponent implements OnInit {
    */
   publish() {
     this.loading = true;
-    if(this.batch.verificationStatus != '2' && 
-      !this.batch.authorisingPersonnel) {
+    const batch = this.verificationForm.value;
+
+    if (batch.verificationStatus !== '2' &&
+      !batch.authorisingPersonnel) {
         alert('Could not publish results. Either verification is not complete or authorising personel is not set.')
     } else {
-      this.batch.publishResults = true;
+      batch.publishResults = true;
 
       let data: any;
-      this.redcaDataService.saveBatch(this.batch).pipe().subscribe(results => {
+      this.redcaDataService.saveBatch(batch).pipe().subscribe(results => {
           data = results;
         }, error => {
           this.router.navigate(['/login']);
           return of(new AuthenticationResponse());
         }
       );
-
+      this.verificationForm.patchValue(batch);
       return data;
     }
     this.loading = false;
   }
 
   authorise() {
-    this.batch.authorisingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');        
-    this.batch.authorisingPersonnel = this.authService.getCurrentUser();
+    const batch = this.verificationForm.value;
+    batch.authorisingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
+    batch.authorisingPersonnel = this.authService.getCurrentUser();
+    this.verificationForm.patchValue(batch);
+  }
+
+  getItemControl(name): FormControl {
+    return this.verificationForm.get(name) as FormControl;
   }
 
   saveVerificationBatch() {
+    const batch = this.verificationForm.value;
     this.loading = true;
-    if(this.authService.getCurrentUser() === this.batch.resultingPersonnel) {
+    if(this.authService.getCurrentUser() === batch.resultingPersonnel) {
       alert('Cannot verify the results you entered.');
     } else {
 
-      this.batch.page = 'verification';
-      this.batch.projectId = 345;
-      if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length == 0) {
+      batch.page = 'verification';
+      batch.projectId = 345;
+      if (!batch.verificationPersonnel || batch.verificationPersonnel.length === 0) {
         this.now();
       }
 
-      this.redcaDataService.saveBatch(this.batch).pipe(catchError((error) => {
+      this.redcaDataService.saveBatch(batch).pipe(catchError((error) => {
         this.router.navigate(['/login']);
         return of(new AuthenticationResponse());
       })).subscribe(
@@ -143,27 +154,30 @@ export class VerificationComponent implements OnInit {
         }
       );
     }
-    
+
   }
 
   now() {
-    this.batch.verificationDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
-    if(!this.batch.verificationPersonnel || this.batch.verificationPersonnel.length === 0) {
-      
-      this.batch.verificationPersonnel = this.authService.getCurrentUser();
+    const batch = this.verificationForm.value;
+    batch.verificationDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
+    if(!batch.verificationPersonnel || batch.verificationPersonnel.length === 0) {
+
+      batch.verificationPersonnel = this.authService.getCurrentUser();
     }
+
+    this.verificationForm.patchValue(batch);
   }
 
   searchBatches() {
     this.loading = true;
     this.searchCriteria.includeSpecimen = true;
     this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {
-      
+
       this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
       this.loading = false;
     });
-    
+
   }
 
   clearSearch() {
@@ -171,17 +185,19 @@ export class VerificationComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    
-    this.batch = batch;
-    this.specimen.data = this.batch.batchItems;
+
+    //this.batch = batch;
+    //this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);
+    this.verificationForm.patchValue(batch);
   }
 
   verified(): boolean {
-    if(this.batch.verificationStatus === '2' && 
-      this.batch.authorisingPersonnel) {
-      
+    const batch = this.verificationForm.value;
+    if(batch.verificationStatus === '2' &&
+      batch.authorisingPersonnel) {
+
       return false;
     }
 
@@ -189,7 +205,7 @@ export class VerificationComponent implements OnInit {
   }
 
   toResulting() {
-    localStorage.setItem(FORM_DATA, JSON.stringify(this.batch));
+    localStorage.setItem(FORM_DATA, JSON.stringify(this.verificationForm.value));
     this.router.navigate(['/resulting']);
   }
 }

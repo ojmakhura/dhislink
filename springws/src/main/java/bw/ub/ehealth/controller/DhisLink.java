@@ -722,11 +722,10 @@ public class DhisLink implements Serializable {
 		 * If the results have already been produced, no need to pull the data or the barcode does not exist,
 		 * or if the specimen has 
 		 */
-		DataValue labResults = values.get(env.getProperty("lab.results").trim());
-		
+		DataValue labResults = values.get(env.getProperty("lab.results").trim());		
 		boolean resultsCheckOk = false;
 		
-		if(skipResulted) { 
+		if(!skipResulted) { 
 			logger.debug("Skipping resulted is true");
 			resultsCheckOk = true;
 		} else {
@@ -734,18 +733,19 @@ public class DhisLink implements Serializable {
 				logger.debug("Everything is great");
 				resultsCheckOk = true;
 			} else {
-				logger.debug(labResults.toString());
+				logger.debug("Something is wrong");
+				//logger.debug(labResults.toString());
 				resultsCheckOk = false;
 			}
 		}
 		
 		if (!resultsCheckOk || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
 			logger.debug("Results check failed");
+			//logger.debug(values.toString());
 			return null;
 		}
 
 		SpecimenVO specimen = new SpecimenVO();
-		
 		specimen.setEvent(event.getEvent());		
 		specimen.setCreated(event.getCreated());
 		specimen.setLastUpdated(event.getLastUpdated());
@@ -787,8 +787,7 @@ public class DhisLink implements Serializable {
 			
 			if(StringUtils.isBlank(specimen.getSpecimenBarcode())) {
 				specimen.setSpecimenBarcode(covidNUmber.replaceAll("[^a-zA-Z0-9]", ""));
-			}
-						
+			}						
 		}
 
 		specimen.setDispatcher(getSubmitter(values));

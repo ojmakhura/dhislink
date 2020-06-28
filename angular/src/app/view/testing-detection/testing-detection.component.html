@@ -11,7 +11,7 @@
             <!-- Editing a location -->
             <mat-tab label="Edit">
                 <div class="col">
-                    <form #saveForm="ngForm" (ngSubmit)="saveDetectionBatch()">
+                    <form [formGroup]="detectionForm" (ngSubmit)="saveDetectionBatch()">
                         
                         <div class="row">  
                             <div class="form-group">  
@@ -28,10 +28,7 @@
                             <div class="form-group">
                                 <mat-form-field>
                                     <mat-label>Batch Id</mat-label>
-                                    <input matInput
-                                    [(ngModel)]="batch.batchId" name="batchId" 
-                                    id = "batchId" #batchId="ngModel" required="true"
-                                    (blur)="fetchBatchData()">
+                                    <input matInput formControlName="batchId" id = "batchId" (blur)="fetchBatchData()">
                                 </mat-form-field>
                             </div>
                             <div class="form-group">          
@@ -50,19 +47,13 @@
                             <div class="form-group">
                                 <mat-form-field>
                                     <mat-label>Detection Personnel</mat-label>
-                                    <input matInput  disabled = "true"
-                                        [(ngModel)]="batch.detectionPersonnel" 
-                                        name="detectionPersonnel" id = "detectionPersonnel" 
-                                        #detectionPersonnel="ngModel" required="false">
+                                    <input matInput formControlName="detectionPersonnel" id = "detectionPersonnel" required="false">
                                 </mat-form-field>
                             </div>
                             <div class="form-group">
                                 <mat-form-field>
                                     <mat-label>Detection Datetime</mat-label>                                    
-                                    <input matInput disabled = "true" datetime="dd-MM-yyyy HH:mm:ss"
-                                        [(ngModel)]="batch.detectionDateTime" 
-                                        name="detectionDateTime" id = "detectionDateTime" 
-                                        #detectionDateTime="ngModel" required="true">                                
+                                    <input matInput formControlName="detectionDateTime" id = "detectionDateTime" required="true">                                
                                 </mat-form-field>
                                 <button type="button" class="btn btn-success" (click)="now()">Now</button>
                             </div>
@@ -82,19 +73,14 @@
                             <div class="form-group">
                                 <mat-form-field>
                                     <mat-label>Batch Size</mat-label>
-                                    <input matInput
-                                        [(ngModel)]="batch.instrumentBatchSize" 
-                                        name="instrumentBatchSize" id = "instrumentBatchSize" 
-                                        #instrumentBatchSize="ngModel" required="true" disabled = "true">
+                                    <input matInput formControlName="instrumentBatchSize" id = "instrumentBatchSize" >
                                 </mat-form-field>
                             </div>
                         </div>
                         <div class="form-group">          
                             <mat-form-field>
                                 <mat-label>Detection Status</mat-label>
-                                <mat-select [(ngModel)]="batch.detectionStatus" 
-                                        name="detectionStatus" id = "detectionStatus" 
-                                        #detectionStatus="ngModel" required="true">
+                                <mat-select formControlName="detectionStatus" id = "detectionStatus">
                                     <mat-option value="" selected></mat-option>
                                     <mat-option value="0" selected>Incomplete</mat-option>
                                     <mat-option value="1" selected>Unverified</mat-option>
@@ -104,7 +90,7 @@
                         </div>
                         <div class="detection-specimen">
                             <div>
-                                <form id="addForm" #saveForm="ngForm" (ngSubmit)="addSpecimen()">
+                                <form id="addForm" #addForm="ngForm" (ngSubmit)="addSpecimen()">
                                     <mat-form-field>
                                         <mat-label>Barcode</mat-label>
                                         <input matInput placeholder="Scan Barcode" [(ngModel)]="barcode" name="barcode" id="barcode">
@@ -116,7 +102,7 @@
                                 </form>
                             </div>
                             <div class="mat-elevation-z8 specimen-list"> 
-                                <mat-table [dataSource]="specimen" class="table table-bordered table-striped" style="width: 100%;">
+                                <mat-table [dataSource]="batchItems.controls" class="table table-bordered table-striped" style="width: 100%;">
                                     <ng-container matColumnDef=" ">
                                         <mat-header-cell *matHeaderCellDef></mat-header-cell>
                                         <mat-cell *matCellDef="let row">
@@ -129,23 +115,23 @@
                                     </ng-container>
                                     <ng-container matColumnDef="position">
                                         <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
-                                        <mat-cell *matCellDef="let row"> {{ row.position }} </mat-cell>
+                                        <mat-cell *matCellDef="let row"> {{ row.get('position').value }} </mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="specimen_barcode">
                                         <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
-                                        <mat-cell *matCellDef="let row"> {{ row.specimen_barcode }} </mat-cell>
+                                        <mat-cell *matCellDef="let row"> {{ row.get('specimen_barcode').value }} </mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="patient_first_name">
                                         <mat-header-cell *matHeaderCellDef>Patient Name</mat-header-cell>
-                                        <mat-cell *matCellDef="let row"> {{ row.patient.patient_first_name }} </mat-cell>
+                                        <mat-cell *matCellDef="let row"> {{ row.get('patient.patient_first_name').value }} </mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="patient_surname">
                                         <mat-header-cell *matHeaderCellDef>Patient Surname</mat-header-cell>
-                                        <mat-cell *matCellDef="let row"> {{ row.patient.patient_surname }} </mat-cell>
+                                        <mat-cell *matCellDef="let row"> {{ row.get('patient.patient_surname').value }} </mat-cell>
                                     </ng-container>
                                     <ng-container matColumnDef="identity_no">
                                         <mat-header-cell *matHeaderCellDef>Patient Id</mat-header-cell>
-                                        <mat-cell *matCellDef="let row"> {{ row.patient.identity_no }} </mat-cell>
+                                        <mat-cell *matCellDef="let row"> {{ row.get('patient.identity_no').value }} </mat-cell>
                                     </ng-container>
                                     <mat-header-row *matHeaderRowDef="specimenColumns"></mat-header-row>
                                     <mat-row *matRowDef="let row; columns: specimenColumns;"></mat-row>            

@@ -30,7 +30,6 @@ import { of } from 'rxjs';
 export class ResultingComponent implements OnInit {
 
   batches: MatTableDataSource<Batch>;
-  //specimen: MatTableDataSource<Specimen>;
   locations: LocationVO[];
   searchCriteria: BatchSearchCriteria;
   selectedIndex = 0;
@@ -67,8 +66,6 @@ export class ResultingComponent implements OnInit {
     this.batches = new MatTableDataSource<Batch>();
 
     this.resultingForm = this.formBuilder.group(new Batch());
-    //this.disableFormInputs();
-
     this.instruments = InstrumentList.allIntruments();
     const token = this.authService.getToken();
     const user = this.authService.getCurrentUser();
@@ -116,12 +113,20 @@ export class ResultingComponent implements OnInit {
   }
 
   saveResultingBatch() {
-    console.log(this.resultingForm);
+
+    if (this.resultingForm.status === 'INVALID') {
+      alert('The batch cannot be saved. Please check the data.');
+      return;
+    }
+
     this.loading = true;
 
+    //this.batch.assayBatchId = this.batch.batchId;
+    this.getItemControl('assayBatchId').setValue(this.getItemControl('detectionBatchId').value);
+
     this.getItemControl('page').setValue('resulting');
-    //batch.page = 'resulting';
-    //batch.projectId = 345;
+    this.getItemControl('projectId').setValue(345);
+
     const cnt = this.getItemControl('resultingPersonnel');
     if (!cnt && cnt.value.length === 0) {
       this.now();
@@ -131,9 +136,6 @@ export class ResultingComponent implements OnInit {
       this.router.navigate(['/login']);
       return of([]);
     })).subscribe( data => {
-      console.log(data);
-
-      //this.specimen.data = data;
       this.loading = false;
     });
 
@@ -142,7 +144,7 @@ export class ResultingComponent implements OnInit {
   now() {
     this.getItemControl('resultingDateTime').patchValue(formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US'));
     const cnt = this.getItemControl('resultingPersonnel');
-    this.getItemControl('resultingPersonnel').patchValue(this.authService.getCurrentUser());
+    cnt.patchValue(this.authService.getCurrentUser());
   }
 
   getItemControl(name): FormControl {
@@ -166,11 +168,7 @@ export class ResultingComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    console.log('Editing batch: ', batch);
     batch.detectionSize = batch.batchItems.length;
-
-    console.log('Going: Editing batch: ', batch);
-    
     this.resultingForm = this.formBuilder.group(batch);
     console.log(this.resultingForm);
     console.log(this.resultingForm.value);

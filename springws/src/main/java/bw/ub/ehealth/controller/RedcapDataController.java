@@ -603,11 +603,11 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    				specimen.setPatient(null);	    			
 	    			}
 	    			specimen = specimenService.saveSpecimen(specimen);
-	    			if(specimen.getPatient() == null) {
-	    				logger.debug(specimen.toString());
-						specimen.setPatient(new PatientVO());
-					}
 	    		}
+    			if(specimen.getPatient() == null) {
+    				//logger.debug(specimen.toString());
+					specimen.setPatient(new PatientVO());
+				}
 	    		
 	    		items.set(idx, specimen);
 	    	}

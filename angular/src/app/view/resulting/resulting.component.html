@@ -13,7 +13,7 @@
             </button>
         </div>
     </div>
-    <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
+    <mat-tab-group id="resultingGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
         <!-- Editing a location -->
         <mat-tab label="Edit">
             <form [formGroup]="resultingForm" (ngSubmit)="saveResultingBatch()" class="col">
@@ -30,16 +30,14 @@
                         <div class="form-group">
                             <mat-form-field>
                                 <mat-label>Batch Id</mat-label>
-                                <input matInput formControlName="batchId" 
-                                    id = "batchId">
+                                <input matInput formControlName="batchId" id = "batchId">
                             </mat-form-field>
                         </div>
                         <div class="form-group">        
                             <div class="form-group" formGroupName="lab">
                                 <mat-form-field>
                                     <mat-label>Lab</mat-label>
-                                    <input matInput formControlName="name" 
-                                        id = "lab">
+                                    <input matInput formControlName="name"  id = "lab">
                                 </mat-form-field>
                             </div>  
                         </div>
