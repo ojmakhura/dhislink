@@ -14,7 +14,7 @@
                 <form [formGroup]="verificationForm" (ngSubmit)="saveVerificationBatch()">                    
                     <div class="row">  
                         <div class="form-group">  
-                            <button class="btn btn-success" [disabled]="resultingForm.invalid">
+                            <button class="btn btn-success" [disabled]="verificationForm.invalid">
                                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
                                 Save
                             </button>
@@ -98,34 +98,32 @@
                     </div>
                     <div >
                         <div class="mat-elevation-z8 specimen-list"> 
-                            <mat-table [dataSource]="specimen" class="table table-bordered table-striped" style="width: 100%;">
-                                <ng-container matColumnDef="specimen_barcode">
-                                    <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.specimen_barcode }} </mat-cell>
-                                </ng-container>
+                            <mat-table [dataSource]="batchItems.controls" class="table table-bordered table-striped" style="width: 100%;">
                                 <ng-container matColumnDef="position">
                                     <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.position }} </mat-cell>
+                                    <mat-cell *matCellDef="let row"> {{ row.get('position').value }} </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="specimen_barcode">
+                                    <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
+                                    <mat-cell *matCellDef="let row"> {{ row.get('specimen_barcode').value }} </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="patient_first_name">
                                     <mat-header-cell *matHeaderCellDef>Patient Name</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.patient.patient_first_name }} </mat-cell>
+                                    <mat-cell *matCellDef="let row"> {{ row.get('patient.patient_first_name').value }} </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="patient_surname">
                                     <mat-header-cell *matHeaderCellDef>Patient Surname</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.patient.patient_surname }} </mat-cell>
+                                    <mat-cell *matCellDef="let row"> {{ row.get('patient.patient_surname').value }} </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="identity_no">
                                     <mat-header-cell *matHeaderCellDef>Patient Id</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.patient.identity_no }} </mat-cell>
+                                    <mat-cell *matCellDef="let row"> {{ row.get('patient.identity_no').value }} </mat-cell>
                                 </ng-container>
-                                <ng-container matColumnDef="covidRnaResults">
+                                <ng-container matColumnDef="covidRnaResults" disabled>
                                     <mat-header-cell *matHeaderCellDef>Results</mat-header-cell>
-                                    <mat-cell *matCellDef="let row">
+                                    <mat-cell *matCellDef="let row" [formGroup]="row">
                                         <mat-form-field>
-                                            <mat-select [(ngModel)]="row.covidRnaResults" 
-                                                    name="covidRnaResults" id = "covidRnaResults" 
-                                                    #testAssayResults="ngModel" disabled="true">
+                                            <mat-select formControlName="covidRnaResults" id = "covidRnaResults" >
                                                 <mat-option value=""></mat-option>
                                                 <mat-option value="1" selected>Positive</mat-option>
                                                 <mat-option value="2" selected>Negative</mat-option>
@@ -137,11 +135,9 @@
                                 </ng-container>
                                 <ng-container matColumnDef="testVerifyResults">
                                     <mat-header-cell *matHeaderCellDef>Verify Results</mat-header-cell>                                    
-                                    <mat-cell *matCellDef="let row">
+                                    <mat-cell *matCellDef="let row" [formGroup]="row">
                                         <mat-form-field>
-                                            <mat-select [(ngModel)]="row.testVerifyResults" required = "false"
-                                                        name="testVerifyResults" id = "testVerifyResults" 
-                                                        #testVerifyResults="ngModel">
+                                            <mat-select formControlName="testVerifyResults" id = "testVerifyResults" >
                                                 <mat-option value="" selected></mat-option>
                                                 <mat-option value="5" selected>Verified</mat-option>
                                                 <mat-option value="6" selected>Not Accepted</mat-option>

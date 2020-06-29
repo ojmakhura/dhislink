@@ -41,7 +41,6 @@ export class ResultingComponent implements OnInit {
 
   // -------------------------------------------------------------------------
   resultingForm: FormGroup;
-  specimenForm: FormGroup;
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
   @ViewChild('BatchSort', {static: true}) batchSort: MatSort;
@@ -52,7 +51,6 @@ export class ResultingComponent implements OnInit {
               private authService: AuthenticationService,
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
-              private specimenBarcode: SpecimenService,
               private formBuilder: RxFormBuilder) {
 
     this.locationService.findAll().subscribe(results => {

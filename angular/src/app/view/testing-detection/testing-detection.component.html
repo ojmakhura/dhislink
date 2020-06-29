@@ -12,10 +12,9 @@
             <mat-tab label="Edit">
                 <div class="col">
                     <form [formGroup]="detectionForm" (ngSubmit)="saveDetectionBatch()">
-                        
                         <div class="row">  
                             <div class="form-group">  
-                                <button class="btn btn-success" [disabled]="saveForm.invalid">
+                                <button class="btn btn-success" [disabled]="detectionForm.invalid">
                                     <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
                                     Save
                                 </button>

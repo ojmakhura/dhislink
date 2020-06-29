@@ -11,7 +11,7 @@ import { InstrumentList } from 'src/app/model/instrument/instrument-list';
 import { Instrument } from 'src/app/model/instrument/instrument';
 import { SpecimenService } from 'src/app/service/specimen/specimen.service';
 import { UserDetails } from 'src/app/model/user/user-details';
-import { FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormControl, Validators, FormGroup, FormArray } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { MatPaginator } from '@angular/material/paginator';
@@ -74,7 +74,6 @@ export class TestingDetectionComponent implements OnInit {
   ngOnInit(): void {
 
     this.batches = new MatTableDataSource<Batch>();
-    //this.specimen = new MatTableDataSource<Specimen>();
     this.searchCriteria = new BatchSearchCriteria();
     this.detectionForm = this.formBuilder.group(new Batch());
     this.instruments = InstrumentList.allIntruments();
@@ -84,21 +83,11 @@ export class TestingDetectionComponent implements OnInit {
       this.editBatch(batch);
       localStorage.removeItem(FORM_DATA);
     }
-    /*
-    if (localStorage.getItem(FORM_DATA)) {
-      const batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
-      this.editBatch(batch);
-      localStorage.removeItem(FORM_DATA);
-    } else {
-      this.batch = new Batch();
-      this.batch.lab = new LocationVO();
-    }*/
 
     const token = this.authService.getToken();
     const user = this.authService.getCurrentUser();
 
     window.localStorage.setItem(CURRENT_ROUTE, '/detection');
-    // this.authService.getLoggeInUser();
 
     if (!user || this.authService.isTokenExpired(token)) {
       this.router.navigate(['/login']);
@@ -107,8 +96,9 @@ export class TestingDetectionComponent implements OnInit {
 
   saveDetectionBatch() {
     this.loading = true;
+    
 
-    if (this.detectionForm.status === 'INVALID') {
+    if (this.detectionForm.invalid) {
       alert('The batch cannot be saved. Please check the data.');
       return;
     }
@@ -201,12 +191,15 @@ export class TestingDetectionComponent implements OnInit {
     this.instrumentControl.setValue(batch.instrument.code);
     batch.detectionSize = batch.batchItems.length;
     batch.instrumentBatchSize = batch.batchItems.length;
+    batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US');
+    batch.lab = this.locations.find(loc => loc.code === this.labControl.value);
+    batch.instrument = this.instruments.find(loc => loc.code === this.instrumentControl.value);
+    
     this.detectionForm = this.formBuilder.group(batch);
-    this.getItemControl('detectionDateTime').patchValue(formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US'));
     //this.batch.lab = this.locations.find(loc => loc.code === this.labControl.value);
-    this.getItemControl('lab').patchValue(this.locations.find(loc => loc.code === this.labControl.value));
+    //this.getItemControl('lab').setValue(this.locations.find(loc => loc.code === this.labControl.value));
     //this.batch.instrument = this.instruments.find(loc => loc.code === this.instrumentControl.value);
-    this.getItemControl('instrument').patchValue(this.instruments.find(loc => loc.code === this.instrumentControl.value));
+    //this.getItemControl('instrument').setValue(this.instruments.find(loc => loc.code === this.instrumentControl.value));
     console.log(this.detectionForm);
 
   }
@@ -320,5 +313,9 @@ export class TestingDetectionComponent implements OnInit {
     });
 
     this.detectionForm.patchValue(batch);
+  }
+
+  get batchItems(): FormArray {
+    return this.detectionForm.get('batchItems') as FormArray;
   }
 }

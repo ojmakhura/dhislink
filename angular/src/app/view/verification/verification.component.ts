@@ -14,12 +14,13 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { formatDate } from '@angular/common';
-import { NgForm, FormControl, Validators, FormGroup }   from '@angular/forms';
+import { NgForm, FormControl, Validators, FormGroup, FormArray }   from '@angular/forms';
 import { catchError, first } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
 import { error } from 'protractor';
+import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 
 @Component({
   selector: 'app-verification',
@@ -56,7 +57,8 @@ export class VerificationComponent implements OnInit {
               private authService: AuthenticationService,
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
-              private specimenService: SpecimenService) {
+              private specimenService: SpecimenService,
+              private formBuilder: RxFormBuilder) {
 
     locationService.findAll().subscribe(results => {
       this.locations = results;
@@ -77,6 +79,7 @@ export class VerificationComponent implements OnInit {
     //this.specimen = new MatTableDataSource<Specimen>();
     this.searchCriteria = new BatchSearchCriteria();
     this.instruments = InstrumentList.allIntruments();
+    this.verificationForm = this.formBuilder.group(new Batch());
 
     /*if(localStorage.getItem(FORM_DATA)) {
       let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
@@ -190,7 +193,7 @@ export class VerificationComponent implements OnInit {
     //this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);
-    this.verificationForm.patchValue(batch);
+    this.verificationForm = this.formBuilder.group(batch);
   }
 
   verified(): boolean {
@@ -207,5 +210,9 @@ export class VerificationComponent implements OnInit {
   toResulting() {
     localStorage.setItem(FORM_DATA, JSON.stringify(this.verificationForm.value));
     this.router.navigate(['/resulting']);
+  }
+
+  get batchItems(): FormArray {
+    return this.verificationForm.get('batchItems') as FormArray;
   }
 }
