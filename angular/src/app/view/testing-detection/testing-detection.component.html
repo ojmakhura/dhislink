@@ -20,7 +20,10 @@
                                 </button>
                             </div>
                             <div class="form-group">  
-                                <button class="btn btn-success" (click)="newDetectionBatch()">New</button>
+                                <button type="button" class="btn btn-success" (click)="newDetectionBatch()">New</button>
+                            </div>
+                            <div class="form-group">  
+                                <button type="button" class="btn btn-success" (click)="pullSpecimenInfo()">Pull</button>
                             </div>
                         </div>
                         <div class="row">
@@ -30,12 +33,12 @@
                                     <input matInput formControlName="batchId" id = "batchId" (blur)="fetchBatchData()">
                                 </mat-form-field>
                             </div>
-                            <div class="form-group">          
+                            <div class="form-group" formGroupName="lab">          
                                 <mat-form-field>
                                     <mat-label>Lab</mat-label>
-                                    <mat-select required="true" [formControl]="labControl">
-                                        <mat-option value="new LocationVO()"></mat-option>
-                                        <mat-option *ngFor="let lab of locations" [value]="lab.code">
+                                    <mat-select required="true" formControlName="name">
+                                        <mat-option value="new LocationVO()" selected></mat-option>
+                                        <mat-option *ngFor="let lab of locations" value="lab">
                                             {{lab.name}}
                                         </mat-option>
                                     </mat-select>
@@ -58,12 +61,12 @@
                             </div>
                         </div>
                         <div class="row"> 
-                            <div class="form-group">          
+                            <div class="form-group" formGroupName="instrument">          
                                 <mat-form-field>
                                     <mat-label>Instrument</mat-label>
-                                    <mat-select [formControl]="instrumentControl" required="true">
+                                    <mat-select formControlName="code" required="true">
                                         <mat-option value="new Instrument('', '')" selected></mat-option>  
-                                        <mat-option *ngFor="let instrument of instruments" [value]="instrument.code">
+                                        <mat-option *ngFor="let instrument of instruments" [value]="instrument">
                                             {{ instrument.name }}
                                         </mat-option>
                                     </mat-select>

@@ -135,8 +135,46 @@ public class RedcapDataController {
     	    	
     	List<Event> events = dhisLink.eventQueryExecute(builder.toString());
     	List<SpecimenVO> found = dhisLink.getSpecimen(events, false);
-    	    	
+    	    	    	    	
     	return found;
+    }
+    
+    @PostMapping("/pullspecimen")
+    @ResponseBody
+    public List<SpecimenVO> pullSpecimenInfo(@RequestBody List<SpecimenVO> specimenToPull) {
+
+    	if(Collections.isEmpty(specimenToPull)) {
+    		return new ArrayList<>();
+    	}
+    	
+    	List<SpecimenVO> noInfo = new ArrayList<>();
+    	List<String> barcodes = new ArrayList<>();
+    	Map<String, SpecimenVO> sps = new HashMap<>();
+    	
+    	for(SpecimenVO sp : specimenToPull) {
+    		if(StringUtils.isBlank(sp.getEvent())) {
+    			noInfo.add(sp);
+    			sps.put(sp.getSpecimenBarcode(), sp);
+    			barcodes.add(sp.getSpecimenBarcode());
+    		}
+    	}
+    	
+    	List<SpecimenVO> pulled = queryDhisSpecimenBarcodes(barcodes);
+    	redcapLink.updateStaging(pulled);
+    	
+    	for(SpecimenVO sp : pulled) {
+    		SpecimenVO s = sps.get(sp.getSpecimenBarcode());
+    		logger.debug(s.toString());
+    		for(int i = 0; i < specimenToPull.size(); i++) {
+    			SpecimenVO s2 = specimenToPull.get(i);
+    			if(s.getSpecimenBarcode().equals(s2.getSpecimenBarcode())) {
+    				s.setPosition(s2.getPosition());
+    				specimenToPull.set(i, s);
+    			}
+    		}
+    	}
+    	
+    	return specimenToPull;
     }
     
     @PostMapping("/savebatch")
@@ -595,7 +633,6 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    			batch.setAuthorisingDateTime(formatter.format(authDate));
 	    		}
 	    		
-	    		specimen.setPosition(encodePosition(Integer.parseInt(pos)));
 	    		specimen.setCovidRnaResults(specimen.getTestAssayResults());
 	    		
 	    		if(specimen.getId() == null) {
@@ -608,7 +645,8 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     				//logger.debug(specimen.toString());
 					specimen.setPatient(new PatientVO());
 				}
-	    		
+
+	    		specimen.setPosition(encodePosition(Integer.parseInt(pos)));
 	    		items.set(idx, specimen);
 	    	}
 	    	batch.setBatchItems(items);
@@ -625,7 +663,6 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
      */
     public int decodePosition(String encoded) {
     	
-    	int pos = 1;
     	int q, r;
     	r = Integer.parseInt(encoded.substring(1));
     	

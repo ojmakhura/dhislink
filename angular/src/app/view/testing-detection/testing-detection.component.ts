@@ -17,7 +17,7 @@ import { Specimen } from 'src/app/model/specimen/specimen';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { formatDate } from '@angular/common';
-import { NgForm }   from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
@@ -39,14 +39,15 @@ export class TestingDetectionComponent implements OnInit {
   //specimen: MatTableDataSource<Specimen>;
   locations: LocationVO[];
   searchCriteria: BatchSearchCriteria;
-  selectedIndex: number = 0;
+  selectedIndex = 0;
   instruments: Instrument[];
   barcode = '';
-  labControl = new FormControl('', Validators.required);
-  instrumentControl = new FormControl('', Validators.required);
-  loading: boolean = false;
+  //labControl = new FormControl('', Validators.required);
+  //instrumentControl = new FormControl('', Validators.required);
+  loading = false;
   adding = false;
   removing = false;
+  pulling = false;
   detectionForm: FormGroup;
 
   searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'detectionStatus'];
@@ -65,17 +66,18 @@ export class TestingDetectionComponent implements OnInit {
               public dialog: MatDialog,
               private formBuilder: RxFormBuilder) {
 
-
-    this.locationService.findAll().subscribe(results => {
-      this.locations = results;
-    });
   }
 
   ngOnInit(): void {
-
+    this.locationService.findAll().subscribe(results => {
+      this.locations = results;
+    });
     this.batches = new MatTableDataSource<Batch>();
     this.searchCriteria = new BatchSearchCriteria();
     this.detectionForm = this.formBuilder.group(new Batch());
+    
+    this.detectionForm.addControl('lab', this.formBuilder.control(new LocationVO()));
+    this.detectionForm.addControl('instrument', this.formBuilder.control());
     this.instruments = InstrumentList.allIntruments();
 
     if (localStorage.getItem(FORM_DATA)) {
@@ -94,9 +96,12 @@ export class TestingDetectionComponent implements OnInit {
     }
   }
 
+  get formInvalid() {
+    return this.detectionForm.invalid;
+  }
+
   saveDetectionBatch() {
     this.loading = true;
-    
 
     if (this.detectionForm.invalid) {
       alert('The batch cannot be saved. Please check the data.');
@@ -112,20 +117,10 @@ export class TestingDetectionComponent implements OnInit {
       this.now();
     }
 
-    //this.batch.lab = this.locations.find(loc => loc.code === this.labControl.value);
-    this.getItemControl('lab').patchValue(this.locations.find(loc => loc.code === this.labControl.value));
-    //this.batch.instrument = this.instruments.find(loc => loc.code === this.instrumentControl.value);
-    this.getItemControl('instrument').patchValue(this.instruments.find(loc => loc.code === this.instrumentControl.value));
-    //this.batch.page = 'testing_detection';
-    //this.batch.projectId = 345;
     this.getItemControl('page').setValue('resulting');
     this.getItemControl('projectId').setValue(345);
 
-    //this.batch.detectionBatchId = this.batch.batchId;
     this.getItemControl('detectionBatchId').setValue(this.getItemControl('detectionBatchId').value);
-
-    //this.batch.assayBatchId = this.batch.batchId;
-    //this.batch.verifyBatchId = this.batch.batchId;
 
     this.redcaDataService.saveBatch(this.detectionForm.value).pipe(catchError((error) => {
       this.router.navigate(['/login']);
@@ -141,21 +136,15 @@ export class TestingDetectionComponent implements OnInit {
     return this.detectionForm.get(name) as FormControl;
   }
 
+  getItemGroup(name): FormGroup {
+    return this.detectionForm.get(name) as FormGroup;
+  }
+
   newDetectionBatch() {
-    //this.batch = new Batch();
-    //this.specimen.data = this.batch.batchItems;
     this.editBatch(new Batch());
-    //this.labControl.setValue(this.batch.lab.code);
-    //this.instrumentControl.setValue(this.batch.instrument.code);
   }
 
   now() {
-    /*this.batch.detectionDateTime = formatDate(new Date(), "yyyy-MM-dd HH:mm", 'en-US');
-    if (!this.batch.detectionPersonnel || this.batch.detectionPersonnel.length === 0) {
-
-      this.batch.detectionPersonnel = this.authService.getCurrentUser();
-
-    }*/
 
     this.getItemControl('detectionDateTime').patchValue(formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US'));
     const cnt = this.getItemControl('detectionPersonnel');
@@ -178,29 +167,33 @@ export class TestingDetectionComponent implements OnInit {
 
   editBatch(batch: Batch) {
     console.log('Editing batch: ', batch);
+    console.log('my form ==== ', this.detectionForm);
 
-    /*this.batch = batch;
-    this.batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US');
-    this.specimen.data = this.batch.batchItems;
-    this.labControl.setValue(batch.lab.code);
-    this.instrumentControl.setValue(batch.instrument.code);
-    this.batch.instrumentBatchSize = this.batch.batchItems.length;
-    this.batch.detectionSize = this.specimen.data.length;*/
-
-    this.labControl.setValue(batch.lab.code);
-    this.instrumentControl.setValue(batch.instrument.code);
-    batch.detectionSize = batch.batchItems.length;
-    batch.instrumentBatchSize = batch.batchItems.length;
-    batch.detectionDateTime = formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US');
-    batch.lab = this.locations.find(loc => loc.code === this.labControl.value);
-    batch.instrument = this.instruments.find(loc => loc.code === this.instrumentControl.value);
-    
     this.detectionForm = this.formBuilder.group(batch);
-    //this.batch.lab = this.locations.find(loc => loc.code === this.labControl.value);
-    //this.getItemControl('lab').setValue(this.locations.find(loc => loc.code === this.labControl.value));
-    //this.batch.instrument = this.instruments.find(loc => loc.code === this.instrumentControl.value);
-    //this.getItemControl('instrument').setValue(this.instruments.find(loc => loc.code === this.instrumentControl.value));
-    console.log(this.detectionForm);
+    //this.getItemControl('labControl').setValue(batch.lab);
+    //this.getItemControl('instrumentControl').setValue(batch.instrument);
+    /*if(batch.lab && batch.lab.code && batch.lab.code.length > 0) {
+      this.getItemGroup('lab').patchValue(batch.lab);
+      this.labControl.setValue(batch.lab);
+      console.log('real => ', this.labControl);
+      
+    }
+
+    if(batch.instrument && batch.instrument.code && batch.instrument.code.length > 0) {
+      this.getItemControl('instrument').setValue(batch.instrument);
+    }
+
+    this.getItemControl('detectionStatus').setValue(batch.detectionStatus);
+
+    this.getItemControl('detectionSize').setValue(batch.batchItems.length);
+    this.getItemControl('instrumentBatchSize').setValue(batch.batchItems.length);
+
+    if (batch.detectionDateTime && batch.detectionDateTime.length > 0) {
+      this.getItemControl('detectionDateTime').setValue(formatDate(batch.detectionDateTime, 'yyyy-MM-dd HH:mm', 'en-US'));
+      this.getItemControl('detectionPersonnel').setValue(batch.detectionPersonnel);
+    }*/
+
+    console.log('my form ', this.detectionForm);
 
   }
 
@@ -208,7 +201,7 @@ export class TestingDetectionComponent implements OnInit {
     this.adding = true;
     if (this.getItemControl('detectionStatus').value !== 'Complete') {
       const batch = this.detectionForm.value;
-      //const items = this.getItemControl('batchItems').value;
+
       if (!batch.batchItems.find(item => item.specimen_barcode === this.barcode) &&
                     batch.batchItems.length <= 96) {
         const bc = this.barcode;
@@ -216,7 +209,7 @@ export class TestingDetectionComponent implements OnInit {
           console.log(result);
           let sp = result;
           if (result === null) {
-            console.log(bc);
+            console.log('bc => ', bc);
             sp = new Specimen();
             sp.specimen_barcode = bc;
             sp.dhis2Synched = false;
@@ -225,16 +218,15 @@ export class TestingDetectionComponent implements OnInit {
 
           sp.position = this.specimenService.encodePosition(batch.batchItems.length);
           batch.batchItems.push(sp);
-          console.log(batch);
 
-          //this.specimen.data  = this.batch.batchItems;
           batch.instrumentBatchSize = batch.batchItems.length;
           batch.detectionSize = batch.batchItems.length;
+          console.log('bcc => ', batch);
+          this.detectionForm = this.formBuilder.group(batch);
+          console.log('bcc3 => ', this.detectionForm);
           this.adding = false;
         });
       }
-
-      this.detectionForm.patchValue(batch);
     }
 
     this.barcode = '';
@@ -243,7 +235,7 @@ export class TestingDetectionComponent implements OnInit {
   fetchBatchData() {
     const batch = this.detectionForm.value;
     this.searchCriteria.batchId = batch.batchId;
-    this.searchCriteria.includeSpecimen = false;
+    this.searchCriteria.includeSpecimen = true;
     this.searchCriteria.lab = null;
     this.searchCriteria.specimenBarcode = null;
 
@@ -254,20 +246,18 @@ export class TestingDetectionComponent implements OnInit {
           this.editBatch(results[0]);
         } else {
           this.redcaDataService.fetchExtractionSpecimen(this.getItemControl('batchId').value).subscribe(results => {
-
+            
             batch.batchItems = results;
             for (let i = 0; i < results.length; i++) {
               results[i].position = this.specimenService.encodePosition(i);
             }
 
-            //this.specimen.data  = this.batch.batchItems;
             batch.instrumentBatchSize = batch.batchItems.length;
             batch.detectionSize = batch.batchItems.length;
+            this.editBatch(batch);
           });
         }
       });
-
-      this.detectionForm.patchValue(batch);
     }
   }
 
@@ -312,10 +302,28 @@ export class TestingDetectionComponent implements OnInit {
       return value.id !== rowObj.id;
     });
 
-    this.detectionForm.patchValue(batch);
+    this.editBatch(batch);
   }
 
   get batchItems(): FormArray {
     return this.detectionForm.get('batchItems') as FormArray;
+  }
+
+  pullSpecimenInfo() {
+    this.pulling = true;
+    const batch = this.detectionForm.value;
+    this.redcaDataService.pullSpecimenInfo(batch.batchItems).subscribe(results => {
+      this.searchCriteria.includeSpecimen = true;
+      this.searchCriteria.batchId = batch.batchId;
+
+      this.redcaDataService.search(this.searchCriteria).subscribe(batches => {
+        this.searchCriteria = new BatchSearchCriteria();
+        if (batches.length > 0) {
+          this.editBatch(batches[0]);
+        }
+      });
+
+      this.pulling = false;
+    });
   }
 }

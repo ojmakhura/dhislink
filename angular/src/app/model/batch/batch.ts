@@ -13,7 +13,7 @@ export class Batch {
     @prop()
     page: string;
 
-    @propObject(LocationVO)
+    @prop()
     lab: LocationVO;
     
     @prop()
@@ -37,7 +37,7 @@ export class Batch {
     @prop()
     detectionSize: number;
     
-    @propObject(Instrument)
+    @prop()
     instrument: Instrument;
     
     @prop()

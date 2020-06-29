@@ -42,9 +42,14 @@ export class RedcapDataService {
   }*/
 
   saveBatch(batch: Batch): Observable<Specimen[]> {
+    console.log('saving - > ', batch);
+    
+    //return of([]);
+    return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
+  }
 
-    return of([]);
-    //return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
+  pullSpecimenInfo(specimens: Specimen): Observable<Specimen[]> {
+    return this.http.post<Specimen[]>(this.url + 'pullspecimen', specimens);
   }
   
   getDescription(code: string): string {

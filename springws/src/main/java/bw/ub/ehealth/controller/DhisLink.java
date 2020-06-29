@@ -726,7 +726,7 @@ public class DhisLink implements Serializable {
 		boolean resultsCheckOk = false;
 		
 		if(!skipResulted) { 
-			logger.debug("Skipping resulted is true");
+			logger.debug("Resulted specimen not skipped");
 			resultsCheckOk = true;
 		} else {
 			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || labResults.getValue().equals("PENDING")) {
@@ -829,7 +829,7 @@ public class DhisLink implements Serializable {
 		
 		specimen.setTestType(this.getTestType(values));
 		//specimen.setRiskFacors(this.getRiskFactors(values));
-
+		logger.debug(specimen.toString());
 		return specimen;
 	}
 	
@@ -944,8 +944,10 @@ public class DhisLink implements Serializable {
 		
 		for(SpecimenVO sp : tmp) {
 			String barcode = sp.getSpecimenBarcode();
+			logger.debug("starting - " + barcode);
 			String tei = teis.get(barcode);
 			PatientVO patientVO = pmap.get(tei);
+			logger.debug("Patient " + patientVO.toString());
 			
 			if (patientVO != null && patientVO.getId() == null) {
 				if(StringUtils.isBlank(patientVO.getIdentityNo())) {
@@ -971,7 +973,13 @@ public class DhisLink implements Serializable {
 				} 
 				
 				// Should not try to save the same specimen twice
-				if (specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode()) == null) {
+				SpecimenVO st = specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode());
+				if ( st == null || StringUtils.isBlank(st.getEvent())) {
+					
+					if(st != null && st.getId() != null) {
+						sp.setId(st.getId());
+						
+					}
 					
 					// Only get the facilities if this is a new specimen
 					OrganisationUnit unit = null;
@@ -1003,7 +1011,8 @@ public class DhisLink implements Serializable {
 					} else {
 						sp.setDhis2Synched(false);
 					}
-					specimenService.saveSpecimen(sp);
+					sp = specimenService.saveSpecimen(sp);
+					logger.debug("Saved " + sp.toString());
 					
 				} else {
 					continue;
