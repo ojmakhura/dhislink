@@ -13,26 +13,26 @@ import { BASE_URL, TOKEN_NAME, REFRESH_TOKEN, CURRENT_USER, CURRENT_ROUTE, FORM_
 })
 export class AuthenticationService {
 
-  private url= BASE_URL + 'auth';
+  private url = BASE_URL + 'auth';
   user: UserDetails;
 
-  constructor (private router: Router,private http: HttpClient) {
+  constructor (private router: Router, private http: HttpClient) {
     this.user = new UserDetails();
   }
 
-  login(loginPayload) : Observable<AuthenticationResponse> {
+  login(loginPayload): Observable<AuthenticationResponse> {
 
     return this.http.post<AuthenticationResponse>(this.url + '/signin', loginPayload).pipe();
   }
 
   refreshToken(): Observable<AuthenticationResponse> {
-    let refreshPayload = new AuthenticationResponse();
+    const refreshPayload = new AuthenticationResponse();
     refreshPayload.accessToken = this.getToken();
     refreshPayload.refreshToken = this.getRefreshToken();
     refreshPayload.username = this.getCurrentUser();
-    
-    if(!refreshPayload.accessToken 
-        || !refreshPayload.refreshToken 
+
+    if (!refreshPayload.accessToken
+        || !refreshPayload.refreshToken
         || refreshPayload.refreshToken === 'undefined'
         || refreshPayload.refreshToken === 'null'
         || refreshPayload.refreshToken === null
@@ -50,7 +50,7 @@ export class AuthenticationService {
   }
 
   redirectToLogin() {
-    
+
     return throwError('Could not refresh token.');
   }
 
@@ -71,7 +71,7 @@ export class AuthenticationService {
   }
 
   setCurrentUser(username: string) {
-    
+
     localStorage.setItem(CURRENT_USER, username);
   }
 
@@ -86,36 +86,38 @@ export class AuthenticationService {
   getTokenExpirationDate(token: string): Date {
     const decoded = jwt_decode(token);
 
-    if (decoded.exp === undefined) return null;
+    if (decoded.exp === undefined) { return null; }
 
-    const date = new Date(); 
+    const date = new Date();
     date.setUTCSeconds(decoded.exp);
     return date;
   }
 
   isTokenExpired(token?: string): boolean {
-    
-    if(!token) token = this.getToken();
-    if(!token) return true;
+
+    if (!token) { token = this.getToken(); }
+    if (!token) { return true; }
 
     const date = this.getTokenExpirationDate(token);
-    if(date === undefined) return false;
+    if (date === undefined) { return false; }
     return !(date.valueOf() > new Date().valueOf());
   }
 
   getLoggeInUser(): boolean {
-    let loggedIn = false
+    let loggedIn = false;
     this.user = undefined;
     this.http.get<UserDetails>(this.url + '/me').pipe(catchError((error) => {
-      this.router.navigate(['/login']);
+      this.logout();
       return  of(new UserDetails());
-    })).subscribe(data => {   
+    })).subscribe(data => {
       this.user = data;
       localStorage.setItem(CURRENT_USER, this.user.username);
       loggedIn = true;
+    }, error => {
+      this.logout();
     });
 
-    if(!this.user || !this.user.username) {
+    if (!this.user || !this.user.username) {
       localStorage.removeItem(CURRENT_USER);
       loggedIn = false;
     }
@@ -124,7 +126,7 @@ export class AuthenticationService {
   }
 
   logout() {
-    let payload = new AuthenticationResponse();
+    const payload = new AuthenticationResponse();
     payload.accessToken = this.getToken();
     payload.refreshToken = this.getRefreshToken();
     payload.username = this.getCurrentUser();

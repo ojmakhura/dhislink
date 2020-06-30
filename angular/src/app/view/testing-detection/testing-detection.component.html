@@ -22,8 +22,9 @@
                             <div class="form-group">  
                                 <button type="button" class="btn btn-success" (click)="newDetectionBatch()">New</button>
                             </div>
-                            <div class="form-group">  
-                                <button *ngIf="pulling" type="button" class="btn btn-success" (click)="pullSpecimenInfo()">Pull</button>
+                            <div class="form-group"> 
+                                <span *ngIf="pulling" class="spinner-border spinner-border-sm mr-1"></span>
+                                <button type="button" class="btn btn-success" (click)="pullSpecimenInfo()">Pull</button>
                             </div>
                         </div>
                         <div class="row">
@@ -46,17 +47,19 @@
                             </div>
                         </div>
                         <div class="row">  
-                            <div class="form-group">
+                            <fieldset disabled class="form-group">
                                 <mat-form-field>
-                                    <mat-label>Detection Personnel</mat-label>
+                                    <mat-label>Detection Personnel</mat-label> 
                                     <input matInput formControlName="detectionPersonnel" id = "detectionPersonnel" required="false">
                                 </mat-form-field>
-                            </div>
-                            <div class="form-group">
-                                <mat-form-field>
-                                    <mat-label>Detection Datetime</mat-label>                                    
-                                    <input matInput formControlName="detectionDateTime" id = "detectionDateTime" required="true">                                
-                                </mat-form-field>
+                            </fieldset>
+                            <div class="row form-group">
+                                <fieldset disabled>
+                                    <mat-form-field>
+                                        <mat-label>Detection Datetime</mat-label>                                    
+                                        <input matInput formControlName="detectionDateTime" id = "detectionDateTime" required="true">                                
+                                    </mat-form-field>
+                                </fieldset>
                                 <button type="button" class="btn btn-success" (click)="now()">Now</button>
                             </div>
                         </div>
@@ -72,12 +75,12 @@
                                     </mat-select>
                                 </mat-form-field>
                             </div>
-                            <div class="form-group">
+                            <fieldset disabled class="form-group">
                                 <mat-form-field>
                                     <mat-label>Batch Size</mat-label>
                                     <input matInput formControlName="instrumentBatchSize" id = "instrumentBatchSize" >
                                 </mat-form-field>
-                            </div>
+                            </fieldset>
                         </div>
                         <div class="form-group">          
                             <mat-form-field>

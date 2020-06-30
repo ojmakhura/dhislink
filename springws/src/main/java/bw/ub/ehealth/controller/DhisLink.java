@@ -107,8 +107,8 @@ public class DhisLink implements Serializable {
     @Value("${lab.resulting.pid}")
     private Long labResultingPID;
     
-    @Value("${app.local}")
-    private Boolean isLocal;
+    @Value("${app.live}")
+    private Boolean isLive;
     
 	@Autowired
 	private PatientService patientService;
@@ -726,22 +726,19 @@ public class DhisLink implements Serializable {
 		boolean resultsCheckOk = false;
 		
 		if(!skipResulted) { 
-			logger.debug("Resulted specimen not skipped");
+			//logger.debug("Resulted specimen not skipped");
 			resultsCheckOk = true;
 		} else {
 			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || labResults.getValue().equals("PENDING")) {
-				logger.debug("Everything is great");
 				resultsCheckOk = true;
 			} else {
-				logger.debug("Something is wrong");
-				//logger.debug(labResults.toString());
 				resultsCheckOk = false;
 			}
 		}
 		
 		if (!resultsCheckOk || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
-			logger.debug("Results check failed");
-			//logger.debug(values.toString());
+			//logger.debug("Results check failed");
+			//logger.debug(event.toString());
 			return null;
 		}
 
@@ -829,7 +826,7 @@ public class DhisLink implements Serializable {
 		
 		specimen.setTestType(this.getTestType(values));
 		//specimen.setRiskFacors(this.getRiskFactors(values));
-		logger.debug(specimen.toString());
+
 		return specimen;
 	}
 	
@@ -941,13 +938,11 @@ public class DhisLink implements Serializable {
 		for(OrganisationUnit unit : getOrganisationUnits(orgIds)) {
 			orgUnits.put(unit.getId(), unit);
 		}
-		
+				
 		for(SpecimenVO sp : tmp) {
 			String barcode = sp.getSpecimenBarcode();
-			logger.debug("starting - " + barcode);
 			String tei = teis.get(barcode);
 			PatientVO patientVO = pmap.get(tei);
-			logger.debug("Patient " + patientVO.toString());
 			
 			if (patientVO != null && patientVO.getId() == null) {
 				if(StringUtils.isBlank(patientVO.getIdentityNo())) {
@@ -998,7 +993,6 @@ public class DhisLink implements Serializable {
 					sp = specimenService.saveSpecimen(sp);
 						
 					// We should set the information for the lab report project
-					redcapLink.postRedcapData(sp, labReportPID);
 					RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
 					criteria.setFieldName("lab_rec_barcode_%");
 					criteria.setValue(sp.getSpecimenBarcode());
@@ -1012,7 +1006,6 @@ public class DhisLink implements Serializable {
 						sp.setDhis2Synched(false);
 					}
 					sp = specimenService.saveSpecimen(sp);
-					logger.debug("Saved " + sp.toString());
 					
 				} else {
 					continue;
@@ -1023,7 +1016,7 @@ public class DhisLink implements Serializable {
 				e.printStackTrace();
 			}
 		}		
-
+		redcapLink.postSpecimen(specimen, labReportPID);
 		return specimen;
 	}
 		
@@ -1949,7 +1942,8 @@ public class DhisLink implements Serializable {
 			
 			boolean synchReceiving = sp.getReceivingDateTime() != null;
 			
-			if ((synchResults || synchReceiving) && !isLocal) {
+			// Only do this if we are live. This comes from the property 'app.live'
+			if ((synchResults || synchReceiving) && isLive) {
 
 				String payload = getEventPayloadString(event);
 				

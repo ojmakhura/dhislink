@@ -1,47 +1,47 @@
 import { LocationVO } from '../location/location-vo';
 import { Instrument } from '../instrument/instrument';
 import { Specimen } from '../specimen/specimen';
-import {propObject, propArray, prop, disable} from '@rxweb/reactive-form-validators';
+import {propObject, propArray, prop, disable, model} from '@rxweb/reactive-form-validators';
 import { AbstractControl } from '@angular/forms';
 
+@model([])
 export class Batch {
     @prop()
     batchId: string;
 
     @prop()
     projectId: number;
-    
+
     @prop()
     page: string;
 
     @prop()
     lab: LocationVO;
-    
-    @disable({conditionalExpression: (control:AbstractControl)=>{return true}})
+
     @prop()
     detectionPersonnel: string;
-    
+
     @prop()
     resultingPersonnel: string;
-    
+
     @prop()
     verificationPersonnel: string;
-    
+
     @prop()
     detectionDateTime: string;
-    
+
     @prop()
     resultingDateTime: string;
-    
+
     @prop()
     verificationDateTime: string;
-    
+
     @prop()
     detectionSize: number;
-    
+
     @prop()
     instrument: Instrument;
-    
+
     @prop()
     instrumentBatchSize: number = 0;
 

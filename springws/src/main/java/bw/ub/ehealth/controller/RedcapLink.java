@@ -12,8 +12,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -85,17 +87,67 @@ public class RedcapLink {
 	@Autowired
 	private RedcapAuthService redcapAuthService;
 	
-	public void postRedcapData(SpecimenVO specimen, Long projectId) {
-		List<RedcapDataVO> list  = getSpecimenRedcapData(specimen, projectId);
+	public void postSpecimen(SpecimenVO specimen, Long projectId) {
 		
-		doPostRedcapData(list, projectId);
+		if(specimen == null) {
+			return;
+		}
+		
+		List<RedcapDataVO> list  = getSpecimenRedcapData(specimen, projectId);
+		HashMap<String, Collection<RedcapDataVO>> data = new HashMap<String, Collection<RedcapDataVO>>();
+		data.put(specimen.getSpecimenBarcode(), list);
+		doPostRedcapData(data, projectId);
 	}
 	
-	public void postRedcapData(List<RedcapDataVO> list, Long projectId) {
-		doPostRedcapData(list, projectId);
+	public void postSpecimen(Collection<SpecimenVO> specimens, Long projectId) {
+		
+		if(specimens == null || specimens.size() == 0) {
+			return;
+		}
+		
+		HashMap<String, Collection<RedcapDataVO>> data = new HashMap<String, Collection<RedcapDataVO>>();
+		
+		for(SpecimenVO specimen : specimens) {
+
+			List<RedcapDataVO> list  = getSpecimenRedcapData(specimen, projectId);
+			data.put(specimen.getSpecimenBarcode(), list);
+		}
+		doPostRedcapData(data, projectId);
+		
+	}
+		
+	public void postRedcapData(Map<String, Collection<RedcapDataVO>> data, Long projectId) {
+		doPostRedcapData(data, projectId);
+	}
+	
+	public void postRedcapData(Collection<RedcapDataVO> list, Long projectId) {
+		
+		if(list == null || list.size() == 0) {
+			return;
+		}
+		
+		HashMap<String, Collection<RedcapDataVO>> data = new HashMap<String, Collection<RedcapDataVO>>();
+		
+		for(RedcapDataVO dt : list) {
+			String key = dt.getRecord();
+			if(StringUtils.isBlank(key)) {
+				key = dt.getValue();
+			}
+			
+			List<RedcapDataVO> tmp = (List<RedcapDataVO>) data.get(key);
+			
+			if(tmp == null) {
+				tmp = new ArrayList<>();
+				data.put(key, tmp);
+			}
+			
+			tmp.add(dt);
+		}
+		
+		doPostRedcapData(data, projectId);
 	}
 
-	private void doPostRedcapData(List<RedcapDataVO> list, Long projectId) {
+	private void doPostRedcapData(Map<String, Collection<RedcapDataVO>> data, Long projectId) {
 		
 		String username = securityService.findLoggedInUsername();
 		
@@ -108,19 +160,23 @@ public class RedcapLink {
 		if(StringUtils.isBlank(projectToken)) {
 			projectToken = redcapAuthService.getUserProjectToken("dhislink", projectId);
 		}
-
-		JSONArray arr = new JSONArray();
-		JSONObject records = new JSONObject();
 		
-		for(RedcapDataVO dt : list) {
-			try {
-				records.put(dt.getFieldName(), dt.getValue());
-			} catch (JSONException e) {
-				e.printStackTrace();
+		JSONArray arr = new JSONArray();
+		
+		
+		for(Map.Entry<String, Collection<RedcapDataVO>> entry : data.entrySet()) {
+			JSONObject record = new JSONObject();
+			for(RedcapDataVO dt : entry.getValue()) {
+				try {
+					record.put(dt.getFieldName(), dt.getValue());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
 			}
+			arr.put(record);
 		}
-
-		arr.put(records);
+		
+		//logger.debug(arr.toString());
 		ArrayList<NameValuePair> params = getProjectParams(projectToken);
 		params.add(new BasicNameValuePair("data", arr.toString()));
 
@@ -170,20 +226,26 @@ public class RedcapLink {
 
 		if(resp != null)
 		{
+			//logger.debug("doPost: response = " + resp.toString());
 			respCode = resp.getStatusLine().getStatusCode();
 
 			try
 			{
 				reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+				//logger.debug("doPost: resp.getEntity().getContent() = " + resp.getEntity().getContent());
 			}
 			catch (final Exception e)
 			{
+				//logger.error(e.getMessage());
 				e.printStackTrace();
 			}
+		} else {
+			//logger.debug("Could not execute post. Response object is null.");
 		}
 		
 		if(reader != null)
 		{
+			
 			try
 			{
 				while((line = reader.readLine()) != null)
@@ -195,8 +257,11 @@ public class RedcapLink {
 			{
 				e.printStackTrace();
 			}
+		} else {
+			//logger.debug("No data read.");
 		}
-
+		
+		//logger.debug("doPost: result is " + result.toString());
 	}
 	
 	private RedcapDataVO getRedcapDataObjet(String record, Long projectId, String fieldName, String value) {
@@ -264,8 +329,6 @@ public class RedcapLink {
 				data.add(tmp);
 				
 				// Calculate the age
-				
-
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(specimen.getPatient().getDateOfBirth());
 				int year = cal.get(Calendar.YEAR);
@@ -332,7 +395,7 @@ public class RedcapLink {
 			data.add(tmp);
 			
 		}
-
+		
 		return data;
 		
 	}
@@ -342,11 +405,9 @@ public class RedcapLink {
 	 * @param specimens
 	 */ 
 	public void updateStaging(Collection<SpecimenVO> specimens) {
-		
+		Map<String, Collection<RedcapDataVO>> toPost = new HashMap<>();
 		for(SpecimenVO specimen : specimens) {
-			//if(StringUtils.isBlank(specimen.getEvent())) {
-			//	continue;
-			//}
+
 			RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
 			// Reception project
 			criteria.setProjectId(labReceptionPID);
@@ -354,7 +415,7 @@ public class RedcapLink {
 			criteria.setValue(specimen.getSpecimenBarcode());
 			
 			List<RedcapDataVO> reportData = new ArrayList<RedcapDataVO>();
-			reportData.add(new RedcapDataVO(null, null, null, "specimen_barcode", specimen.getSpecimenBarcode()));
+			reportData.add(new RedcapDataVO(null, labReportPID, null, "specimen_barcode", specimen.getSpecimenBarcode()));
 			
 			List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
 			// Update with information from receiving forms
@@ -795,7 +856,13 @@ public class RedcapLink {
 			}
 			
 			specimenService.saveSpecimen(specimen);
-			doPostRedcapData(reportData, labReportPID);
+			
+			reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "covid19_lab_report_complete", "0"));
+			//logger.debug("Positing to lab report : " + reportData.toString());
+			
+			toPost.put(specimen.getSpecimenBarcode(), reportData);
 		}
+		
+		doPostRedcapData(toPost, labReportPID);		
 	}
 }

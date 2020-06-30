@@ -1,5 +1,6 @@
-import { prop } from '@rxweb/reactive-form-validators';
+import { prop, model } from '@rxweb/reactive-form-validators';
 
+@model([])
 export class Instrument {
     @prop()
     code: string;

@@ -39,7 +39,6 @@ export class ResultingComponent implements OnInit {
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
   specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'testAssayResults'];
 
-  // -------------------------------------------------------------------------
   resultingForm: FormGroup;
 
   @ViewChild('BatchesPaginator', {static: true}) batchesPaginator: MatPaginator;
@@ -55,6 +54,8 @@ export class ResultingComponent implements OnInit {
 
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
+    }, error => {
+      authService.logout();
     });
   }
 
@@ -118,8 +119,6 @@ export class ResultingComponent implements OnInit {
     }
 
     this.loading = true;
-
-    //this.batch.assayBatchId = this.batch.batchId;
     this.getItemControl('assayBatchId').setValue(this.getItemControl('detectionBatchId').value);
 
     this.getItemControl('page').setValue('resulting');
@@ -177,6 +176,11 @@ export class ResultingComponent implements OnInit {
   }
 
   toVerification() {
+    const batch = this.resultingForm.value as Batch;
+    if ( batch.resultingStatus !== '2' ) {
+      alert('The batch is not complete and cannot be sent to resulting.');
+      return;
+    }
     localStorage.setItem(FORM_DATA, JSON.stringify(this.resultingForm.value));
     this.router.navigate(['/verification']);
   }

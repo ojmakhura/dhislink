@@ -11,22 +11,25 @@ export class JwtInterceptor implements HttpInterceptor {
 
     constructor(public authService: AuthenticationService) { }
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
         if (request.url.indexOf('refresh') !== -1) {
             return next.handle(request);
         }
 
         const accessExpired = this.authService.isTokenExpired();
-
+        //if (accessExpired) {
+        //    console.log('>>>> Expired token');
+        //    return next.handle(request);
+        //}
         if (accessExpired) {
-            return next.handle(request);
-        }
-        if (accessExpired) {
+            console.log('Expired token');
+            
             if (!this.refreshTokenInProgress) {
                 this.refreshTokenInProgress = true;
                 this.refreshTokenSubject.next(null);
                 return this.authService.refreshToken().pipe(
                     switchMap((authResponse) => {
-                        
+
                         this.authService.setAccessToken(authResponse.accessToken);
                         this.authService.setRefreshToken(authResponse.refreshToken);
                         this.refreshTokenInProgress = false;

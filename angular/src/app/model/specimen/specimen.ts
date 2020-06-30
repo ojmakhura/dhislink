@@ -1,54 +1,55 @@
 import { Patient } from '../patient/patient';
-import { prop, propObject } from '@rxweb/reactive-form-validators';
+import { prop, propObject, model } from '@rxweb/reactive-form-validators';
 
+@model([])
 export class Specimen {
     @prop()
-    id = 0;
+    id: number;
 
     @prop()
-    batch_number: string = '';
+    batch_number = '';
 
     @prop()
     date_dispatched: Date;
 
     @prop()
-    dispatcher: string = '';
+    dispatcher = '';
 
     @prop()
-    location_of_dispatch: string = '';
+    location_of_dispatch = '';
 
     @prop()
     date_specimen_collected: Date;
 
     @prop()
-    gis_lat: string = '';
+    gis_lat = '';
 
     @prop()
-    gis_long: string = '';
+    gis_long = '';
 
     @prop()
-    specimen_barcode: string = '';
+    specimen_barcode = '';
 
     @prop()
-    outcome: string = '';
+    outcome = '';
 
     @prop()
-    receiving_personnel: string = '';
+    receiving_personnel = '';
 
     @prop()
-    receiving_condition_code: string = '';
+    receiving_condition_code = '';
 
     @prop()
-    sample_status_dispatch: string = '';
+    sample_status_dispatch = '';
 
     @prop()
-    symptom: string = '';
+    symptom = '';
 
     @prop()
     received_datetime: Date;
 
     @prop()
-    specimen_type: string = '';
+    specimen_type = '';
 
     @prop()
     time_dispatched: Date;
@@ -57,40 +58,40 @@ export class Specimen {
     patient: Patient;
 
     @prop()
-    testType: string = '';
+    testType = '';
 
     @prop()
-    riskFactors: string = '';
+    riskFactors = '';
 
     @prop()
-    test_assay_personnel: string = '';
+    test_assay_personnel = '';
 
     @prop()
     test_assay_datetime: Date;
 
     @prop()
-    test_verify_personnel: string = '';
+    test_verify_personnel = '';
 
     @prop()
     test_verify_datetime: Date;
 
     @prop()
-    authorizer_personnel: string = '';
+    authorizer_personnel = '';
 
     @prop()
     authorizer_datetime: Date;
 
     @prop()
-    notes: string = '';
+    notes = '';
 
     @prop()
-    dispatcher_contact: string = '';
+    dispatcher_contact = '';
 
     @prop()
-    dispatcher_email: string = '';
+    dispatcher_email = '';
 
     @prop()
-    dispatcher_city: string = '';
+    dispatcher_city = '';
 
     @prop()
     lastUpdated: Date;
@@ -99,32 +100,32 @@ export class Specimen {
     created: Date;
 
     @prop()
-    event: string = '';
+    event = '';
 
     @prop()
-    dhis2Synched: boolean  = false;
+    dhis2Synched  = false;
 
     @prop()
-    receiving_lab: string = '';
+    receiving_lab = '';
 
     @prop()
-    patient_facility: string = '';
+    patient_facility = '';
 
     @prop()
-    covid_number: string = '';
+    covid_number = '';
 
     @prop()
-    testAssayResults: string = '';
+    testAssayResults = '';
 
     @prop()
-    testVerifyResults: string = '';
+    testVerifyResults = '';
 
     @prop()
-    covidRnaResults: string = '';
+    covidRnaResults = '';
 
     @prop()
-    results: string = '';
+    results = '';
 
     @prop()
-    position: string = '';
+    position = '';
 }

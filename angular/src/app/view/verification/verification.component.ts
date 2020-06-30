@@ -29,20 +29,25 @@ import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 })
 export class VerificationComponent implements OnInit {
 
-  //batch: Batch;
   batches: MatTableDataSource<Batch>;
-  //specimen: MatTableDataSource<Specimen>;
   locations: LocationVO[];
   searchCriteria: BatchSearchCriteria;
   selectedIndex = 0;
   instruments: Instrument[];
   barcode = '';
   loading = false;
-
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
-  specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'covidRnaResults', 'testVerifyResults'];
+  specimenColumns: string[] = [
+    'position',
+    'specimen_barcode',
+    'patient_first_name',
+    'patient_surname',
+    'identity_no',
+    'covidRnaResults',
+    'testVerifyResults'
+  ];
 
   // ----------------------------
   verificationForm: FormGroup;
@@ -60,35 +65,28 @@ export class VerificationComponent implements OnInit {
               private specimenService: SpecimenService,
               private formBuilder: RxFormBuilder) {
 
-    locationService.findAll().subscribe(results => {
-      this.locations = results;
-    });
   }
 
   ngOnInit(): void {
-    let token = this.authService.getToken();
-    let user = this.authService.getCurrentUser();
-    //this.authService.getLoggeInUser();
+    this.locationService.findAll().subscribe(results => {
+      this.locations = results;
+    }, error => {
+      console.log(error);
+      this.authService.logout();
+    });
+    const token = this.authService.getToken();
+    const user = this.authService.getCurrentUser();
+    this.authService.getLoggeInUser();
     window.localStorage.setItem(CURRENT_ROUTE, '/verification');
 
-    if(!user || this.authService.isTokenExpired(token)) {
-      this.router.navigate(['/login']);
+    if (!user || this.authService.isTokenExpired(token)) {
+      this.authService.logout();
     }
 
     this.batches = new MatTableDataSource<Batch>();
-    //this.specimen = new MatTableDataSource<Specimen>();
     this.searchCriteria = new BatchSearchCriteria();
     this.instruments = InstrumentList.allIntruments();
     this.verificationForm = this.formBuilder.group(new Batch());
-
-    /*if(localStorage.getItem(FORM_DATA)) {
-      let batch: Batch = JSON.parse(localStorage.getItem(FORM_DATA));
-      this.editBatch(batch);
-      localStorage.removeItem(FORM_DATA);
-    } else {
-      this.batch = new Batch();
-      this.batch.lab = new LocationVO();
-    }*/
 
     if (localStorage.getItem(FORM_DATA)) {
       const batch = JSON.parse(localStorage.getItem(FORM_DATA));
@@ -138,7 +136,7 @@ export class VerificationComponent implements OnInit {
   saveVerificationBatch() {
     const batch = this.verificationForm.value;
     this.loading = true;
-    if(this.authService.getCurrentUser() === batch.resultingPersonnel) {
+    if (this.authService.getCurrentUser() === batch.resultingPersonnel) {
       alert('Cannot verify the results you entered.');
     } else {
 
@@ -163,7 +161,7 @@ export class VerificationComponent implements OnInit {
   now() {
     const batch = this.verificationForm.value;
     batch.verificationDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
-    if(!batch.verificationPersonnel || batch.verificationPersonnel.length === 0) {
+    if (!batch.verificationPersonnel || batch.verificationPersonnel.length === 0) {
 
       batch.verificationPersonnel = this.authService.getCurrentUser();
     }
@@ -189,8 +187,6 @@ export class VerificationComponent implements OnInit {
 
   editBatch(batch: Batch) {
 
-    //this.batch = batch;
-    //this.specimen.data = this.batch.batchItems;
     this.labControl.setValue(batch.lab.code);
     this.instrumentControl.setValue(batch.instrument.code);
     this.verificationForm = this.formBuilder.group(batch);
@@ -198,7 +194,7 @@ export class VerificationComponent implements OnInit {
 
   verified(): boolean {
     const batch = this.verificationForm.value;
-    if(batch.verificationStatus === '2' &&
+    if (batch.verificationStatus === '2' &&
       batch.authorisingPersonnel) {
 
       return false;
@@ -217,13 +213,13 @@ export class VerificationComponent implements OnInit {
   }
 
   getResults(code) {
-    if(code === '1') {
+    if (code === '1') {
       return 'Positive';
-    } else if(code === '2') {
+    } else if (code === '2') {
       return 'Negative';
-    } else if(code === '3') {
+    } else if (code === '3') {
       return 'Inconclusive';
-    } else if(code === '4') {
+    } else if (code === '4') {
       return 'No Results';
     } else {
       return '';

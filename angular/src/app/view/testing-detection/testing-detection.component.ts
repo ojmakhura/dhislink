@@ -34,16 +34,12 @@ import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 })
 export class TestingDetectionComponent implements OnInit {
 
-  //batch: Batch;
   batches: MatTableDataSource<Batch>;
-  //specimen: MatTableDataSource<Specimen>;
   locations: LocationVO[];
   searchCriteria: BatchSearchCriteria;
   selectedIndex = 0;
   instruments: Instrument[];
   barcode = '';
-  //labControl = new FormControl('', Validators.required);
-  //instrumentControl = new FormControl('', Validators.required);
   loading = false;
   adding = false;
   removing = false;
@@ -71,15 +67,17 @@ export class TestingDetectionComponent implements OnInit {
   ngOnInit(): void {
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
+    }, error => {
+      console.log(error);
+      this.authService.logout();
+      this.router.navigate(['login']);
     });
     this.instruments = InstrumentList.allIntruments();
 
     this.batches = new MatTableDataSource<Batch>();
     this.searchCriteria = new BatchSearchCriteria();
-    this.editBatch(new Batch())
-    //this.detectionForm = this.formBuilder.group(new Batch());
-    //this.detectionForm.get('detectionPersonnel').disable({onlySelf: true});
-    
+    this.editBatch(new Batch());
+
     if (localStorage.getItem(FORM_DATA)) {
       const batch = JSON.parse(localStorage.getItem(FORM_DATA));
       this.editBatch(batch);
@@ -113,7 +111,7 @@ export class TestingDetectionComponent implements OnInit {
       this.now();
     }
 
-    this.getItemControl('page').setValue('resulting');
+    this.getItemControl('page').setValue('testing_detection');
     this.getItemControl('projectId').setValue(345);
     this.getItemControl('detectionBatchId').setValue(this.getItemControl('detectionBatchId').value);
 
@@ -161,13 +159,10 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   editBatch(batch: Batch) {
-    
-    //if(this.detectionForm === undefined) {
+
     this.detectionForm = this.formBuilder.group(batch);
-    //} else {
-    //  this.detectionForm.patchValue(batch);
-    //  this.batchItems.patchValue(batch.batchItems);
-    //}
+    console.log(this.detectionForm);
+
   }
 
   addSpecimen() {
@@ -179,7 +174,7 @@ export class TestingDetectionComponent implements OnInit {
                     batch.batchItems.length <= 96) {
         const bc = this.barcode;
         this.specimenService.findSpecimenByBarcode(this.barcode).subscribe(result => {
-          
+
           let sp = result;
           if (result === null) {
             sp = new Specimen();
@@ -212,11 +207,24 @@ export class TestingDetectionComponent implements OnInit {
     if (!batch.detectionStatus) {
       this.redcaDataService.search(this.searchCriteria).subscribe(results => {
         if (results.length === 1) {
-          console.log('Got saved batch');
+          console.log('Got saved batch', results);
+
+          if (results[0].instrument === null) {
+            results[0].instrument = new Instrument('', '');
+          }
+
+          if (results[0].lab === null) {
+            results[0].lab = new LocationVO();
+          }
+
+          if (results[0].batchItems === null ) {
+            results[0].batchItems = [];
+          }
+
           this.editBatch(results[0]);
         } else {
           this.redcaDataService.fetchExtractionSpecimen(this.getItemControl('batchId').value).subscribe(results => {
-            
+
             batch.batchItems = results;
             for (let i = 0; i < results.length; i++) {
               results[i].position = this.specimenService.encodePosition(i);
@@ -229,9 +237,18 @@ export class TestingDetectionComponent implements OnInit {
         }
       });
     }
+
+    this.searchCriteria = new BatchSearchCriteria();
   }
 
   toResulting() {
+    const batch = this.detectionForm.value as Batch;
+
+    if ( batch.detectionStatus !== '2' ) { 
+      alert('The batch is not complete and cannot be sent to resulting.');
+      return;
+    }
+
     localStorage.setItem(FORM_DATA, JSON.stringify(this.detectionForm.value));
     this.router.navigate(['/resulting']);
   }
@@ -299,28 +316,28 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   onLabSelectionChange(event) {
-    
-    if(event.value === '') {
+
+    if (event.value === '') {
       return;
     }
 
-    let lab = this.locations.find(loc => loc.code == event.value);
+    const lab = this.locations.find(loc => loc.code === event.value);
 
-    if(lab !== undefined) {
+    if (lab !== undefined) {
       this.getItemGroup('lab').setValue(lab);
     }
-    
+
   }
 
   onInstrumentSelectionChange(event) {
-    
-    if(event.value === '') {
+
+    if (event.value === '') {
       return;
     }
 
-    let instrument = this.instruments.find(inst => inst.code == event.value);
+    const instrument = this.instruments.find(inst => inst.code === event.value);
 
-    if(instrument !== undefined) {
+    if (instrument !== undefined) {
       this.getItemGroup('instrument').setValue(instrument);
     }
   }

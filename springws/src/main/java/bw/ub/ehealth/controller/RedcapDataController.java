@@ -65,6 +65,9 @@ public class RedcapDataController {
     
 	@Value("${dhis2.api.url}")
 	private String dhis2Url;
+	
+    @Value("${app.live}")
+    private Boolean isLive;
     
 	@Autowired
 	private RedcapDataService redcapDataService;
@@ -310,17 +313,18 @@ public class RedcapDataController {
 					}
 	    		}
     		}
+    		
     	}
 
-    	// Save the data for this particular project    	
-		redcapLink.postRedcapData(redcapData, batch.getProjectId());
+    	// Save the data for this particular project       	
+		redcapLink.postSpecimen((List)batch.getBatchItems(), batch.getProjectId());
 
 		// Update the staging area. This also updated the lab report
 		redcapLink.updateStaging(batch.getBatchItems());
 		
-		if(batch.getPublishResults()) {
+		if(batch.getPublishResults() && isLive) {
 			//logger.info(String.format("%d specimen data sent to DHIS2 and they are %s", verifiedSpecimen.size(), verifiedSpecimen.toString()));
-			//dhisLink.getDhisPayload(verifiedSpecimen);
+			dhisLink.getDhisPayload(verifiedSpecimen);
 		}
 		
 		List<SpecimenVO> tmp = new ArrayList<>();

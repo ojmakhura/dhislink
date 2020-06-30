@@ -4,8 +4,8 @@
 	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
  
-    <!-- <property name="LOGS" value="/var/log" /> -->
-    <property name="LOGS" value="/home/junior" />
+    <property name="LOGS" value="/var/log" />
+    <!-- <property name="LOGS" value="/home/junior" /> -->
  
     <appender name="Console"
         class="ch.qos.logback.core.ConsoleAppender">
@@ -42,8 +42,5 @@
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </root> 
-    <!-- <root level="INFO">
-        <appender-ref ref="Console" />
-    </root> --> 
     <logger name="org.springframework.web" level="INFO"/>
 </configuration>

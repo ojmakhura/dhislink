@@ -20,7 +20,7 @@ export class RedcapDataService {
 
   search(criteria: BatchSearchCriteria): Observable<Batch[]> {
     console.log(criteria);
-    
+
     return this.http.post<Batch[]>(this.url + 'search/batch', criteria);
   }
 
@@ -43,15 +43,39 @@ export class RedcapDataService {
 
   saveBatch(batch: Batch): Observable<Specimen[]> {
     console.log('saving - > ', batch);
-    
-    return of([]);
-    //return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
+
+    if (batch.authorisingDateTime === '') {
+      batch.authorisingDateTime = null;
+    }
+
+    if (batch.authorisingPersonnel === '') {
+      batch.authorisingPersonnel = null;
+    }
+
+    if (batch.resultingDateTime === '') {
+      batch.resultingDateTime = null;
+    }
+
+    if (batch.resultingPersonnel === '') {
+      batch.resultingPersonnel = null;
+    }
+
+    if (batch.verificationDateTime === '') {
+      batch.verificationDateTime = null;
+    }
+
+    if (batch.verificationPersonnel === '') {
+      batch.verificationPersonnel = null;
+    }
+
+    //return of([]);
+    return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
   }
 
   pullSpecimenInfo(specimens: Specimen): Observable<Specimen[]> {
     return this.http.post<Specimen[]>(this.url + 'pullspecimen', specimens);
   }
-  
+
   getDescription(code: string): string {
     let description = '';
 

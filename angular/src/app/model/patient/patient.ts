@@ -1,12 +1,13 @@
-import { prop } from '@rxweb/reactive-form-validators';
+import { prop, model } from '@rxweb/reactive-form-validators';
 
+@model([])
 export class Patient {
 
     @prop()
-    id: number = 0;
+    id;
 
     @prop()
-    identity_no = '';    
+    identity_no = '';
 
     @prop()
     patient_first_name = '';
