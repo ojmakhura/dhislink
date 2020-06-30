@@ -317,7 +317,7 @@ public class RedcapDataController {
     	}
 
     	// Save the data for this particular project       	
-		redcapLink.postSpecimen((List)batch.getBatchItems(), batch.getProjectId());
+		redcapLink.postSpecimen(batch.getBatchItems(), batch.getProjectId());
 
 		// Update the staging area. This also updated the lab report
 		redcapLink.updateStaging(batch.getBatchItems());

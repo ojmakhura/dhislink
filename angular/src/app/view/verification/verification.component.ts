@@ -134,19 +134,19 @@ export class VerificationComponent implements OnInit {
   }
 
   saveVerificationBatch() {
-    const batch = this.verificationForm.value;
+
     this.loading = true;
-    if (this.authService.getCurrentUser() === batch.resultingPersonnel) {
+    if (this.authService.getCurrentUser() === this.verificationForm.value.resultingPersonnel) {
       alert('Cannot verify the results you entered.');
     } else {
 
-      batch.page = 'verification';
-      batch.projectId = 345;
-      if (!batch.verificationPersonnel || batch.verificationPersonnel.length === 0) {
+      this.getItemControl('page').setValue('verification');
+      this.getItemControl('projectId').setValue(345);
+      if (!this.verificationForm.value.verificationPersonnel || this.verificationForm.value.verificationPersonnel.length === 0) {
         this.now();
       }
 
-      this.redcaDataService.saveBatch(batch).pipe(catchError((error) => {
+      this.redcaDataService.saveBatch(this.verificationForm.value).pipe(catchError((error) => {
         this.router.navigate(['/login']);
         return of(new AuthenticationResponse());
       })).subscribe(
