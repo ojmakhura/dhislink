@@ -215,4 +215,18 @@ export class VerificationComponent implements OnInit {
   get batchItems(): FormArray {
     return this.verificationForm.get('batchItems') as FormArray;
   }
+
+  getResults(code) {
+    if(code === '1') {
+      return 'Positive';
+    } else if(code === '2') {
+      return 'Negative';
+    } else if(code === '3') {
+      return 'Inconclusive';
+    } else if(code === '4') {
+      return 'No Results';
+    } else {
+      return '';
+    }
+  }
 }

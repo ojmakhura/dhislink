@@ -1,21 +1,61 @@
+import { prop } from '@rxweb/reactive-form-validators';
+
 export class Patient {
-    id: number;
-    identity_no: string;    
-    patient_first_name: string;
-    patient_surname: string;
-    patient_contact: string;
-    date_birth: Date;    
-    sex: string;
-    plotNo: string;
-    transportRegistration: string;
-    travelDestination: string;
-    countryDeparture: string;
-    nextOfKin: string;
-    city: string;
+
+    @prop()
+    id: number = 0;
+
+    @prop()
+    identity_no = '';    
+
+    @prop()
+    patient_first_name = '';
+
+    @prop()
+    patient_surname = '';
+
+    @prop()
+    patient_contact = '';
+
+    @prop()
+    date_birth: Date;
+
+    @prop()
+    sex = '';
+
+    @prop()
+    plotNo = '';
+
+    @prop()
+    transportRegistration = '';
+
+    @prop()
+    travelDestination = '';
+
+    @prop()
+    countryDeparture = '';
+
+    @prop()
+    nextOfKin = '';
+
+    @prop()
+    city = '';
+
+    @prop()
     departureDate: Date;
-    kinContact: string;
-    nationality: string;
+
+    @prop()
+    kinContact = '';
+
+    @prop()
+    nationality = '';
+
+    @prop()
     lastUpdated: Date;
+
+    @prop()
     created: Date;
-    trackedEntityInstance: string;
+
+    @prop()
+    trackedEntityInstance = '';
 }

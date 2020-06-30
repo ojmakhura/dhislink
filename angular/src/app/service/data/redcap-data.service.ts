@@ -4,7 +4,7 @@ import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
 import { DataSearchCriteria } from 'src/app/model/data/data-search-criteria';
 import { Observable, of } from 'rxjs';
 import { Batch } from 'src/app/model/batch/batch';
-import { Specimen, DhislinkCode } from 'src/app/model/specimen/specimen';
+import { Specimen } from 'src/app/model/specimen/specimen';
 import { RedcapData } from 'src/app/model/data/redcap-data';
 import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
 import { FormArray, FormGroup } from '@angular/forms';
@@ -44,8 +44,8 @@ export class RedcapDataService {
   saveBatch(batch: Batch): Observable<Specimen[]> {
     console.log('saving - > ', batch);
     
-    //return of([]);
-    return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
+    return of([]);
+    //return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
   }
 
   pullSpecimenInfo(specimens: Specimen): Observable<Specimen[]> {
@@ -67,11 +67,11 @@ export class RedcapDataService {
   getResultCodes() {
 
     return [
-        new DhislinkCode('', ''),
-        new DhislinkCode('1', 'Positive'),
-        new DhislinkCode('2', 'Negative'),
-        new DhislinkCode('3', 'Inconclusive'),
-        new DhislinkCode('4', 'No Results')
+        //new DhislinkCode('', ''),
+        //new DhislinkCode('1', 'Positive'),
+        //new DhislinkCode('2', 'Negative'),
+        //new DhislinkCode('3', 'Inconclusive'),
+        //new DhislinkCode('4', 'No Results')
       ];
   }
 }

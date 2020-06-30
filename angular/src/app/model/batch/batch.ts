@@ -1,7 +1,8 @@
 import { LocationVO } from '../location/location-vo';
 import { Instrument } from '../instrument/instrument';
 import { Specimen } from '../specimen/specimen';
-import {propObject, propArray, prop} from '@rxweb/reactive-form-validators';
+import {propObject, propArray, prop, disable} from '@rxweb/reactive-form-validators';
+import { AbstractControl } from '@angular/forms';
 
 export class Batch {
     @prop()
@@ -16,6 +17,7 @@ export class Batch {
     @prop()
     lab: LocationVO;
     
+    @disable({conditionalExpression: (control:AbstractControl)=>{return true}})
     @prop()
     detectionPersonnel: string;
     

@@ -1,55 +1,130 @@
 import { Patient } from '../patient/patient';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { prop, propObject } from '@rxweb/reactive-form-validators';
 
 export class Specimen {
-    id: number;
-    batch_number: string;
+    @prop()
+    id = 0;
+
+    @prop()
+    batch_number: string = '';
+
+    @prop()
     date_dispatched: Date;
-    dispatcher: string;
-    location_of_dispatch: string;
+
+    @prop()
+    dispatcher: string = '';
+
+    @prop()
+    location_of_dispatch: string = '';
+
+    @prop()
     date_specimen_collected: Date;
-    gis_lat: string;
-    gis_long: string;
-    specimen_barcode: string;
-    outcome: string;
-    receiving_personnel: string;
-    receiving_condition_code: string;
-    sample_status_dispatch: string;
-    symptom: string;
+
+    @prop()
+    gis_lat: string = '';
+
+    @prop()
+    gis_long: string = '';
+
+    @prop()
+    specimen_barcode: string = '';
+
+    @prop()
+    outcome: string = '';
+
+    @prop()
+    receiving_personnel: string = '';
+
+    @prop()
+    receiving_condition_code: string = '';
+
+    @prop()
+    sample_status_dispatch: string = '';
+
+    @prop()
+    symptom: string = '';
+
+    @prop()
     received_datetime: Date;
-    specimen_type: string;
+
+    @prop()
+    specimen_type: string = '';
+
+    @prop()
     time_dispatched: Date;
+
+    @propObject(Patient)
     patient: Patient;
-    testType: string;
-    riskFactors: string;
-    test_assay_personnel: string;
+
+    @prop()
+    testType: string = '';
+
+    @prop()
+    riskFactors: string = '';
+
+    @prop()
+    test_assay_personnel: string = '';
+
+    @prop()
     test_assay_datetime: Date;
-    test_verify_personnel: string;
+
+    @prop()
+    test_verify_personnel: string = '';
+
+    @prop()
     test_verify_datetime: Date;
-    authorizer_personnel: string;
+
+    @prop()
+    authorizer_personnel: string = '';
+
+    @prop()
     authorizer_datetime: Date;
-    notes: string;
-    dispatcher_contact: string;
-    dispatcher_email: string;
-    dispatcher_city: string;
+
+    @prop()
+    notes: string = '';
+
+    @prop()
+    dispatcher_contact: string = '';
+
+    @prop()
+    dispatcher_email: string = '';
+
+    @prop()
+    dispatcher_city: string = '';
+
+    @prop()
     lastUpdated: Date;
+
+    @prop()
     created: Date;
-    event: string;
+
+    @prop()
+    event: string = '';
+
+    @prop()
     dhis2Synched: boolean  = false;
-    receiving_lab: string;
-    patient_facility: string;
-    covid_number: string;
-    testAssayResults: string;
-    testVerifyResults: string;
-    covidRnaResults: string;
-    results: string;
-    position: string;
+
+    @prop()
+    receiving_lab: string = '';
+
+    @prop()
+    patient_facility: string = '';
+
+    @prop()
+    covid_number: string = '';
+
+    @prop()
+    testAssayResults: string = '';
+
+    @prop()
+    testVerifyResults: string = '';
+
+    @prop()
+    covidRnaResults: string = '';
+
+    @prop()
+    results: string = '';
+
+    @prop()
+    position: string = '';
 }
-
-export class DhislinkCode {
-
-    constructor(code: string, description: string) {
-
-    }
-}
-

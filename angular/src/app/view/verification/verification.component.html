@@ -121,17 +121,7 @@
                                 </ng-container>
                                 <ng-container matColumnDef="covidRnaResults" disabled>
                                     <mat-header-cell *matHeaderCellDef>Results</mat-header-cell>
-                                    <mat-cell *matCellDef="let row" [formGroup]="row">
-                                        <mat-form-field>
-                                            <mat-select formControlName="covidRnaResults" id = "covidRnaResults" >
-                                                <mat-option value=""></mat-option>
-                                                <mat-option value="1" selected>Positive</mat-option>
-                                                <mat-option value="2" selected>Negative</mat-option>
-                                                <mat-option value="3" selected>Inconclusive</mat-option> 
-                                                <mat-option value="4" selected>No Results</mat-option> 
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </mat-cell>
+                                    <mat-cell *matCellDef="let row"> {{ getResults(row.get('covidRnaResults').value) }} </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="testVerifyResults">
                                     <mat-header-cell *matHeaderCellDef>Verify Results</mat-header-cell>                                    

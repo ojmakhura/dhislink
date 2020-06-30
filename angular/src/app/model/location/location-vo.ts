@@ -18,5 +18,6 @@ export class LocationVO {
         this.code = '';
         this.name = '';
         this.description = '';
+        this.id = 0;
     }
 }

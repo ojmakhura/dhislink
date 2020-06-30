@@ -11,7 +11,7 @@
             <!-- Editing a location -->
             <mat-tab label="Edit">
                 <div class="col">
-                    <form [formGroup]="detectionForm" (ngSubmit)="saveDetectionBatch()">
+                    <form [formGroup]="detectionForm" id='detectionForm' (ngSubmit)="saveDetectionBatch()">
                         <div class="row">  
                             <div class="form-group">  
                                 <button class="btn btn-success" [disabled]="detectionForm.invalid">
@@ -23,7 +23,7 @@
                                 <button type="button" class="btn btn-success" (click)="newDetectionBatch()">New</button>
                             </div>
                             <div class="form-group">  
-                                <button type="button" class="btn btn-success" (click)="pullSpecimenInfo()">Pull</button>
+                                <button *ngIf="pulling" type="button" class="btn btn-success" (click)="pullSpecimenInfo()">Pull</button>
                             </div>
                         </div>
                         <div class="row">
@@ -36,9 +36,9 @@
                             <div class="form-group" formGroupName="lab">          
                                 <mat-form-field>
                                     <mat-label>Lab</mat-label>
-                                    <mat-select required="true" formControlName="name">
+                                    <mat-select required="true" formControlName="code" (selectionChange)="onLabSelectionChange($event)">
                                         <mat-option value="new LocationVO()" selected></mat-option>
-                                        <mat-option *ngFor="let lab of locations" value="lab">
+                                        <mat-option *ngFor="let lab of locations" [value] = "lab.code">
                                             {{lab.name}}
                                         </mat-option>
                                     </mat-select>
@@ -64,9 +64,9 @@
                             <div class="form-group" formGroupName="instrument">          
                                 <mat-form-field>
                                     <mat-label>Instrument</mat-label>
-                                    <mat-select formControlName="code" required="true">
+                                    <mat-select formControlName="code" required="true" (selectionChange)="onInstrumentSelectionChange($event)">
                                         <mat-option value="new Instrument('', '')" selected></mat-option>  
-                                        <mat-option *ngFor="let instrument of instruments" [value]="instrument">
+                                        <mat-option *ngFor="let instrument of instruments" [value] = 'instrument.code'>
                                             {{ instrument.name }}
                                         </mat-option>
                                     </mat-select>
@@ -138,12 +138,6 @@
                                     <mat-header-row *matHeaderRowDef="specimenColumns"></mat-header-row>
                                     <mat-row *matRowDef="let row; columns: specimenColumns;"></mat-row>            
                                 </mat-table>
-                                <!--mat-paginator 
-                                        #SpecimenPaginator="matPaginator" 
-                                        [length]="specimen.data.length" 
-                                        [pageSize]="10" 
-                                        [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons>
-                                </mat-paginator-->
                             </div>
                         </div>
                     </form>
