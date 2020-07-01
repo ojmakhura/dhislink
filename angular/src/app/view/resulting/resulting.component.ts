@@ -52,15 +52,25 @@ export class ResultingComponent implements OnInit {
               private redcaDataService: RedcapDataService,
               private formBuilder: RxFormBuilder) {
 
-    this.locationService.findAll().subscribe(results => {
-      this.locations = results;
-    }, error => {
-      authService.logout();
-    });
   }
 
   ngOnInit(): void {
 
+    this.authService.isLoggedIn.subscribe(
+      data => {
+        console.log(data);
+        if(!data) {
+          this.router.navigate(['/login']);
+        }
+      }
+    );
+
+    this.locationService.findAll().subscribe(results => {
+      this.locations = results;
+    }, error => {
+      this.authService.logout();
+    });
+    
     this.searchCriteria = new BatchSearchCriteria();
     this.batches = new MatTableDataSource<Batch>();
 

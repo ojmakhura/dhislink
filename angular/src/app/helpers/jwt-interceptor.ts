@@ -17,12 +17,10 @@ export class JwtInterceptor implements HttpInterceptor {
         }
 
         const accessExpired = this.authService.isTokenExpired();
-        //if (accessExpired) {
-        //    console.log('>>>> Expired token');
-        //    return next.handle(request);
-        //}
         if (accessExpired) {
-            console.log('Expired token');
+            return next.handle(request);
+        }
+        if (accessExpired) {
             
             if (!this.refreshTokenInProgress) {
                 this.refreshTokenInProgress = true;

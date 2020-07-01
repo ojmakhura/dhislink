@@ -226,21 +226,21 @@ public class RedcapLink {
 
 		if(resp != null)
 		{
-			//logger.debug("doPost: response = " + resp.toString());
+			logger.debug("doPost: response = " + resp.toString());
 			respCode = resp.getStatusLine().getStatusCode();
 
 			try
 			{
 				reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-				//logger.debug("doPost: resp.getEntity().getContent() = " + resp.getEntity().getContent());
+				logger.debug("doPost: resp.getEntity().getContent() = " + resp.getEntity().getContent());
 			}
 			catch (final Exception e)
 			{
-				//logger.error(e.getMessage());
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		} else {
-			//logger.debug("Could not execute post. Response object is null.");
+			logger.debug("Could not execute post. Response object is null.");
 		}
 		
 		if(reader != null)
@@ -258,10 +258,10 @@ public class RedcapLink {
 				e.printStackTrace();
 			}
 		} else {
-			//logger.debug("No data read.");
+			logger.debug("No data read.");
 		}
 		
-		//logger.debug("doPost: result is " + result.toString());
+		logger.debug("doPost: result is " + result.toString());
 	}
 	
 	private RedcapDataVO getRedcapDataObjet(String record, Long projectId, String fieldName, String value) {

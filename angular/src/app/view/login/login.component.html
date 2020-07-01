@@ -1,23 +1,21 @@
 <div class="row">
   <div class="col-md-6 login-container">
     <h2 style="margin: auto">Login </h2>
-    <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        
           <mat-form-field>
             <mat-label>Username</mat-label>
             <input matInput
-              [(ngModel)]="redcapAuth.username" name="username" id = "username" #username="ngModel" required="true">
+              formControlName="username" id = "username" required="true">
           </mat-form-field>
       </div>
       <div class="form-group">
         <mat-form-field>
           <mat-label>Password</mat-label>
-          <input matInput
-            [(ngModel)]="redcapAuth.password" name="password" id = "password" #password="ngModel" required="true" [type]="hide ? 'password' : 'text'">
+          <input matInput formControlName="password" id = "password" required="true" [type]="hide ? 'password' : 'text'">
           <button type="button" mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
               <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>
+            </button>
         </mat-form-field>
       </div>
       <button class="btn btn-success" [disabled]="loginForm.invalid">

@@ -307,16 +307,19 @@
   />
   <span>Detection, Resulting and Verification</span>
     <div class="spacer"></div>
-    <div *ngIf="isLogggedIn()">
+    <div *ngIf="isLoggedIn$ | async">
       <button type="button" (click)="changeForm('/location')" class="btn btn-danger">Location</button>
       <button type="button" (click)="changeForm('/detection')" class="btn btn-danger">Detection</button>
       <button type="button" (click)="changeForm('/resulting')" class="btn btn-danger">Resulting</button>
       <button type="button" (click)="changeForm('/verification')" class="btn btn-danger">Verification</button>
     </div>
+
     <div class="spacer"></div>
-    <div *ngIf="isLogggedIn()">
-      {{ getUser() }}
-      <button type="button" (click)="logout()" class="btn btn-danger">Logout</button>
+    <div>
+      <div *ngIf="isLoggedIn$ | async">
+        {{ getUser() }}
+        <button type="button" (click)="logout()" class="btn btn-danger" >Logout</button>
+      </div>
     </div>
 </div>
 

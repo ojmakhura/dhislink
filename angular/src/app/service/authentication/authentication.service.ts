@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import * as jwt_decode from 'jwt-decode';
 import { UserDetails } from 'src/app/model/user/user-details';
-import { retry, catchError, } from 'rxjs/operators';
+import { retry, catchError, map, } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BASE_URL, TOKEN_NAME, REFRESH_TOKEN, CURRENT_USER, CURRENT_ROUTE, FORM_DATA } from 'src/app/helpers/dhis-link-constants';
 
@@ -15,14 +15,22 @@ export class AuthenticationService {
 
   private url = BASE_URL + 'auth';
   user: UserDetails;
+  private loggedIn = new BehaviorSubject<boolean>(false);
 
   constructor (private router: Router, private http: HttpClient) {
     this.user = new UserDetails();
   }
 
   login(loginPayload): Observable<AuthenticationResponse> {
-
-    return this.http.post<AuthenticationResponse>(this.url + '/signin', loginPayload).pipe();
+        
+    return this.http.post<AuthenticationResponse>(this.url + '/signin', loginPayload).pipe(
+      map(data => {
+        console.log(data);
+        this.loggedIn.next(true);
+        return data;
+      })
+    );
+      
   }
 
   refreshToken(): Observable<AuthenticationResponse> {
@@ -45,8 +53,12 @@ export class AuthenticationService {
 
     return this.http.post<AuthenticationResponse>(this.url + '/refresh', refreshPayload).pipe(catchError((error) => {
       this.router.navigate(['/login']);
-      return  of(new AuthenticationResponse());
+      return of(new AuthenticationResponse());
     }));
+  }
+
+  get isLoggedIn() {
+    return this.loggedIn.asObservable(); // {2}
   }
 
   redirectToLogin() {
@@ -94,17 +106,18 @@ export class AuthenticationService {
   }
 
   isTokenExpired(token?: string): boolean {
-
+    
     if (!token) { token = this.getToken(); }
-    if (!token) { return true; }
 
+    if (!token || token === 'undefined') { return true; }
+    
     const date = this.getTokenExpirationDate(token);
     if (date === undefined) { return false; }
     return !(date.valueOf() > new Date().valueOf());
   }
 
-  getLoggeInUser(): boolean {
-    let loggedIn = false;
+  getLoggeInUser(): Observable<boolean> {
+    this.loggedIn.next(false);
     this.user = undefined;
     this.http.get<UserDetails>(this.url + '/me').pipe(catchError((error) => {
       this.logout();
@@ -112,24 +125,21 @@ export class AuthenticationService {
     })).subscribe(data => {
       this.user = data;
       localStorage.setItem(CURRENT_USER, this.user.username);
-      loggedIn = true;
+      this.loggedIn.next(true);
     }, error => {
       this.logout();
     });
 
     if (!this.user || !this.user.username) {
       localStorage.removeItem(CURRENT_USER);
-      loggedIn = false;
+      this.loggedIn.next(false);
     }
 
-    return loggedIn;
+    return this.loggedIn.asObservable();
   }
 
   logout() {
-    const payload = new AuthenticationResponse();
-    payload.accessToken = this.getToken();
-    payload.refreshToken = this.getRefreshToken();
-    payload.username = this.getCurrentUser();
+    this.loggedIn.next(false);
 
     this.http.get(this.url + '/logout').pipe();
 

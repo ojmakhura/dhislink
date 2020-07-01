@@ -19,8 +19,7 @@ export class RedcapDataService {
   constructor(private http: HttpClient) { }
 
   search(criteria: BatchSearchCriteria): Observable<Batch[]> {
-    console.log(criteria);
-
+    
     return this.http.post<Batch[]>(this.url + 'search/batch', criteria);
   }
 
@@ -30,7 +29,7 @@ export class RedcapDataService {
   }
 
   fetchBatchSpecimen(criteria: DataSearchCriteria): Observable<Specimen[]> {
-    console.log(localStorage, JSON.stringify(criteria));
+    
     return this.http.post<Specimen[]>(this.url + 'batch/specimen', criteria);
   }
 

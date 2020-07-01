@@ -188,7 +188,20 @@ public class RedcapDataController {
     	List<RedcapDataVO> redcapData = new ArrayList<RedcapDataVO>();
     	List<SpecimenVO> verifiedSpecimen = new ArrayList<SpecimenVO>();
     	
+    	if(StringUtils.isBlank(batch.getAssayBatchId())) {
+    		batch.setAssayBatchId(batch.getBatchId());
+    	}
+    	
+    	if(StringUtils.isBlank(batch.getDetectionBatchId())) {
+    		batch.setDetectionBatchId(batch.getBatchId());
+    	}
+    	
+    	if(StringUtils.isBlank(batch.getVerifyBatchId())) {
+    		batch.setVerifyBatchId(batch.getBatchId());
+    	}
+    	
     	if(batch.getPage().equals("testing_detection")) {
+    		
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_id", batch.getBatchId()));  	
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_batch_id", batch.getDetectionBatchId()));
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_assay_batch_id", batch.getAssayBatchId()));
@@ -210,9 +223,9 @@ public class RedcapDataController {
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "resulting_complete", batch.getDetectionStatus()));
 	    	
     	} else if(batch.getPage().equals("verification")) {
-
+    		batch.setVerifyBatchId(batch.getBatchId());
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_id", batch.getBatchId()));  	
-	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_det_batch_id", batch.getDetectionBatchId()));
+	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_batch_id", batch.getDetectionBatchId()));
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_batch_id", batch.getVerifyBatchId()));
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_personnel", batch.getVerificationPersonnel()));
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_datetime", batch.getVerificationDateTime()));
@@ -291,7 +304,7 @@ public class RedcapDataController {
 	    			}
 	    		}
 	    		
-	    		if(!StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
+	    		if(StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
 		    		specimen.setResultsVerifiedBy(batch.getVerificationPersonnel());
 		    		
 		    		try {
@@ -302,7 +315,7 @@ public class RedcapDataController {
 					}
     			}
 	    		
-	    		if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+	    		if(StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
 		    		specimen.setResultsAuthorisedBy(batch.getAuthorisingPersonnel());
 		    		
 		    		try {
@@ -315,9 +328,10 @@ public class RedcapDataController {
     		}
     		
     	}
-
+    	logger.info(redcapData.toString());
     	// Save the data for this particular project       	
-		redcapLink.postSpecimen(batch.getBatchItems(), batch.getProjectId());
+		//redcapLink.postSpecimen(batch.getBatchItems(), batch.getProjectId());
+    	redcapLink.postRedcapData(redcapData, batch.getProjectId());
 
 		// Update the staging area. This also updated the lab report
 		redcapLink.updateStaging(batch.getBatchItems());

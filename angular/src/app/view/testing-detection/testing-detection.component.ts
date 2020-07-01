@@ -65,12 +65,21 @@ export class TestingDetectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.authService.isLoggedIn.subscribe(
+      data => {
+        if(!data) {
+          this.router.navigate(['/login']);
+        }
+      }
+    );
+
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
     }, error => {
       console.log(error);
       this.authService.logout();
-      this.router.navigate(['login']);
+      this.router.navigate(['/login']);
     });
     this.instruments = InstrumentList.allIntruments();
 
@@ -161,7 +170,6 @@ export class TestingDetectionComponent implements OnInit {
   editBatch(batch: Batch) {
 
     this.detectionForm = this.formBuilder.group(batch);
-    console.log(this.detectionForm);
 
   }
 
@@ -192,6 +200,8 @@ export class TestingDetectionComponent implements OnInit {
           this.adding = false;
         });
       }
+    } else {
+      alert('Cannot add specimen to a completed batch.');
     }
 
     this.barcode = '';

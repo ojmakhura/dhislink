@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Keepalive } from '@ng-idle/keepalive';
 import { Router } from '@angular/router';
@@ -6,19 +6,22 @@ import { AuthenticationService } from './service/authentication/authentication.s
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
   title = 'Detection, Resulting and Verification';
   idleState = 'Not started.';
   timedOut = false;
   lastPing?: Date = null;
   user: string;
   loggedIn: boolean = false;
+  isLoggedIn$: Observable<boolean>; 
 
   public modalRef: BsModalRef;
   @ViewChild('childModal', { static: false }) childModal: ModalDirective;
@@ -71,6 +74,10 @@ export class AppComponent {
     } else {
       idle.stop();
     }
+  }
+
+  ngOnInit() {
+    this.isLoggedIn$ = this.authService.isLoggedIn; // {2}
   }
 
   reset() {

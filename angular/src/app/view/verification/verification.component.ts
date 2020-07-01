@@ -68,11 +68,16 @@ export class VerificationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.isLoggedIn.subscribe(
+      data => {
+        console.log(data);
+        if(!data) {
+          this.router.navigate(['/login']);
+        }
+      }
+    );
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
-    }, error => {
-      console.log(error);
-      this.authService.logout();
     });
     const token = this.authService.getToken();
     const user = this.authService.getCurrentUser();
