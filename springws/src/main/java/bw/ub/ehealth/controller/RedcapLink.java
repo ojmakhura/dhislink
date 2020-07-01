@@ -851,13 +851,25 @@ public class RedcapLink {
 				}
 			}
 			
-			if(specimen.getPatient() != null && specimen.getPatient().getIdentityNo() == null) {
+			if(specimen.getPatient() != null && StringUtils.isBlank(specimen.getPatient().getIdentityNo())) {
 				specimen.setPatient(null);
 			}
 			
 			specimenService.saveSpecimen(specimen);
 			
-			reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "covid19_lab_report_complete", "0"));
+			String status = "0";
+			
+			/// If the specimen results have been authorised, then it is complete
+			if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+				status = "2";
+			}
+			
+			// If the information from dhis is not available the status must be set to incomplete
+			if(specimen.getPatient() == null || specimen.getPatient().getId() == null || specimen.getId() == 0) {
+				status = "1";
+			}
+			
+			reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "covid19_lab_report_complete", status));
 			//logger.debug("Positing to lab report : " + reportData.toString());
 			
 			toPost.put(specimen.getSpecimenBarcode(), reportData);

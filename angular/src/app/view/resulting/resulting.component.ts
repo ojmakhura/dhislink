@@ -36,6 +36,7 @@ export class ResultingComponent implements OnInit {
   instruments: Instrument[];
   barcode = '';
   loading = false;
+  pulling = false;
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
   specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'testAssayResults'];
 
@@ -51,19 +52,9 @@ export class ResultingComponent implements OnInit {
               private locationService: LocationService,
               private redcaDataService: RedcapDataService,
               private formBuilder: RxFormBuilder) {
-
   }
 
   ngOnInit(): void {
-
-    this.authService.isLoggedIn.subscribe(
-      data => {
-        console.log(data);
-        if(!data) {
-          this.router.navigate(['/login']);
-        }
-      }
-    );
 
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
@@ -135,6 +126,8 @@ export class ResultingComponent implements OnInit {
     this.getItemControl('projectId').setValue(345);
 
     const cnt = this.getItemControl('resultingPersonnel');
+    console.log(cnt);
+    
     if (!cnt && cnt.value.length === 0) {
       this.now();
     }
@@ -198,5 +191,24 @@ export class ResultingComponent implements OnInit {
   toDetection() {
     localStorage.setItem(FORM_DATA, JSON.stringify(this.resultingForm.value));
     this.router.navigate(['/detection']);
+  }
+
+  pullSpecimenInfo() {
+    this.pulling = true;
+    const batch = this.resultingForm.value;
+    this.redcaDataService.pullSpecimenInfo(batch.batchItems).subscribe(results => {
+      this.searchCriteria.includeSpecimen = true;
+      this.searchCriteria.batchId = batch.batchId;
+
+      this.redcaDataService.search(this.searchCriteria).subscribe(batches => {
+        this.searchCriteria = new BatchSearchCriteria();
+        if (batches.length > 0) {
+          this.editBatch(batches[0]);
+        }
+        this.searchCriteria = new BatchSearchCriteria();
+      });
+
+      this.pulling = false;
+    });
   }
 }

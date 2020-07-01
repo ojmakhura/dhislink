@@ -36,6 +36,7 @@ export class VerificationComponent implements OnInit {
   instruments: Instrument[];
   barcode = '';
   loading = false;
+  pulling = false;
   labControl = new FormControl('', Validators.required);
   instrumentControl = new FormControl('', Validators.required);
   searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
@@ -64,24 +65,19 @@ export class VerificationComponent implements OnInit {
               private redcaDataService: RedcapDataService,
               private specimenService: SpecimenService,
               private formBuilder: RxFormBuilder) {
-
+    
+    if (!authService.isLoggedIn) {
+      this.router.navigate(['/login']);
+    }
   }
 
   ngOnInit(): void {
-    this.authService.isLoggedIn.subscribe(
-      data => {
-        console.log(data);
-        if(!data) {
-          this.router.navigate(['/login']);
-        }
-      }
-    );
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
     });
     const token = this.authService.getToken();
     const user = this.authService.getCurrentUser();
-    this.authService.getLoggeInUser();
+    //this.authService.getLoggeInUser();
     window.localStorage.setItem(CURRENT_ROUTE, '/verification');
 
     if (!user || this.authService.isTokenExpired(token)) {
@@ -141,9 +137,9 @@ export class VerificationComponent implements OnInit {
   saveVerificationBatch() {
 
     this.loading = true;
-    if (this.authService.getCurrentUser() === this.verificationForm.value.resultingPersonnel) {
-      alert('Cannot verify the results you entered.');
-    } else {
+    //if (this.authService.getCurrentUser() === this.verificationForm.value.resultingPersonnel) {
+    //  alert('You entered the results so you cannot verify them.');
+    //} else {
 
       this.getItemControl('page').setValue('verification');
       this.getItemControl('projectId').setValue(345);
@@ -159,19 +155,19 @@ export class VerificationComponent implements OnInit {
           this.loading = false;
         }
       );
-    }
+    //}
 
   }
 
   now() {
-    const batch = this.verificationForm.value;
-    batch.verificationDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
-    if (!batch.verificationPersonnel || batch.verificationPersonnel.length === 0) {
+    //const batch = this.verificationForm.value;
+    this.verificationForm.controls.verificationDateTime.setValue(formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US'));
+    if (!this.verificationForm.value.verificationPersonnel || this.verificationForm.value.verificationPersonnel.length === 0) {
 
-      batch.verificationPersonnel = this.authService.getCurrentUser();
+      this.verificationForm.controls.verificationPersonnel.setValue(this.authService.getCurrentUser());
     }
 
-    this.verificationForm.patchValue(batch);
+    //this.verificationForm.patchValue(batch);
   }
 
   searchBatches() {
@@ -229,5 +225,24 @@ export class VerificationComponent implements OnInit {
     } else {
       return '';
     }
+  }
+
+  pullSpecimenInfo() {
+    this.pulling = true;
+    const batch = this.verificationForm.value;
+    this.redcaDataService.pullSpecimenInfo(batch.batchItems).subscribe(results => {
+      this.searchCriteria.includeSpecimen = true;
+      this.searchCriteria.batchId = batch.batchId;
+
+      this.redcaDataService.search(this.searchCriteria).subscribe(batches => {
+        this.searchCriteria = new BatchSearchCriteria();
+        if (batches.length > 0) {
+          this.editBatch(batches[0]);
+        }
+        this.searchCriteria = new BatchSearchCriteria();
+      });
+
+      this.pulling = false;
+    });
   }
 }

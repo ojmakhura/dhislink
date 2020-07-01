@@ -12,6 +12,7 @@ import bw.ub.ehealth.dhislink.patient.Patient;
 import bw.ub.ehealth.dhislink.patient.vo.PatientVO;
 import bw.ub.ehealth.dhislink.specimen.Specimen;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,11 @@ public class PatientServiceImpl
     protected  PatientVO handleSavePatient(PatientVO patientVO)
         throws Exception
     {
+    	
+    	if(patientVO == null || StringUtils.isBlank(patientVO.getIdentityNo()) 
+    			|| (StringUtils.isBlank(patientVO.getFirstName()) && StringUtils.isBlank(patientVO.getSurname()))) {
+    		return null;
+    	}
     	
     	if(patientVO.getFirstName() == null) {
     		patientVO.setFirstName(patientVO.getSurname());

@@ -11,10 +11,10 @@ import { LoginComponent } from './view/login/login.component';
 const routes: Routes = [
   {path: '', redirectTo: '/detection', pathMatch: 'full', canActivate: [AuthGuard]},
   {path: 'login', component: LoginComponent},
-  {path: 'location', component: LocationComponent},
-  {path: 'detection', component: TestingDetectionComponent},
-  {path: 'resulting', component: ResultingComponent},
-  {path: 'verification', component: VerificationComponent}
+  {path: 'location', component: LocationComponent, canActivate: [AuthGuard]},
+  {path: 'detection', component: TestingDetectionComponent, canActivate: [AuthGuard]},
+  {path: 'resulting', component: ResultingComponent, canActivate: [AuthGuard]},
+  {path: 'verification', component: VerificationComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

@@ -62,24 +62,16 @@ export class TestingDetectionComponent implements OnInit {
               public dialog: MatDialog,
               private formBuilder: RxFormBuilder) {
 
+
   }
 
   ngOnInit(): void {
-
-    this.authService.isLoggedIn.subscribe(
-      data => {
-        if(!data) {
-          this.router.navigate(['/login']);
-        }
-      }
-    );
 
     this.locationService.findAll().subscribe(results => {
       this.locations = results;
     }, error => {
       console.log(error);
       this.authService.logout();
-      this.router.navigate(['/login']);
     });
     this.instruments = InstrumentList.allIntruments();
 
@@ -93,14 +85,7 @@ export class TestingDetectionComponent implements OnInit {
       localStorage.removeItem(FORM_DATA);
     }
 
-    const token = this.authService.getToken();
-    const user = this.authService.getCurrentUser();
-
     window.localStorage.setItem(CURRENT_ROUTE, '/detection');
-
-    if (!user || this.authService.isTokenExpired(token)) {
-      this.router.navigate(['/login']);
-    }
   }
 
   get formInvalid() {
@@ -188,6 +173,9 @@ export class TestingDetectionComponent implements OnInit {
             sp = new Specimen();
             sp.specimen_barcode = bc;
             sp.dhis2Synched = false;
+          }
+
+          if (sp.patient === null) {
             sp.patient = new Patient();
           }
 
@@ -196,9 +184,21 @@ export class TestingDetectionComponent implements OnInit {
 
           batch.instrumentBatchSize = batch.batchItems.length;
           batch.detectionSize = batch.batchItems.length;
+          console.log(sp);
+
           this.detectionForm = this.formBuilder.group(batch);
+
           this.adding = false;
         });
+      } else {
+        if (batch.batchItems.find(item => item.specimen_barcode === this.barcode)) {
+          alert('Specimen already in the batch.');
+        } else if (this.batchItems.length > 96) {
+          alert('Batch is full.');
+        } else {
+          alert('Could not add the specimen. Unknown error occured.');
+        }
+        this.adding = false;
       }
     } else {
       alert('Cannot add specimen to a completed batch.');
@@ -254,7 +254,7 @@ export class TestingDetectionComponent implements OnInit {
   toResulting() {
     const batch = this.detectionForm.value as Batch;
 
-    if ( batch.detectionStatus !== '2' ) { 
+    if ( batch.detectionStatus !== '2' ) {
       alert('The batch is not complete and cannot be sent to resulting.');
       return;
     }

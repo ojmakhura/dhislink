@@ -19,7 +19,7 @@ export class RedcapDataService {
   constructor(private http: HttpClient) { }
 
   search(criteria: BatchSearchCriteria): Observable<Batch[]> {
-    
+
     return this.http.post<Batch[]>(this.url + 'search/batch', criteria);
   }
 
@@ -29,19 +29,11 @@ export class RedcapDataService {
   }
 
   fetchBatchSpecimen(criteria: DataSearchCriteria): Observable<Specimen[]> {
-    
+
     return this.http.post<Specimen[]>(this.url + 'batch/specimen', criteria);
   }
 
-  /*fetchBatchSpecimenAsFormArray(criteria: DataSearchCriteria): Observable<FormArray> {
-     return this.fetchBatchSpecimen(criteria).pipe(map((specimens: Specimen[]) => {
-      const fgs = specimens.map(Specimen.asResultingFormGroup);
-      return new FormArray(fgs);
-    }));
-  }*/
-
   saveBatch(batch: Batch): Observable<Specimen[]> {
-    console.log('saving - > ', batch);
 
     if (batch.authorisingDateTime === '') {
       batch.authorisingDateTime = null;
@@ -87,14 +79,4 @@ export class RedcapDataService {
     return description;
   }
 
-  getResultCodes() {
-
-    return [
-        //new DhislinkCode('', ''),
-        //new DhislinkCode('1', 'Positive'),
-        //new DhislinkCode('2', 'Negative'),
-        //new DhislinkCode('3', 'Inconclusive'),
-        //new DhislinkCode('4', 'No Results')
-      ];
-  }
 }

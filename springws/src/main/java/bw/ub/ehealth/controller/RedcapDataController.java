@@ -304,7 +304,7 @@ public class RedcapDataController {
 	    			}
 	    		}
 	    		
-	    		if(StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
+	    		if(!StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
 		    		specimen.setResultsVerifiedBy(batch.getVerificationPersonnel());
 		    		
 		    		try {
@@ -315,20 +315,22 @@ public class RedcapDataController {
 					}
     			}
 	    		
-	    		if(StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+	    		if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+	    			
 		    		specimen.setResultsAuthorisedBy(batch.getAuthorisingPersonnel());
 		    		
 		    		try {
 		    			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 		    			specimen.setResultsAuthorisedDate(format.parse(batch.getAuthorisingDateTime()));
 					} catch (ParseException e) {
+						
 						e.printStackTrace();
 					}
 	    		}
     		}
     		
     	}
-    	logger.info(redcapData.toString());
+    	//logger.info(redcapData.toString());
     	// Save the data for this particular project       	
 		//redcapLink.postSpecimen(batch.getBatchItems(), batch.getProjectId());
     	redcapLink.postRedcapData(redcapData, batch.getProjectId());
