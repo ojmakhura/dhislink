@@ -184,7 +184,7 @@ public class RedcapDataController {
     @ResponseStatus(code = HttpStatus.OK)
     @ResponseBody
     public List<SpecimenVO> saveBatch(@RequestBody BatchVO batch) {
-    	//logger.debug(batch.toString());
+    	logger.debug(batch.getAuthorisingDateTime());
     	List<RedcapDataVO> redcapData = new ArrayList<RedcapDataVO>();
     	List<SpecimenVO> verifiedSpecimen = new ArrayList<SpecimenVO>();
     	
@@ -231,7 +231,7 @@ public class RedcapDataController {
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_datetime", batch.getVerificationDateTime()));
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "test_verify_batchsize", batch.getDetectionSize().toString()));
 	    	redcapData.add(getRedcapDataObjet(batch.getBatchId(), batch.getProjectId(), "verification_complete", batch.getVerificationStatus()));
-	    	
+	    		    	
     	}
     	
     	/// Detect barcodes that do not have data in the stagins
@@ -304,23 +304,23 @@ public class RedcapDataController {
 	    			}
 	    		}
 	    		
-	    		if(!StringUtils.isBlank(specimen.getResultsVerifiedBy())) {
+	    		if(!StringUtils.isBlank(batch.getVerificationPersonnel())) {
 		    		specimen.setResultsVerifiedBy(batch.getVerificationPersonnel());
 		    		
 		    		try {
-		    			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+		    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		    			specimen.setResultsVerifiedDate(format.parse(batch.getVerificationDateTime()));
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
     			}
 	    		
-	    		if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+	    		if(!StringUtils.isBlank(batch.getAuthorisingPersonnel())) {
 	    			
 		    		specimen.setResultsAuthorisedBy(batch.getAuthorisingPersonnel());
 		    		
 		    		try {
-		    			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+		    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		    			specimen.setResultsAuthorisedDate(format.parse(batch.getAuthorisingDateTime()));
 					} catch (ParseException e) {
 						
@@ -514,6 +514,10 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     			batch.setDetectionDateTime(rd.getValue());
 				    			
+    		} else if(rd.getFieldName().equals("authorizer_datetime")) {
+    			
+    			batch.setAuthorisingDateTime(rd.getValue());
+				    			
     		} else if(rd.getFieldName().equals("test_assay_datetime")) {
     			
     			batch.setResultingDateTime(rd.getValue());
@@ -550,9 +554,9 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     			
     			batch.setVerificationPersonnel(rd.getValue());
     			
-    		} else if(rd.getFieldName().equals("test_verify_personnel")) {
+    		} else if(rd.getFieldName().equals("authorizer_personnel")) {
     			
-    			batch.setVerificationPersonnel(rd.getValue());
+    			batch.setAuthorisingPersonnel(rd.getValue());
     			
     		} else if(rd.getFieldName().equals("test_det_instrument")) {
     			
@@ -624,7 +628,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    					specimen.setResultsVerifiedBy(field.getValue());
 	    				} else if(field.getField().equals("test_verify_datetime")) {
 	    					    					
-	    					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	    					SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 	    					try {
 	    						specimen.setResultsVerifiedDate(format.parse(field.getValue()));
 	    					} catch (ParseException e) {
@@ -648,9 +652,11 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    				!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
 	    			batch.setAuthorisingPersonnel(specimen.getResultsAuthorisedBy());
 	    			
-	    			Instant authDate = specimen.getResultsAuthorisedDate().toInstant();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
-	    			batch.setAuthorisingDateTime(formatter.format(authDate));
+	    			if(specimen.getResultsAuthorisedDate() != null) {
+		    			Instant authDate = specimen.getResultsAuthorisedDate().toInstant();
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+		    			batch.setAuthorisingDateTime(formatter.format(authDate));
+	    			}
 	    		}
 	    		
 	    		specimen.setCovidRnaResults(specimen.getTestAssayResults());
@@ -671,6 +677,8 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    	}
 	    	batch.setBatchItems(items);
     	}
+    	
+    	//logger.debug(batch.toString());
 
     	return batch;
     }

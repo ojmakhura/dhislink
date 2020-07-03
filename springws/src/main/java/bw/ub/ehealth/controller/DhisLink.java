@@ -1292,7 +1292,7 @@ public class DhisLink implements Serializable {
 		}
 
 		if (!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
-			fields.add(new DDPObjectField("results_authorised_by", specimen.getResultsAuthorisedBy(), null));
+			fields.add(new DDPObjectField("authorizer_personnel", specimen.getResultsAuthorisedBy(), null));
 		}
 
 		if (specimen.getResultsAuthorisedDate() != null) {
@@ -1300,7 +1300,13 @@ public class DhisLink implements Serializable {
 			Instant authDate = specimen.getResultsAuthorisedDate().toInstant();
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
 			String datetime = formatter.format(authDate);
-			fields.add(new DDPObjectField("results_authorised_date", datetime, null));
+			fields.add(new DDPObjectField("authorizer_datetime", datetime, null));
+		}
+		
+		if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy()) && specimen.getResultsAuthorisedDate() != null) {
+			fields.add(new DDPObjectField("result_authorised", "1", null));
+		} else {
+			fields.add(new DDPObjectField("result_authorised", "0", null));
 		}
 
 		if (!StringUtils.isBlank(specimen.getNotes())) {

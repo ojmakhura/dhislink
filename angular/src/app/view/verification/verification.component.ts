@@ -124,10 +124,12 @@ export class VerificationComponent implements OnInit {
   }
 
   authorise() {
-    const batch = this.verificationForm.value;
-    batch.authorisingDateTime = formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US');
-    batch.authorisingPersonnel = this.authService.getCurrentUser();
-    this.verificationForm.patchValue(batch);
+
+    this.verificationForm.controls.authorisingDateTime.setValue(formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US'));
+    if (!this.verificationForm.value.authorisingPersonnel || this.verificationForm.value.authorisingPersonnel.length === 0) {
+
+      this.verificationForm.controls.authorisingPersonnel.setValue(this.authService.getCurrentUser());
+    }
   }
 
   getItemControl(name): FormControl {
@@ -135,11 +137,12 @@ export class VerificationComponent implements OnInit {
   }
 
   saveVerificationBatch() {
-
+    console.log(this.verificationForm.value);
+    
     this.loading = true;
-    //if (this.authService.getCurrentUser() === this.verificationForm.value.resultingPersonnel) {
-    //  alert('You entered the results so you cannot verify them.');
-    //} else {
+    if (this.authService.getCurrentUser() === this.verificationForm.value.resultingPersonnel) {
+      alert('You entered the results so you cannot verify them.');
+    } else {
 
       this.getItemControl('page').setValue('verification');
       this.getItemControl('projectId').setValue(345);
@@ -155,7 +158,7 @@ export class VerificationComponent implements OnInit {
           this.loading = false;
         }
       );
-    //}
+    }
 
   }
 

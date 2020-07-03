@@ -396,6 +396,11 @@ public class RedcapLink {
 			
 		}
 		
+		if(!StringUtils.isBlank(specimen.getCovidNumber())) {
+			tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), projectId, "patient_facility", specimen.getCovidNumber());
+			data.add(tmp);
+		}
+		
 		return data;
 		
 	}
@@ -833,6 +838,10 @@ public class RedcapLink {
 					if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
 						rd = redcapDataVOs.get(0);
 						specimen.setResultsAuthorisedBy(rd.getValue());
+					} else {
+						if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
+							reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "authorizer_personnel", specimen.getResultsAuthorisedBy()));
+						}
 					}
 					
 					// When was the results authorised
@@ -847,7 +856,21 @@ public class RedcapLink {
 							e.printStackTrace();
 						}
 						
+					} else {
+						if(specimen.getResultsAuthorisedDate() != null) {
+							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+							reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "authorizer_datetime", format.format(specimen.getResultsAuthorisedDate())));
+						}
 					}
+				}
+			} else {
+				if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy()) && specimen.getResultsAuthorisedDate() != null) {
+					reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "result_authorised", "1"));
+					reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "authorizer_personnel", specimen.getResultsAuthorisedBy()));
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "authorizer_datetime", format.format(specimen.getResultsAuthorisedDate())));
+				} else {
+					reportData.add(getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "result_authorised", "0"));
 				}
 			}
 			
