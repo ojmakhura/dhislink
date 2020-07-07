@@ -7,20 +7,20 @@
       </button>
     </div>
   </div>
-  <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex" class = "view-tabs">
+  <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedTab" class = "view-tabs" (selectedIndexChange)="tabChanged($event)">
     <!-- Editing a location -->
     <mat-tab label="Edit">
       <div class="col">
-        <form [formGroup]="detectionForm" id='detectionForm' (ngSubmit)="saveDetectionBatch()">
+        <form [formGroup]="batchForm" id='detectionForm' (ngSubmit)="saveBatch()">
           <div class="row">
             <div class="form-group">
-              <button class="btn btn-success" [disabled]="detectionForm.invalid">
+              <button class="btn btn-success" [disabled]="batchForm.invalid">
                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
                 Save
               </button>
             </div>
             <div class="form-group">
-              <button type="button" class="btn btn-success" (click)="newDetectionBatch()">New</button>
+              <button type="button" class="btn btn-success" (click)="newBatch()">New</button>
             </div>
             <div class="form-group">
               <button type="button" class="btn btn-success" (click)="pullSpecimenInfo()">

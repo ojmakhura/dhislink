@@ -7,14 +7,14 @@
       </button>
     </div>
   </div>
-  <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex" class = "view-tabs">
+  <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedTab" (selectedIndexChange)="tabChanged($event)" class = "view-tabs">
     <!-- Editing a location -->
     <mat-tab label="Edit">
       <div class="col">
-        <form [formGroup]="verificationForm" (ngSubmit)="saveVerificationBatch()">
+        <form [formGroup]="batchForm" (ngSubmit)="saveBatch()">
           <div class="row">
             <div class="form-group">
-              <button class="btn btn-success" [disabled]="verificationForm.invalid">
+              <button class="btn btn-success" [disabled]="batchForm.invalid">
                 <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
                 Save
               </button>

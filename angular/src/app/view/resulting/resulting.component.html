@@ -12,10 +12,10 @@
       </button>
     </div>
   </div>
-  <mat-tab-group id="resultingGroup" animationDuration="0ms" [selectedIndex]="selectedIndex" class = "view-tabs">
+  <mat-tab-group id="resultingGroup" animationDuration="0ms" [selectedIndex]="selectedTab" (selectedIndexChange)="tabChanged($event)" class = "view-tabs">
     <!-- Editing a location -->
     <mat-tab label="Edit">
-      <form [formGroup]="resultingForm" (ngSubmit)="saveResultingBatch()" class="col">
+      <form [formGroup]="batchForm" (ngSubmit)="saveBatch()" class="col">
         <div>
           <div class="row">
             <div class="form-group">
