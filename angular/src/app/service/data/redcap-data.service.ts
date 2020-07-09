@@ -35,7 +35,7 @@ export class RedcapDataService {
 
   saveBatch(batch: Batch): Observable<Specimen[]> {
 
-    if (batch.authorisingDateTime === '') {
+    if (batch.authorisingDateTime === null) {
       batch.authorisingDateTime = null;
     }
 
@@ -43,7 +43,7 @@ export class RedcapDataService {
       batch.authorisingPersonnel = null;
     }
 
-    if (batch.resultingDateTime === '') {
+    if (batch.resultingDateTime === null) {
       batch.resultingDateTime = null;
     }
 
@@ -51,7 +51,7 @@ export class RedcapDataService {
       batch.resultingPersonnel = null;
     }
 
-    if (batch.verificationDateTime === '') {
+    if (batch.verificationDateTime === null) {
       batch.verificationDateTime = null;
     }
 

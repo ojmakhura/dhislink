@@ -64,7 +64,7 @@ export class TestingDetectionComponent extends BatchComponent {
             sp.dhis2Synched = false;
           }
 
-          if (sp.patient === null) {
+          if (sp.patient === null || !sp.patient) {
             sp.patient = new Patient();
           }
 
@@ -73,8 +73,6 @@ export class TestingDetectionComponent extends BatchComponent {
 
           batch.instrumentBatchSize = batch.batchItems.length;
           batch.detectionSize = batch.batchItems.length;
-          console.log(sp);
-
           this.batchForm = this.formBuilder.group(batch);
 
           this.adding = false;
@@ -106,7 +104,7 @@ export class TestingDetectionComponent extends BatchComponent {
 
     // We don't want to remove from a saved batch
     this.redcaDataService.search(this.searchCriteria).subscribe(results => {
-      console.log(results);
+
       if (results.length > 0) {
         alert('Cannot remove specimen from saved batch.');
       } else {

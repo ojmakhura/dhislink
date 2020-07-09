@@ -124,7 +124,7 @@ export abstract class BatchComponent implements OnInit {
 
   now() {
 
-    this.getItemControl(this.page + 'DateTime').patchValue(formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US'));
+    this.getItemControl(this.page + 'DateTime').patchValue(formatDate(new Date(), 'yyyy-MM-ddTHH:mm', 'en-US'));
     const cnt = this.getItemControl(this.page + 'Personnel');
     cnt.patchValue(this.authService.getCurrentUser());
   }
@@ -275,7 +275,7 @@ export abstract class BatchComponent implements OnInit {
   tabChanged(event) {
     this.selectedTab = event;
   }
-  
+
   /**
    * This publishes the verified results to DHIS2
    */

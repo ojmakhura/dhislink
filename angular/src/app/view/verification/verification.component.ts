@@ -34,7 +34,7 @@ export class VerificationComponent extends BatchComponent {
 
   authorise() {
 
-    this.batchForm.controls.authorisingDateTime.setValue(formatDate(new Date(), 'yyyy-MM-dd HH:mm', 'en-US'));
+    this.batchForm.controls.authorisingDateTime.setValue(formatDate(new Date(), 'yyyy-MM-ddTHH:mm', 'en-US'));
     if (!this.batchForm.value.authorisingPersonnel || this.batchForm.value.authorisingPersonnel.length === 0) {
 
       this.batchForm.controls.authorisingPersonnel.setValue(this.authService.getCurrentUser());
@@ -47,6 +47,7 @@ export class VerificationComponent extends BatchComponent {
   preSaveBatch() {
     if (this.authService.getCurrentUser() === this.batchForm.value.resultingPersonnel) {
       alert('You entered the results so you cannot verify them.');
+      this.loading = false;
       return false;
     } else {
 

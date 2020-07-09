@@ -51,10 +51,10 @@
               </mat-form-field>
             </fieldset>
             <div class="row form-group">
-              <fieldset disabled>
+              <fieldset>
                 <mat-form-field>
                   <mat-label>Verification Datetime</mat-label>
-                  <input matInput formControlName="verificationDateTime" id="verificationDateTime">
+                  <input type="datetime-local" matInput formControlName="verificationDateTime" id="verificationDateTime">
                 </mat-form-field>
               </fieldset>
               <button type="button" class="btn btn-success" (click)="now()">Now</button>
@@ -68,10 +68,10 @@
               </mat-form-field>
             </fieldset>
             <div class="row form-group">
-              <fieldset disabled>
+              <fieldset>
                 <mat-form-field>
                   <mat-label>Authorising Datetime</mat-label>
-                  <input matInput formControlName="authorisingDateTime" id="authorisingDateTime">
+                  <input type="datetime-local" matInput formControlName="authorisingDateTime" id="authorisingDateTime">
                 </mat-form-field>
               </fieldset>
               <button type="button" class="btn btn-success" (click)="authorise()">Now</button>

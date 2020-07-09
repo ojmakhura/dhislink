@@ -28,13 +28,13 @@ export class Batch {
     verificationPersonnel: string;
 
     @prop()
-    detectionDateTime: string;
+    detectionDateTime: Date;
 
     @prop()
-    resultingDateTime: string;
+    resultingDateTime: Date;
 
     @prop()
-    verificationDateTime: string;
+    verificationDateTime: Date;
 
     @prop()
     detectionSize: number;
@@ -70,7 +70,7 @@ export class Batch {
     authorisingPersonnel: string;
 
     @prop()
-    authorisingDateTime: string;
+    authorisingDateTime: Date;
 
     @prop()
     publishResults: boolean;
@@ -82,9 +82,9 @@ export class Batch {
         this.detectionPersonnel = '';
         this.resultingPersonnel = '';
         this.verificationPersonnel = '';
-        this.detectionDateTime = '';
-        this.resultingDateTime = '';
-        this.verificationDateTime = '';
+        this.detectionDateTime = null;
+        this.resultingDateTime = null;
+        this.verificationDateTime = null;
         this.detectionSize = 0;
         this.instrumentBatchSize = 0;
         this.detectionStatus = '';
@@ -94,7 +94,7 @@ export class Batch {
         this.assayBatchId = '';
         this.verifyBatchId = '';
         this.authorisingPersonnel = '';
-        this.authorisingDateTime = '';
+        this.authorisingDateTime = null;
         this.publishResults = false;
         this.lab = new LocationVO();
         this.batchItems = [];

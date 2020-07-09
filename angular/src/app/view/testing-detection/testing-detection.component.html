@@ -56,11 +56,11 @@
                 </mat-form-field>
             </fieldset>
             <div class="row form-group">
-                <fieldset disabled>
-                <mat-form-field>
-                    <mat-label>Detection Datetime</mat-label>
-                    <input matInput formControlName="detectionDateTime" id="detectionDateTime" required="true">
-                </mat-form-field>
+                <fieldset>
+                  <mat-form-field>
+                      <mat-label>Detection Datetime</mat-label>
+                      <input type="datetime-local" matInput formControlName="detectionDateTime" id="detectionDateTime" required="true">
+                  </mat-form-field>
                 </fieldset>
                 <button type="button" class="btn btn-success" (click)="now()">Now</button>
             </div>

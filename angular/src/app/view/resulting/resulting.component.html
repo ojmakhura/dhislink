@@ -57,10 +57,10 @@
               </mat-form-field>
             </fieldset>
             <div class="row form-group">
-              <fieldset disabled>
+              <fieldset>
                 <mat-form-field>
                   <mat-label>Resulting Datetime</mat-label>
-                  <input matInput formControlName="resultingDateTime" id="resultingDateTime" required="true">
+                  <input type="datetime-local" matInput formControlName="resultingDateTime" id="resultingDateTime" required="true">
                 </mat-form-field>
               </fieldset>
               <button type="button" class="btn btn-success" (click)="now()">Now</button>

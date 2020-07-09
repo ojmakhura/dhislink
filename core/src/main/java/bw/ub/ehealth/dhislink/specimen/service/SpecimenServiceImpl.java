@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +59,7 @@ public class SpecimenServiceImpl
     {
     	Specimen specimen = getSpecimenDao().createOrUpdate(getSpecimenDao().specimenVOToEntity(specimenVO));
     	
-    	if(specimen.getPatient() != null && specimen.getPatient().getIdentityNo() == null) {
+    	if(specimen.getPatient() != null && StringUtils.isBlank(specimen.getPatient().getIdentityNo())) {
     		specimen.setPatient(null);
     	}
     	
