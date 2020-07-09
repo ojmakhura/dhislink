@@ -1,4 +1,10 @@
+import { prop, model } from '@rxweb/reactive-form-validators';
+
+@model([])
 export class UserDetails {
-    username: string;
-    password: string;
+    @prop()
+    username = '';
+
+    @prop()
+    password = '';
 }

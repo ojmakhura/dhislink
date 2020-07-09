@@ -1,46 +1,131 @@
 import { Patient } from '../patient/patient';
+import { prop, propObject, model } from '@rxweb/reactive-form-validators';
 
+@model([])
 export class Specimen {
+    @prop()
     id: number;
-    batch_number: string;
+
+    @prop()
+    batch_number = '';
+
+    @prop()
     date_dispatched: Date;
-    dispatcher: string;
-    location_of_dispatch: string;
+
+    @prop()
+    dispatcher = '';
+
+    @prop()
+    location_of_dispatch = '';
+
+    @prop()
     date_specimen_collected: Date;
-    gis_lat: string;
-    gis_long: string;
-    specimen_barcode: string;
-    outcome: string;
-    receiving_personnel: string;
-    receiving_condition_code: string;
-    sample_status_dispatch: string;
-    symptom: string;
+
+    @prop()
+    gis_lat = '';
+
+    @prop()
+    gis_long = '';
+
+    @prop()
+    specimen_barcode = '';
+
+    @prop()
+    outcome = '';
+
+    @prop()
+    receiving_personnel = '';
+
+    @prop()
+    receiving_condition_code = '';
+
+    @prop()
+    sample_status_dispatch = '';
+
+    @prop()
+    symptom = '';
+
+    @prop()
     received_datetime: Date;
-    specimen_type: string;
+
+    @prop()
+    specimen_type = '';
+
+    @prop()
     time_dispatched: Date;
+
+    @propObject(Patient)
     patient: Patient;
-    results: string;
-    testType: string;
-    riskFactors: string;
-    test_assay_personnel: string;
+
+    @prop()
+    testType = '';
+
+    @prop()
+    riskFactors = '';
+
+    @prop()
+    test_assay_personnel = '';
+
+    @prop()
     test_assay_datetime: Date;
-    test_verify_personnel: string;
+
+    @prop()
+    test_verify_personnel = '';
+
+    @prop()
     test_verify_datetime: Date;
-    authorizer_personnel: string;
+
+    @prop()
+    authorizer_personnel = '';
+
+    @prop()
     authorizer_datetime: Date;
-    notes: string;
-    dispatcher_contact: string;
-    dispatcher_email: string;
-    dispatcher_city: string;
+
+    @prop()
+    notes = '';
+
+    @prop()
+    dispatcher_contact = '';
+
+    @prop()
+    dispatcher_email = '';
+
+    @prop()
+    dispatcher_city = '';
+
+    @prop()
     lastUpdated: Date;
+
+    @prop()
     created: Date;
-    event: string;
-    dhis2Synched: Boolean  = false;
-    receiving_lab: string;
-    patient_facility: string;
-    covid_number: string;
-    testAssayResults: string;
-    testVerifyResults: string;
-    covidRnaResults: string;
-    position: string
+
+    @prop()
+    event = '';
+
+    @prop()
+    dhis2Synched  = false;
+
+    @prop()
+    receiving_lab = '';
+
+    @prop()
+    patient_facility = '';
+
+    @prop()
+    covid_number = '';
+
+    @prop()
+    testAssayResults = '';
+
+    @prop()
+    testVerifyResults = '';
+
+    @prop()
+    covidRnaResults = '';
+
+    @prop()
+    results = '';
+
+    @prop()
+    position = '';
 }

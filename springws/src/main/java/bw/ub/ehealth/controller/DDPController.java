@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -177,7 +178,12 @@ public class DDPController {
         if(last != null) {
         	
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(last.getLastUpdated());
+			
 			Instant updated = last.getLastUpdated().toInstant();
+			updated = updated.minus(4, ChronoUnit.HOURS); /// Just backtrack in case we missed some. Also a hack to counter 
 			date = formatter.format(updated).replace(' ', 'T');
         }
         	
@@ -246,9 +252,26 @@ public class DDPController {
     @ResponseStatus(value = HttpStatus.OK)
     public String sendDhisResults() {
     	
+    	StringBuilder builder = new StringBuilder();
     	// Make sure the staging area is updated
-    	redcapLink.updateStaging(specimenService.findUnsynchedSpecimen()); 
-    	return dhisLink.getDhisPayload(specimenService.findUnsynchedSpecimen());
+    	Collection<SpecimenVO> updateable = specimenService.findUnsynchedSpecimen();
+    	redcapLink.updateStaging(updateable);
+    	Collection<SpecimenVO> tmp = null;
+    	
+    	for(SpecimenVO specimen : updateable) {
+    		if(tmp == null) {
+    			tmp = new ArrayList<>();
+    		}
+    		
+    		tmp.add(specimen);
+    		
+    		if(tmp.size() == 100) {
+    			builder.append(dhisLink.getDhisPayload(tmp));
+    			tmp.clear();
+    		}
+    	}
+    	
+    	return builder.toString();
     }
     
     /**

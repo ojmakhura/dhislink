@@ -1,9 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, ErrorHandler } from '@angular/core';
-import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule} from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table'  
+import { MatTableModule } from '@angular/material/table';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -31,7 +31,7 @@ import { ResultingComponent } from './view/resulting/resulting.component';
 import { LocationService } from './service/location/location.service';
 import { RedcapDataService } from './service/data/redcap-data.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -39,10 +39,13 @@ import { AuthErrorHandler } from './helpers/auth-error-handler';
 import { RequestOptions } from '@angular/http';
 import { AuthRequestOptions } from './helpers/auth-request-options';
 import { LoginComponent } from './view/login/login.component';
-import { NgForm }   from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { NgIdleKeepaliveModule } from '@ng-idle/keepalive';
 import { MomentModule } from 'angular2-moment';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { DialogBoxComponent } from './view/dialog-box/dialog-box.component';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { BatchComponent } from './view/batch/batch.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +54,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     VerificationComponent,
     ResultingComponent,
     LocationComponent,
-    TestingDetectionComponent
+    TestingDetectionComponent,
+    DialogBoxComponent
   ],
   imports: [
     MatButtonModule,
@@ -78,6 +82,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    RxReactiveFormsModule,
     NgIdleKeepaliveModule.forRoot(),
     MomentModule,
     ModalModule.forRoot()
@@ -111,6 +116,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     LocationService,
     RedcapDataService,
     RedcapAuth,
+    DialogBoxComponent,
     { provide: ErrorHandler, useClass: AuthErrorHandler }
   ],
   bootstrap: [AppComponent]

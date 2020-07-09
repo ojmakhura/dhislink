@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
  
     <property name="LOGS" value="/var/log" />
+    <!-- <property name="LOGS" value="/home/junior" /> -->
  
     <appender name="Console"
         class="ch.qos.logback.core.ConsoleAppender">
@@ -23,7 +27,8 @@
         <rollingPolicy
             class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 10 MegaBytes -->
-            <fileNamePattern>${LOGS}/archived/dhislink-%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>
+            	${LOGS}/archived/dhislink-%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -33,11 +38,12 @@
     </appender>
      
     <!-- LOG everything at INFO level -->
-    <root level="error">
+    <root level="INFO">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </root> 
     <!-- <root level="INFO">
         <appender-ref ref="Console" />
     </root> --> 
+    <logger name="org.springframework.web" level="INFO"/>
 </configuration>

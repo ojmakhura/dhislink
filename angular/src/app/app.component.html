@@ -313,10 +313,13 @@
       <button type="button" (click)="changeForm('/resulting')" class="btn btn-danger">Resulting</button>
       <button type="button" (click)="changeForm('/verification')" class="btn btn-danger">Verification</button>
     </div>
+
     <div class="spacer"></div>
-    <div *ngIf="isLogggedIn()">
-      {{ getUser() }}
-      <button type="button" (click)="logout()" class="btn btn-danger">Logout</button>
+    <div>
+      <div *ngIf="isLogggedIn()">
+        {{ getUser() }}
+        <button type="button" (click)="logout()" class="btn btn-danger" >Logout</button>
+      </div>
     </div>
 </div>
 

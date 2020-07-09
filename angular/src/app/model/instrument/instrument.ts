@@ -1,4 +1,13 @@
-export class Instrument {
+import { prop, model } from '@rxweb/reactive-form-validators';
 
-    constructor(public code: string, public name:string){}
+@model([])
+export class Instrument {
+    @prop()
+    code: string;
+    @prop()
+    name: string;
+    constructor(code: string, name: string) {
+        this.code = code;
+        this.name = name;
+    }
 }

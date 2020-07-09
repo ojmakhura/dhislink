@@ -1,248 +1,233 @@
-
-<div class="component"  style="width: 100%;">
-    <h2>Resulting</h2>
-    <div class="row">
-        <div>
-            <button type="button" class="btn" (click)="toDetection()" >
-                <mat-icon aria-hidden="false" >keyboard_arrow_left</mat-icon>
-            </button>
-        </div>
-        <div>
-            <button type="button" class="btn" (click)="toVerification()" >
-                <mat-icon aria-hidden="false" >keyboard_arrow_right</mat-icon>
-            </button>
-        </div>
+<div class="component view">
+  <h2>Resulting</h2>
+  <div class="row">
+    <div>
+      <button type="button" class="btn" (click)="toDetection()">
+        <mat-icon aria-hidden="false">keyboard_arrow_left</mat-icon>
+      </button>
     </div>
-    <mat-tab-group id="detectionGroup" animationDuration="0ms" [selectedIndex]="selectedIndex">
-        <!-- Editing a location -->
-        <mat-tab label="Edit">
-            <div class="col">
-                <form #resultingForm="ngForm" (ngSubmit)="saveResultingBatch()">
-                    
-                    <div class="row">  
-                        <div class="form-group">  
-                            <button class="btn btn-success" [disabled]="resultingForm.invalid">
-                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <mat-form-field>
-                                <mat-label>Batch Id</mat-label>
-                                <input matInput disabled
-                                [(ngModel)]="batch.batchId" name="batchId" id = "batchId" #batchId="ngModel" required="true">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-group">        
-                            <div class="form-group">
-                                <mat-form-field>
-                                    <mat-label>Lab</mat-label>
-                                    <input matInput
-                                    [(ngModel)]="batch.lab.name" name="lab" id = "lab" #lab="ngModel" required="true" disabled="true">
-                                </mat-form-field>
-                            </div>  
-                        </div>
-                    </div>
-                    <div class="row">  
-                        <div class="form-group">
-                            <mat-form-field>
-                                <mat-label>Resulting Personnel</mat-label>
-                                <input matInput  disabled = "true"
-                                    [(ngModel)]="batch.resultingPersonnel" 
-                                    name="resultingPersonnel" id = "resultingPersonnel" 
-                                    #resultingPersonnel="ngModel" required="false">
-                            </mat-form-field>
-                        </div>
-                        <div class="form-group">
-                            <mat-form-field>
-                                <mat-label>Resulting Datetime</mat-label>                                
-                                <input matInput disabled = "true"
-                                    [(ngModel)]="batch.resultingDateTime" 
-                                    name="resultingDateTime" id = "resultingDateTime" 
-                                    #resultingDateTime="ngModel" required="true">                                
-                            </mat-form-field>
-                            <button type="button" class="btn btn-success" (click)="now()">Now</button>
-                        </div>
-                    </div>
-                    <div class="row"> 
-                        <div class="form-group">          
-                            <mat-form-field>
-                                <mat-label>Instrument</mat-label>    
-                                <mat-select [formControl]="instrumentControl" disabled="true">
-                                    <mat-option value="new Instrument('', '')" selected></mat-option>  
-                                    <mat-option *ngFor="let instrument of instruments" [value]="instrument.code">
-                                        {{ instrument.name }}
-                                    </mat-option>
-                                </mat-select>    
-                            </mat-form-field>
-                        </div>
-                        <div class="form-group">
-                            <mat-form-field>
-                                <mat-label>Batch Size</mat-label>
-                                <input matInput
-                                    [(ngModel)]="batch.instrumentBatchSize" 
-                                    name="instrumentBatchSize" id = "instrumentBatchSize" 
-                                    #instrumentBatchSize="ngModel" required="true" disabled = "true">
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div class="form-group">          
-                        <mat-form-field>
-                            <mat-label>Resulting Status</mat-label>
-                            <mat-select [(ngModel)]="batch.detectionStatus" 
-                                    name="detectionStatus" id = "detectionStatus" 
-                                    #detectionStatus="ngModel" required="true">
-                                <mat-option value=""></mat-option>
-                                <mat-option value="0" selected>Incomplete</mat-option>
-                                <mat-option value="1" selected>Unverified</mat-option>
-                                <mat-option value="2" selected>Complete</mat-option> 
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                    <div>
-                        <div class="mat-elevation-z8 specimen-list"> 
-                            <mat-table [dataSource]="specimen" class="table table-bordered table-striped" style="width: 100%;">
-                                <ng-container matColumnDef="position">
-                                    <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.position }} </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="specimen_barcode">
-                                    <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.specimen_barcode }} </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="patient_first_name">
-                                    <mat-header-cell *matHeaderCellDef>Patient Name</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.patient.patient_first_name }} </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="patient_surname">
-                                    <mat-header-cell *matHeaderCellDef>Patient Surname</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.patient.patient_surname }} </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="identity_no">
-                                    <mat-header-cell *matHeaderCellDef>Patient Id</mat-header-cell>
-                                    <mat-cell *matCellDef="let row"> {{ row.patient.identity_no }} </mat-cell>
-                                </ng-container>
-                                <ng-container matColumnDef="testAssayResults">
-                                    <mat-header-cell *matHeaderCellDef>Assay Results</mat-header-cell>
-                                    <mat-cell *matCellDef="let row">
-                                        <mat-form-field>
-                                            <mat-select [(ngModel)]="row.testAssayResults" 
-                                                    name="testAssayResults" id = "testAssayResults" 
-                                                    #testAssayResults="ngModel" required="true">
-                                                <mat-option value=""></mat-option>
-                                                <mat-option value="1" selected>Positive</mat-option>
-                                                <mat-option value="2" selected>Negative</mat-option>
-                                                <mat-option value="3" selected>Inconclusive</mat-option> 
-                                                <mat-option value="4" selected>No Results</mat-option> 
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </mat-cell>
-                                </ng-container>
-                                <mat-header-row *matHeaderRowDef="specimenColumns"></mat-header-row>
-                                <mat-row *matRowDef="let row; columns: specimenColumns;"></mat-row>            
-                            </mat-table>
-                            <!--mat-paginator 
-                                #SpecimenPaginator="matPaginator" 
-                                [length]="specimen.data.length" 
-                                [pageSize]="10" 
-                                [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons>
-                            </mat-paginator-->
-                        </div>
-                    </div>
-                </form>
+    <div>
+      <button type="button" class="btn" (click)="toVerification()">
+        <mat-icon aria-hidden="false">keyboard_arrow_right</mat-icon>
+      </button>
+    </div>
+  </div>
+  <mat-tab-group id="resultingGroup" animationDuration="0ms" [selectedIndex]="selectedTab" (selectedIndexChange)="tabChanged($event)" class = "view-tabs">
+    <!-- Editing a location -->
+    <mat-tab label="Edit">
+      <form [formGroup]="batchForm" (ngSubmit)="saveBatch()" class="col">
+        <div>
+          <div class="row">
+            <div class="form-group">
+              <button class="btn btn-success">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                Save
+              </button>
             </div>
-        </mat-tab>
+            <div class="form-group">
+              <button type="button" class="btn btn-success" (click)="pullSpecimenInfo()">
+                <span *ngIf="pulling" class="spinner-border spinner-border-sm mr-1"></span>
+                Pull
+              </button>
+            </div>
+          </div>
+          <fieldset disabled>
+            <div class="row">
+              <div class="form-group">
+                <mat-form-field>
+                  <mat-label>Batch Id</mat-label>
+                  <input matInput formControlName="batchId" id="batchId">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <div class="form-group" formGroupName="lab">
+                  <mat-form-field>
+                    <mat-label>Lab</mat-label>
+                    <input matInput formControlName="name" id="lab">
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <div class="row">
+            <fieldset disabled class="form-group">
+              <mat-form-field>
+                <mat-label>Resulting Personnel</mat-label>
+                <input matInput formControlName="resultingPersonnel" id="resultingPersonnel" required="false">
+              </mat-form-field>
+            </fieldset>
+            <div class="row form-group">
+              <fieldset>
+                <mat-form-field>
+                  <mat-label>Resulting Datetime</mat-label>
+                  <input type="datetime-local" matInput formControlName="resultingDateTime" id="resultingDateTime" required="true">
+                </mat-form-field>
+              </fieldset>
+              <button type="button" class="btn btn-success" (click)="now()">Now</button>
+            </div>
+          </div>
+          <fieldset disabled>
+            <div class="row">
+              <div class="form-group">
+                <mat-form-field formGroupName="instrument">
+                  <mat-label>Instrument</mat-label>
+                  <input matInput formControlName="name" id="instrument">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field>
+                  <mat-label>Batch Size</mat-label>
+                  <input matInput formControlName="instrumentBatchSize" id="instrumentBatchSize"
+                    style="text-align: right">
+                </mat-form-field>
+              </div>
+            </div>
+          </fieldset>
+          <div class="form-group">
+            <mat-form-field>
+              <mat-label>Resulting Status</mat-label>
+              <mat-select formControlName="resultingStatus" id="resultingStatus" required="true">
+                <mat-option value=""></mat-option>
+                <mat-option value="0" selected>Incomplete</mat-option>
+                <mat-option value="1" selected>Unverified</mat-option>
+                <mat-option value="2" selected>Complete</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <div class="mat-elevation-z8 specimen-list">
+              <mat-table [dataSource]="batchItems.controls" class="table table-bordered table-striped"
+                style="width: 100%;">
+                <ng-container matColumnDef="position">
+                  <mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{ row.get('position').value }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="specimen_barcode">
+                  <mat-header-cell *matHeaderCellDef>Specimen Barcode</mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{ row.get('specimen_barcode').value }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="patient_first_name">
+                  <mat-header-cell *matHeaderCellDef>Patient Name</mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{ row.get('patient.patient_first_name').value }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="patient_surname">
+                  <mat-header-cell *matHeaderCellDef>Patient Surname</mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{ row.get('patient.patient_surname').value }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="identity_no">
+                  <mat-header-cell *matHeaderCellDef>Patient Id</mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{ row.get('patient.identity_no').value }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="testAssayResults">
+                  <mat-header-cell *matHeaderCellDef>Assay Results</mat-header-cell>
+                  <mat-cell *matCellDef="let row" [formGroup]="row">
+                    <mat-form-field>
+                      <mat-select formControlName="testAssayResults" id="testAssayResults" required="true"
+                        value="row.testAssayResults">
+                        <mat-option value=""></mat-option>
+                        <mat-option value="1" selected>Positive</mat-option>
+                        <mat-option value="2" selected>Negative</mat-option>
+                        <mat-option value="3" selected>Inconclusive</mat-option>
+                        <mat-option value="4" selected>No Results</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="specimenColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: specimenColumns;"></mat-row>
+              </mat-table>
+            </div>
+          </div>
+        </div>
+      </form>
+    </mat-tab>
 
-        <!-- Searching a location -->
-        <mat-tab label="Search">
-            <div class="col-md-12">
-                <form #searchForm="ngForm" (ngSubmit)="searchBatches()">
-                    <div class="form-group">  
-                        <mat-form-field>
-                            <mat-label>Batch Id</mat-label>
-                            <input matInput
-                                [(ngModel)]="searchCriteria.batchId" name="searchBatchId" 
-                                id = "searchBatchId" #searchBatchId="ngModel"  required="false">
-                        </mat-form-field>
-                    </div>
-                    <div class="form-group">  
-                        <mat-form-field>
-                            <mat-label>Specimen Barcode</mat-label>
-                            <input matInput
-                                [(ngModel)]="searchCriteria.specimenBarcode" name="searchSpecimenBarcode" 
-                                id = "searchSpecimenBarcode" #searchSpecimenBarcode="ngModel"  required="false">
-                        </mat-form-field>
-                    </div>
-                    <div class="form-group"> 
-                        <mat-form-field>
-                            <mat-label>Lab</mat-label>
-                            <mat-select [(value)]="searchCriteria.lab">
-                                <mat-option value="None"></mat-option>
-                                <mat-option *ngFor="let location of locations" [value]="location.code">
-                                            {{location.name}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
-                </form>
-            </div>
-            <div class="form-group">  
-                <button class="btn btn-success" (click)="searchBatches()">
-                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
-                    Search
+    <!-- Searching a location -->
+    <mat-tab label="Search">
+      <div class="col-md-12">
+        <form #searchForm="ngForm" (ngSubmit)="searchBatches()">
+          <div class="form-group">
+            <mat-form-field>
+              <mat-label>Batch Id</mat-label>
+              <input matInput [(ngModel)]="searchCriteria.batchId" name="searchBatchId" id="searchBatchId"
+                #searchBatchId="ngModel" required="false">
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field>
+              <mat-label>Specimen Barcode</mat-label>
+              <input matInput [(ngModel)]="searchCriteria.specimenBarcode" name="searchSpecimenBarcode"
+                id="searchSpecimenBarcode" #searchSpecimenBarcode="ngModel" required="false">
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <mat-form-field>
+              <mat-label>Lab</mat-label>
+              <mat-select [(value)]="searchCriteria.lab">
+                <mat-option value="None"></mat-option>
+                <mat-option *ngFor="let location of locations" [value]="location.code">
+                  {{location.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </form>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-success" (click)="searchBatches()">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+          Search
+        </button>
+        <button type="button" class="btn btn-success" (click)="clearSearch()">Clear</button>
+      </div>
+      <div class="form-group">
+        <mat-table matSort [dataSource]="batches" #BatchesSort="matSort" class="table table-bordered table-striped"
+          style="width: 100%;">
+
+          <ng-container matColumnDef=" ">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <div class="form-group">
+                <button class="btn btn-info" (click)="editBatch(row)">
+                  <mat-icon>edit</mat-icon>
                 </button>
-                <button type="button" class="btn btn-success" (click)="clearSearch()">Clear</button>
-            </div>
-            <div class="form-group">  
-                <mat-table matSort [dataSource]="batches" #BatchesSort="matSort" class="table table-bordered table-striped" style="width: 100%;">
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="batchId">
+            <mat-header-cell *matHeaderCellDef>Batch Id</mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.batchId }} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="resultingPersonnel">
+            <mat-header-cell *matHeaderCellDef>Resulting Personnel</mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.resultingPersonnel }} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="resultingDateTime">
+            <mat-header-cell *matHeaderCellDef>Resulting Datetime</mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.resultingDateTime }} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="resultingStatus">
+            <mat-header-cell *matHeaderCellDef>Resulting Status</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-form-field>
+                <mat-select [(ngModel)]="row.resultingStatus" name="resultingStatus" id="resultingStatus"
+                  #resultingStatus="ngModel" disabled="true">
+                  <mat-option value=""></mat-option>
+                  <mat-option value="0" selected>Incomplete</mat-option>
+                  <mat-option value="1" selected>Unverified</mat-option>
+                  <mat-option value="2" selected>Complete</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-cell>
+          </ng-container>
 
-                    <ng-container matColumnDef=" ">
-                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <div class = "form-group">
-                                <button class="btn btn-info" (click)="editBatch(row)">
-                                    <mat-icon>edit</mat-icon>
-                                </button>
-                            </div>    
-                        </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="batchId">
-                        <mat-header-cell *matHeaderCellDef>Batch Id</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.batchId }} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="resultingPersonnel">
-                        <mat-header-cell *matHeaderCellDef>Resulting Personnel</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.resultingPersonnel }} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="resultingDateTime">
-                        <mat-header-cell *matHeaderCellDef>Resulting Datetime</mat-header-cell>
-                        <mat-cell *matCellDef="let row"> {{ row.resultingDateTime }} </mat-cell>
-                    </ng-container>
-                    <ng-container matColumnDef="resultingStatus">
-                        <mat-header-cell *matHeaderCellDef>Resulting Status</mat-header-cell>
-                        <mat-cell *matCellDef="let row">         
-                            <mat-form-field>
-                                <mat-select [(ngModel)]="row.resultingStatus" 
-                                        name="resultingStatus" id = "resultingStatus" 
-                                        #resultingStatus="ngModel" disabled="true">
-                                    <mat-option value=""></mat-option>
-                                    <mat-option value="0" selected>Incomplete</mat-option>
-                                    <mat-option value="1" selected>Unverified</mat-option>
-                                    <mat-option value="2" selected>Complete</mat-option> 
-                                </mat-select>
-                            </mat-form-field>
-                        </mat-cell>
-                    </ng-container>
+          <mat-header-row *matHeaderRowDef="searchColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: searchColumns;"></mat-row>
 
-                    <mat-header-row *matHeaderRowDef="searchColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: searchColumns;"></mat-row>
-
-                </mat-table>
-                <mat-paginator #BatchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]" showFirstLastButtons></mat-paginator>
-            </div>
-        </mat-tab>
-    </mat-tab-group>
+        </mat-table>
+        <mat-paginator #BatchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"
+          showFirstLastButtons></mat-paginator>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>
-

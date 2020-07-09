@@ -72,6 +72,7 @@ public class RedcapAuthController {
 	@ResponseBody
 	public ResponseEntity<?> authenticatedUser(@Valid @RequestBody RedcapAuthVO authVO) {
 		
+		logger.debug(authVO.toString());
 		securityService.login(authVO.getUsername(), authVO.getPassword());
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		

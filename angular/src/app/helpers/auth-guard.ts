@@ -1,21 +1,26 @@
-import { CanActivate, Router } from '@angular/router';
+import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { AuthenticationService } from '../service/authentication/authentication.service';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class AuthGuard implements CanActivate {
     constructor(
-        private router: Router, 
+        private router: Router,
         private authService: AuthenticationService) {}
-        
-    canActivate(route: import("@angular/router").ActivatedRouteSnapshot, state: import("@angular/router").RouterStateSnapshot): boolean | import("@angular/router").UrlTree | import("rxjs").Observable<boolean | import("@angular/router").UrlTree> | Promise<boolean | import("@angular/router").UrlTree> {
-        if (!this.authService.isTokenExpired()) {
-            
+
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
+                        boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+
+        if (!this.authService.isLoggedIn()) {
+            //window.alert('Access denied. Please login!');
+            this.router.navigate(['/login']);
+            return false;
+        } else {
             return true;
         }
-      
-        this.router.navigate(['/login']);
-        return false;
-        
     }
 }
