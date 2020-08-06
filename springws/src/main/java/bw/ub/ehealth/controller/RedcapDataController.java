@@ -34,10 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 import bw.ub.ehealth.dhislink.patient.vo.PatientVO;
 import bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService;
 import bw.ub.ehealth.dhislink.redacap.data.vo.BatchVO;
-import bw.ub.ehealth.dhislink.redacap.data.vo.InstrumentVO;
+import bw.ub.ehealth.dhislink.instrument.vo.InstrumentVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataSearchCriteria;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataVO;
-import bw.ub.ehealth.dhislink.redacap.location.service.LocationService;
+import bw.ub.ehealth.dhislink.location.service.LocationService;
 import bw.ub.ehealth.dhislink.specimen.service.SpecimenService;
 import bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO;
 import bw.ub.ehealth.dhislink.vo.BatchSearchCriteria;
@@ -69,6 +69,24 @@ public class RedcapDataController {
 	
     @Value("${app.live}")
     private Boolean isLive;
+    
+    @Value("${sentinel.id}")
+    private String sentinelId;
+
+    @Value("${sentinel.program.stage.examination}")
+    private String sentinelExaminationId;
+    
+    @Value("${yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.barcode}")
+    private String sentinelField;
+    
+    @Value("${dhis2.api.program}")
+    private String covidProgram;
+
+    @Value("${dhis2.api.program.stage}")
+    private String covidProgramStage;
+
+    @Value("${HR4C8VTwGuo.nIaEdUY97YD.lab.specimen.barcode}")
+    private String covidField;
     
 	@Autowired
 	private RedcapDataService redcapDataService;
@@ -120,15 +138,16 @@ public class RedcapDataController {
     	return map;
     }
     
-    private List<SpecimenVO> queryDhisSpecimenBarcodes(List<String> barcodes) {
+    private List<SpecimenVO> queryDhisSpecimenBarcodes(List<String> barcodes, String program, String stage, String field) {
     	
     	if(Collections.isEmpty(barcodes)) {
     		return new ArrayList<>();
     	}
     	
-    	String queryBase = dhis2Url + "/events?programStage=nIaEdUY97YD&program=HR4C8VTwGuo&filter=kkD26RljqPY:IN:";
+    	String queryBase = dhis2Url + "/events.json?" 
+    				+ "programStage=" + stage + 
+    				"&program=" + program + "&filter=" + field + ":IN:";
     	StringBuilder builder = new StringBuilder();
-    	
     	for(String barcode : barcodes) {
     		if(builder.length() > 0) {
     			builder.append(";");
@@ -152,23 +171,29 @@ public class RedcapDataController {
     	}
     	
     	List<SpecimenVO> noInfo = new ArrayList<>();
-    	List<String> barcodes = new ArrayList<>();
+    	List<String> covidBarcodes = new ArrayList<>();
+    	List<String> sentinelBarcodes = new ArrayList<>();
     	Map<String, SpecimenVO> sps = new HashMap<>();
     	
     	for(SpecimenVO sp : specimenToPull) {
     		if(StringUtils.isBlank(sp.getEvent())) {
     			noInfo.add(sp);
     			sps.put(sp.getSpecimenBarcode(), sp);
-    			barcodes.add(sp.getSpecimenBarcode());
+    			
+    			if(StringUtils.isBlank(sp.getProgramId()) || sp.getProgramId().equals(covidProgram)) {
+    				covidBarcodes.add(sp.getSpecimenBarcode());
+    			} else {
+    				sentinelBarcodes.add(sp.getSpecimenBarcode());
+    			}
     		}
     	}
     	
-    	List<SpecimenVO> pulled = queryDhisSpecimenBarcodes(barcodes);
+    	List<SpecimenVO> pulled = queryDhisSpecimenBarcodes(covidBarcodes, covidProgram, covidProgramStage, covidField);
+    	pulled.addAll(queryDhisSpecimenBarcodes(sentinelBarcodes, sentinelId, sentinelExaminationId, sentinelField));
     	redcapLink.updateStaging(pulled);
     	
     	for(SpecimenVO sp : pulled) {
     		SpecimenVO s = sps.get(sp.getSpecimenBarcode());
-    		logger.debug(s.toString());
     		for(int i = 0; i < specimenToPull.size(); i++) {
     			SpecimenVO s2 = specimenToPull.get(i);
     			if(s.getSpecimenBarcode().equals(s2.getSpecimenBarcode())) {
@@ -185,7 +210,6 @@ public class RedcapDataController {
     @ResponseStatus(code = HttpStatus.OK)
     @ResponseBody
     public List<SpecimenVO> saveBatch(@RequestBody BatchVO batch) {
-    	logger.debug(batch.toString());
     	List<RedcapDataVO> redcapData = new ArrayList<RedcapDataVO>();
     	List<SpecimenVO> verifiedSpecimen = new ArrayList<SpecimenVO>();
     	
@@ -236,13 +260,17 @@ public class RedcapDataController {
     	}
     	
     	/// Detect barcodes that do not have data in the stagins
-		List<String> missing = new ArrayList<>();
+		List<String> covidMissing = new ArrayList<>();
+		List<String> sentinelMissing = new ArrayList<>();
 
 		for (SpecimenVO specimen : batch.getBatchItems()) {
 			if (specimen.getId() == null) {
 				// Record this somewhere
-				missing.add(specimen.getSpecimenBarcode());
-				
+				if(StringUtils.isBlank(specimen.getProgramId()) || specimen.getProgramId().equals(covidProgram)) {
+					covidMissing.add(specimen.getSpecimenBarcode());
+				} else {
+					sentinelMissing.add(specimen.getSpecimenBarcode());
+				}
 				// Save the specimen in the staging area
 				
 				if(specimen.getPatient() != null && StringUtils.isBlank(specimen.getPatient().getIdentityNo())) {
@@ -258,7 +286,8 @@ public class RedcapDataController {
 		// Find the specimen from DHIS2
 		List<SpecimenVO> found = new ArrayList<>();
 		if(batch.getPublishResults()) {
-			found = queryDhisSpecimenBarcodes(missing);
+			found = queryDhisSpecimenBarcodes(covidMissing, covidProgram, covidProgramStage, covidField);
+			found.addAll(queryDhisSpecimenBarcodes(sentinelMissing, covidProgram, covidProgramStage, covidField));
 		}
 		Map<String, SpecimenVO> foundMap = getSpecimenMap(found);
     	
@@ -647,13 +676,7 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    				} else if(field.getField().equals("test_assay_result")) {
 	    					specimen.setTestAssayResults(field.getValue());
 	    					
-	    				}
-	    				
-	    			}
-	    			
-	    			fields = dhisLink.getVerificationFormFields(rd.getValue());
-	    			for(DDPObjectField field : fields) {
-	    				if(field.getField().equals("test_verify_personnel")) {
+	    				} else if(field.getField().equals("test_verify_personnel")) {
 	    					specimen.setResultsVerifiedBy(field.getValue());
 	    				} else if(field.getField().equals("test_verify_datetime")) {
 	    					    					
@@ -673,7 +696,9 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
 	    					specimen.setTestVerifyResults(field.getValue());
 	    					
 	    				} 
+	    				
 	    			}
+	    			
 	    			specimen.setDhis2Synched(false);
 	    		}
 	    		
@@ -805,7 +830,6 @@ bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService.searchByCriteria(s
     public List<BatchVO> searchBatches(@RequestBody BatchSearchCriteria searchCriteria) {
     	
     	if(searchCriteria.getIncludeSpecimen() == null) {
-    		logger.debug(searchCriteria.toString());
     		searchCriteria.setIncludeSpecimen(true);
     	}
     	

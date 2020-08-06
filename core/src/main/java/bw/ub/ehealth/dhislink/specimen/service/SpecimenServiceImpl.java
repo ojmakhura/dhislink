@@ -73,8 +73,8 @@ public class SpecimenServiceImpl
 	}
 
 	@Override
-	protected SpecimenVO handleFindLatestSpecimen() throws Exception {
-		return getSpecimenDao().toSpecimenVO(getSpecimenDao().findLatestSpecimen());
+	protected SpecimenVO handleFindLatestSpecimen(String programId) throws Exception {
+		return getSpecimenDao().toSpecimenVO(getSpecimenDao().findLatestSpecimen(programId));
 	}
 
 	@Override
@@ -88,5 +88,4 @@ public class SpecimenServiceImpl
 		
 		return vos;
 	}
-
 }

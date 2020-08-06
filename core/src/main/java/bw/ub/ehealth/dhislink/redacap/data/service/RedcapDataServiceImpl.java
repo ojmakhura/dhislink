@@ -11,6 +11,7 @@ package bw.ub.ehealth.dhislink.redacap.data.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -80,6 +81,12 @@ public class RedcapDataServiceImpl
 	protected Long handleFindMaxEvent(Long projectId) throws Exception {
 		
 		return getRedcapDataDao().findMaxEvent(projectId);
+	}
+
+	@Override
+	protected Collection<RedcapDataVO> handleSearchRedcapData(Map fields) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

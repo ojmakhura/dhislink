@@ -477,21 +477,21 @@
 					For Pointbase use: jdbc:pointbase:server://@pointbase.server@:@pointbase.port/pointbase.dhislink@,new 
 					For Postgres use: jdbc:postgresql://localhost/dhislink For Sybase use: jdbc:sybase:Tds:localhost:5000/dhislink?JCONNECT_VERSION=6 
 					For SapDB use: jdbc:sapdb://127.0.0.1/dhislink For Progress use: jdbc:JdbcProgress:T:localhost:3305:dhislink -->
-				<!-- <jdbc.url>
+				<jdbc.url>
 					jdbc:mysql://localhost:3306/redcap
 				</jdbc.url>
 				<jdbc.username>
 					testuser
 				</jdbc.username>
-				<jdbc.password>TestUser123!</jdbc.password> -->
+				<jdbc.password>TestUser123!</jdbc.password>
 				
-				<jdbc.url>
+				<!-- <jdbc.url>
 					jdbc:mysql://localhost:3306/redcap_UB
 				</jdbc.url>
 				<jdbc.username>
 					 junior
 				</jdbc.username>
-				<jdbc.password>Jw@n3n1_20</jdbc.password>
+				<jdbc.password>Jw@n3n1_20</jdbc.password> -->
 				<!-- Change exception sorter class name for appropriate database For 
 					H2 use: org.jboss.resource.adapter.jdbc.vendor.DummyExceptionSorter For MySQL 
 					use: org.jboss.resource.adapter.jdbc.vendor.MySQLExceptionSorter For Hypersonic 

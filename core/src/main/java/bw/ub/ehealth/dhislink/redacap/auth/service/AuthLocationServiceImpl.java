@@ -11,7 +11,7 @@ package bw.ub.ehealth.dhislink.redacap.auth.service;
 import bw.ub.ehealth.dhislink.redacap.auth.RedcapAuthLocation;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthLocationVO;
 import bw.ub.ehealth.dhislink.redacap.auth.vo.RedcapAuthVO;
-import bw.ub.ehealth.dhislink.redacap.location.vo.LocationVO;
+import bw.ub.ehealth.dhislink.location.vo.LocationVO;
 import java.util.Collection;
 
 import javax.validation.constraints.NotNull;

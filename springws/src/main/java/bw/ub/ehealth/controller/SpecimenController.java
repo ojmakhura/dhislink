@@ -92,11 +92,11 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findByEvent(event)
      * bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findLatestSpecimen
      * @return SpecimenVO
      */
-    @GetMapping("/latest")
+    @GetMapping("/latest{programId}")
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
-    public SpecimenVO findLatestSpecimen() {
-    	return specimenService.findLatestSpecimen();
+    public SpecimenVO findLatestSpecimen(@PathVariable String programId) {
+    	return specimenService.findLatestSpecimen(programId);
     }
 
     /**

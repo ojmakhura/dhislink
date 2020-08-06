@@ -103,7 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/ddpcontroller/ddp")
 					.permitAll()
 				.anyRequest()
-					.authenticated()
+					.permitAll()
 				.and()
 				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
 				//.and()

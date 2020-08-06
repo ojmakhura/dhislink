@@ -197,10 +197,11 @@ public class SpecimenDaoImpl
 	}
 
 	@Override
-	protected Specimen handleFindLatestSpecimen() throws Exception {
+	protected Specimen handleFindLatestSpecimen(String programId) throws Exception {
 		
 		Query query = entityManager.createQuery("select sp from bw.ub.ehealth.dhislink.specimen.Specimen sp where sp.lastUpdated = "
-    			+ "(select MAX(s1.lastUpdated) from bw.ub.ehealth.dhislink.specimen.Specimen s1)");
+    			+ "(select MAX(s1.lastUpdated) from bw.ub.ehealth.dhislink.specimen.Specimen s1) and sp.programId = :programId");
+		query.setParameter("programId", programId);
 		
 		try {
 			return (Specimen) query.getSingleResult();
