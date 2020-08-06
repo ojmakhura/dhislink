@@ -3,14 +3,14 @@
  * This is only generated once! It will never be overwritten.
  * You can (and have to!) safely modify it by hand.
  * TEMPLATE:    SpringServiceImpl.vsl in andromda-spring cartridge
- * MODEL CLASS: NewModel::bw.ub.ehealth.dhislink::redacap::location::service::LocationService
+ * MODEL CLASS: NewModel::bw.ub.ehealth.dhislink::location::service::LocationService
  * STEREOTYPE:  Service
  * STEREOTYPE:  WebService
  */
-package bw.ub.ehealth.dhislink.redacap.location.service;
+package bw.ub.ehealth.dhislink.location.service;
 
-import bw.ub.ehealth.dhislink.redacap.location.Location;
-import bw.ub.ehealth.dhislink.redacap.location.vo.LocationVO;
+import bw.ub.ehealth.dhislink.location.Location;
+import bw.ub.ehealth.dhislink.location.vo.LocationVO;
 import java.util.Collection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

@@ -214,6 +214,10 @@
             <mat-header-cell *matHeaderCellDef>Detection Datetime</mat-header-cell>
             <mat-cell *matCellDef="let row"> {{ row.detectionDateTime }} </mat-cell>
           </ng-container>
+          <ng-container matColumnDef="instrumentBatchSize">
+            <mat-header-cell *matHeaderCellDef>Batch Size</mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.instrumentBatchSize }} </mat-cell>
+          </ng-container>
           <ng-container matColumnDef="detectionStatus">
             <mat-header-cell *matHeaderCellDef>Detection Status</mat-header-cell>
             <mat-cell *matCellDef="let row">

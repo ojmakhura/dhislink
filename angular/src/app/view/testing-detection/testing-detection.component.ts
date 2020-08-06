@@ -18,7 +18,7 @@ export class TestingDetectionComponent extends BatchComponent {
   adding = false;
   removing = false;
 
-  searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'detectionStatus'];
+  searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'instrumentBatchSize', 'detectionStatus'];
   specimenColumns: string[] = [' ', 'position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no'];
 
   constructor(private injector: Injector, public dialog: MatDialog) {
