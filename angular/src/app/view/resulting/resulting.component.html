@@ -206,6 +206,10 @@
             <mat-header-cell *matHeaderCellDef>Resulting Datetime</mat-header-cell>
             <mat-cell *matCellDef="let row"> {{ row.resultingDateTime }} </mat-cell>
           </ng-container>
+          <ng-container matColumnDef="instrumentBatchSize">
+            <mat-header-cell *matHeaderCellDef>Batch Size</mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.instrumentBatchSize }} </mat-cell>
+          </ng-container>
           <ng-container matColumnDef="resultingStatus">
             <mat-header-cell *matHeaderCellDef>Resulting Status</mat-header-cell>
             <mat-cell *matCellDef="let row">

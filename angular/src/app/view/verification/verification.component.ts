@@ -13,7 +13,7 @@ import { BatchComponent } from '../batch/batch.component';
 })
 export class VerificationComponent extends BatchComponent {
 
-  searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
+  searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'instrumentBatchSize', 'resultingStatus'];
   specimenColumns: string[] = [
     'position',
     'specimen_barcode',

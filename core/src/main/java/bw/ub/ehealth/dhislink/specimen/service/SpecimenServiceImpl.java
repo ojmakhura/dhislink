@@ -14,6 +14,7 @@ import bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -87,5 +88,11 @@ public class SpecimenServiceImpl
 		}
 		
 		return vos;
+	}
+
+	@Override
+	protected Collection<SpecimenVO> handleSaveSpecimen(Set<SpecimenVO> specimens) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

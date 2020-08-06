@@ -226,6 +226,10 @@
             <mat-header-cell *matHeaderCellDef>Verification Datetime</mat-header-cell>
             <mat-cell *matCellDef="let row"> {{ row.verificationDateTime }} </mat-cell>
           </ng-container>
+          <ng-container matColumnDef="instrumentBatchSize">
+            <mat-header-cell *matHeaderCellDef>Batch Size</mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.instrumentBatchSize }} </mat-cell>
+          </ng-container>
           <ng-container matColumnDef="resultingStatus">
             <mat-header-cell *matHeaderCellDef>Verification Status</mat-header-cell>
             <mat-cell *matCellDef="let row">

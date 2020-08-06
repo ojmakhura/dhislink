@@ -851,11 +851,11 @@ public class DhisLink implements Serializable {
 		String pre = event.getProgram() + "." + event.getProgramStage() + ".";
 
 		if (!resultsCheckOk || values.get(env.getProperty(pre + "lab.specimen.barcode").trim()) == null) {
-			// logger.debug("Results check failed");
-			// logger.debug(event.toString());
+			//logger.debug("Results check failed");
+			//logger.debug(event.toString());
 			return null;
 		}
-
+		logger.debug(event.toString());
 		SpecimenVO specimen = new SpecimenVO();
 		specimen.setEvent(event.getEvent());
 		specimen.setCreated(event.getCreated());
@@ -1123,12 +1123,14 @@ public class DhisLink implements Serializable {
 
 		for (SpecimenVO sp : tmp) {
 			if (specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode()) == null) {
-				if (!StringUtils.isBlank(sp.getDispatchLocation())) {
-					orgIds.add(sp.getDispatchLocation());
-				}
-
-				if (!StringUtils.isBlank(sp.getPatientFacility())) {
-					orgIds.add(sp.getPatientFacility());
+				if(StringUtils.isBlank(sp.getProgramId()) || sp.getProgramId().equals(covidProgram)) {
+					if (!StringUtils.isBlank(sp.getDispatchLocation())) {
+						orgIds.add(sp.getDispatchLocation());
+					}
+	
+					if (!StringUtils.isBlank(sp.getPatientFacility())) {
+						orgIds.add(sp.getPatientFacility());
+					}
 				}
 			}
 		}
@@ -1555,6 +1557,7 @@ public class DhisLink implements Serializable {
 				res = redcapDataVOs.get(0);
 			} else {
 				// TODO: what to do if the specimen was processed multiple times
+				res = redcapDataVOs.get(0);
 			}
 
 			int pindex = res.getFieldName().lastIndexOf("_");

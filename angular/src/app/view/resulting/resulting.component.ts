@@ -11,7 +11,7 @@ import { BatchComponent } from '../batch/batch.component';
 })
 export class ResultingComponent extends BatchComponent {
 
-  searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'resultingStatus'];
+  searchColumns: string[] = [' ', 'batchId', 'resultingPersonnel', 'resultingDateTime', 'instrumentBatchSize', 'resultingStatus'];
   specimenColumns: string[] = ['position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'testAssayResults'];
 
   constructor(private injector: Injector) {

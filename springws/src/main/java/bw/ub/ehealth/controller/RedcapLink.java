@@ -682,7 +682,7 @@ public class RedcapLink {
 				
 				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
 				searchMap = getRedcapDataMap(redcapDataVOs);
-				logger.info(searchMap.toString());
+				
 				String key = "test_assay_datetime";
 				
 				if(searchMap.containsKey(key)) {
@@ -773,10 +773,8 @@ public class RedcapLink {
 				 * Find if the the results have been verified
 				 */
 				key = "test_verify_result";
-				logger.info("Checking " + key + "_" + pos);
 				if(searchMap.containsKey(key + "_" + pos)) {
 					rd = searchMap.get(key + "_" + pos);
-					logger.info("got " + rd.toString());
 
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_verify_result", rd.getValue());
 					reportData.add(tmp);
