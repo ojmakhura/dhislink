@@ -6,6 +6,7 @@ import { Patient } from 'src/app/model/patient/patient';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
 import { BatchComponent } from '../batch/batch.component';
+import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage';
 
 @Component({
   selector: 'app-testing-detection',
@@ -101,7 +102,7 @@ export class TestingDetectionComponent extends BatchComponent {
     this.searchCriteria.includeSpecimen = false;
     this.searchCriteria.lab = null;
     this.searchCriteria.specimenBarcode = null;
-
+    this.searchCriteria.page = BatchAuthorityStage.DETECTION;
     // We don't want to remove from a saved batch
     this.redcaDataService.search(this.searchCriteria).subscribe(results => {
 
@@ -130,7 +131,7 @@ export class TestingDetectionComponent extends BatchComponent {
       return value.id !== rowObj.id;
     });
 
-    this.editBatch(batch);
+    this.editBatch(batch, false);
   }
 
   disableItems() {

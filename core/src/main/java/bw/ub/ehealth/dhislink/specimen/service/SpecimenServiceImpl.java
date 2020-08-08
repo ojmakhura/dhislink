@@ -92,7 +92,35 @@ public class SpecimenServiceImpl
 
 	@Override
 	protected Collection<SpecimenVO> handleSaveSpecimen(Set<SpecimenVO> specimens) throws Exception {
+		
+		Collection<Specimen> create = new ArrayList<Specimen>();
+		Collection<Specimen> update = new ArrayList<Specimen>();
+		
+		for(SpecimenVO sp : specimens) {
+			Specimen specimen = getSpecimenDao().specimenVOToEntity(sp);
+	    		    	
+	    	if(specimen.getId() == null) {
+	    		create.add(specimen);
+	    	} else {
+	    		update.add(specimen);
+	    	}
+		}
+		
+		
+		create = getSpecimenDao().create(create);
+		getSpecimenDao().update(update);
+		
+		Collection<SpecimenVO> specimenVos = new ArrayList();
+		
+		for(Specimen sp : create) {
+			specimenVos.add(getSpecimenDao().toSpecimenVO(sp));
+		}
+		
+		for(Specimen sp : update) {
+			specimenVos.add(getSpecimenDao().toSpecimenVO(sp));
+		}
+				
 		// TODO Auto-generated method stub
-		return null;
+		return specimenVos;
 	}
 }

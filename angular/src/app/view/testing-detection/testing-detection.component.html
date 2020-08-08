@@ -189,21 +189,26 @@
         <button type="button" class="btn btn-success" (click)="clearSearch()">Clear</button>
       </div>
       <div class="mat-elevation-z8">
-        <mat-table matSort [dataSource]="batches" #BatchesSort="matSort" class="table table-bordered table-striped"
+        <div class="overlay">
+          <div class="center">
+            <mat-progress-bar [mode]="'indeterminate'" *ngIf="spLoading"></mat-progress-bar>
+          </div>
+        </div>
+        <mat-table matSort [dataSource]="batches" #batchesSort="matSort" class="table table-bordered table-striped"
           style="width: 100%;">
 
           <ng-container matColumnDef=" ">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let row">
               <div class="form-group">
-                <button type="button" class="btn btn-info" (click)="editBatch(row)">
+                <button type="button" class="btn btn-info" (click)="editBatch(row, true)">
                   <mat-icon>edit</mat-icon>
                 </button>
               </div>
             </mat-cell>
           </ng-container>
           <ng-container matColumnDef="batchId">
-            <mat-header-cell *matHeaderCellDef>Batch Id</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Batch Id</mat-header-cell>
             <mat-cell *matCellDef="let row"> {{ row.batchId }} </mat-cell>
           </ng-container>
           <ng-container matColumnDef="detectionPersonnel">
@@ -237,7 +242,7 @@
           <mat-row *matRowDef="let row; columns: searchColumns;"></mat-row>
 
         </mat-table>
-        <mat-paginator #BatchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"
+        <mat-paginator #batchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"
           showFirstLastButtons></mat-paginator>
       </div>
     </mat-tab>

@@ -3,6 +3,7 @@ import { Batch } from 'src/app/model/batch/batch';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
 import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
 import { BatchComponent } from '../batch/batch.component';
+import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage';
 
 @Component({
   selector: 'app-resulting',
@@ -38,11 +39,12 @@ export class ResultingComponent extends BatchComponent {
     this.redcaDataService.pullSpecimenInfo(batch.batchItems).subscribe(results => {
       this.searchCriteria.includeSpecimen = true;
       this.searchCriteria.batchId = batch.batchId;
+      this.searchCriteria.page = BatchAuthorityStage.RESULTING
 
       this.redcaDataService.search(this.searchCriteria).subscribe(batches => {
         this.searchCriteria = new BatchSearchCriteria();
         if (batches.length > 0) {
-          this.editBatch(batches[0]);
+          this.editBatch(batches[0], false);
         }
         this.searchCriteria = new BatchSearchCriteria();
       });

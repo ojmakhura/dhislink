@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -111,8 +112,8 @@ public class DhisLink implements Serializable {
     @Value("${sentinel.program.stage.examination}")
     private String sentinelExaminationId;
     
-    @Value("${yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.barcode}")
-    private String sentinelField;
+    //@Value("${yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.barcode}")
+    //private String sentinelField;
     
     @Value("${dhis2.api.program}")
     private String covidProgram;
@@ -120,8 +121,8 @@ public class DhisLink implements Serializable {
     @Value("${dhis2.api.program.stage}")
     private String covidProgramStage;
 
-    @Value("${HR4C8VTwGuo.nIaEdUY97YD.lab.specimen.barcode}")
-    private String covidField;
+    @Value("lab.specimen.barcode}")
+    private String barcodeField;
     
 	@Autowired
 	private PatientService patientService;
@@ -255,6 +256,10 @@ public class DhisLink implements Serializable {
 		if (attrMap.get(env.getProperty("patient.passport")) != null && patientVO.getIdentityNo() == null) {
 			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.passport")).getValue());
 		}
+		
+		if (attrMap.get(env.getProperty("patient.identification")) != null) {
+			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.identification")).getValue());
+		}
 
 		/// Get the surname
 		if (attrMap.get(env.getProperty("patient.surname")) != null) {
@@ -265,7 +270,7 @@ public class DhisLink implements Serializable {
 		if (attrMap.get(env.getProperty("patient.name")) != null) {
 			patientVO.setFirstName(attrMap.get(env.getProperty("patient.name")).getValue());
 		}
-
+		
 		/// Get the birth day
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -309,6 +314,10 @@ public class DhisLink implements Serializable {
 		// Get patient nationality
 		if (attrMap.get(env.getProperty("patient.nationality")) != null) {
 			patientVO.setNationality(attrMap.get(env.getProperty("patient.nationality")).getValue());
+		}
+		
+		if (attrMap.get(env.getProperty("patient.identification")) != null) {
+			patientVO.setNationality(attrMap.get(env.getProperty("patient.identification")).getValue());
 		}
 
 		// Get patient phone
@@ -833,7 +842,7 @@ public class DhisLink implements Serializable {
 		 * barcode does not exist, or if the specimen has
 		 */
 		DataValue labResults = values
-				.get(env.getProperty(event.getProgram() + "." + event.getProgramStage() + ".lab.results").trim());
+				.get(env.getProperty("lab.results").trim());
 		boolean resultsCheckOk = false;
 
 		if (!skipResulted) {
@@ -850,12 +859,12 @@ public class DhisLink implements Serializable {
 
 		String pre = event.getProgram() + "." + event.getProgramStage() + ".";
 
-		if (!resultsCheckOk || values.get(env.getProperty(pre + "lab.specimen.barcode").trim()) == null) {
+		if (!resultsCheckOk || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
 			//logger.debug("Results check failed");
 			//logger.debug(event.toString());
 			return null;
 		}
-		logger.debug(event.toString());
+		//logger.debug(event.toString());
 		SpecimenVO specimen = new SpecimenVO();
 		specimen.setEvent(event.getEvent());
 		specimen.setCreated(event.getCreated());
@@ -903,8 +912,8 @@ public class DhisLink implements Serializable {
 		}
 
 		// Get the barcode
-		if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.barcode"))) {
-			val = values.get(env.getProperty(pre + "lab.specimen.barcode").trim());
+		if (!StringUtils.isBlank(env.getProperty("lab.specimen.barcode"))) {
+			val = values.get(env.getProperty("lab.specimen.barcode").trim());
 			if (val != null) {
 				String barcode = val.getValue();
 				specimen.setSpecimenBarcode(barcode.toUpperCase()); // Ensure standard barcodes
@@ -928,23 +937,27 @@ public class DhisLink implements Serializable {
 		specimen.setDispatcher(getSubmitter(values, pre));
 
 		try {
-			if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.date.collection"))) {
-				val = values.get(env.getProperty(pre + "lab.specimen.date.collection").trim());
+			if (!StringUtils.isBlank(env.getProperty("lab.specimen.date.collection"))) {
+				val = values.get(env.getProperty("lab.specimen.date.collection").trim());
 				if (val != null) {
 
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
 					String date = val == null ? "" : val.getValue();
+					
+					date.replace('T', ' ');
 
 					String time = ""; 
 					
-					if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.collection.time"))) {
-						if(values.get(env.getProperty(pre + "lab.specimen.collection.time").trim()) != null) {
-							time = values.get(env.getProperty(pre + "lab.specimen.collection.time").trim()).getValue();
-						} else {
+					if(date.length() == 10) {
+						if (!StringUtils.isBlank(env.getProperty("lab.specimen.collection.time"))) {
+							if(values.get(env.getProperty("lab.specimen.collection.time").trim()) != null) {
+								time = values.get(env.getProperty("lab.specimen.collection.time").trim()).getValue();
+							}
+						}
+						
+						if(StringUtils.isBlank(time)) {
 							time = "00:01";
 						}
-					} else {
-						time = "00:01";
 					}
 										
 					if (date.trim().length() > 0) {
@@ -956,24 +969,72 @@ public class DhisLink implements Serializable {
 					}
 				}
 			}
-
-			if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.date.received"))) {
-				val = values.get(env.getProperty(pre + "lab.specimen.date.received").trim());
+			
+			if (!StringUtils.isBlank(env.getProperty("lab.specimen.date.received"))) {
+				val = values.get(env.getProperty("lab.specimen.date.received").trim());
 				if (val != null) {
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
-					Date dt = val == null ? null : format.parse(val.getValue());
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+					String date = val == null ? "" : val.getValue();
+					date = date.replace('T', ' ');
 
-					specimen.setReceivingDateTime(dt);
+					String time = ""; 
+
+					if(date.length() == 10) {
+						if (!StringUtils.isBlank(env.getProperty("lab.specimen.time.received"))) {
+							if(values.get(env.getProperty("lab.specimen.time.received").trim()) != null) {
+								time = values.get(env.getProperty("lab.specimen.time.received").trim()).getValue();
+							}
+						} 
+						
+						if(StringUtils.isBlank(time)) {
+							time = "00:01";
+						}
+					}
+										
+					if (date.trim().length() > 0) {
+						date = date + " " + time;
+						Date dt = format.parse(date.trim());
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(dt);
+						specimen.setReceivingDateTime(cal.getTime());
+					}
 				}
 			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-
-		specimen.setSpecimenType(getSpecimenType(values, pre));
-		specimen.setSymptom(this.getSymptoms(values, pre));
+		
+		if(StringUtils.isBlank(specimen.getProgramId()) || specimen.getProgramId().equals(covidProgram)) {
+			specimen.setSpecimenType(getSpecimenType(values, pre));
+		} else {
+			if (!StringUtils.isBlank(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.type"))) {
+				val = values.get(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.type").trim());
+				if(val != null) {
+					//logger.info(event.toString());
+					specimen.setSpecimenType(val.getValue());
+				}
+			}
+		}
+		
+		if(!StringUtils.isBlank(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.patient.receive.sms"))) {
+			val = values.get(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.patient.receive.sms").trim());
+			if(val != null) {
+				specimen.setReceiveSMS(Boolean.valueOf(val.getValue()));
+			} else {
+				specimen.setReceiveSMS(false);
+			}
+		} else {
+			specimen.setReceiveSMS(false);
+		}
+		
+		if(!StringUtils.isBlank(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.submitter"))) {
+			val = values.get(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.submitter").trim());
+			if(val != null) {
+				specimen.setDispatcher(val.getValue());
+			}
+		}
 
 		specimen.setTestType(this.getTestType(values, pre));
 		// specimen.setRiskFacors(this.getRiskFactors(values));
@@ -1036,7 +1097,7 @@ public class DhisLink implements Serializable {
 	 * @return
 	 */
 	public List<SpecimenVO> getSpecimen(String programId, String stageId) {
-		final int pageSize = 2000;
+		final int pageSize = 50;
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("program", programId);
 		parameters.put("programStage", stageId);
@@ -1070,14 +1131,12 @@ public class DhisLink implements Serializable {
 		List<Event> events = this.getEvents(parameters);
 		List<SpecimenVO> tmp = getSpecimen(events, true);
 
-		while (tmp.size() != 0) {
+		while (events.size() != 0) {
 			specimen.addAll(tmp);
+			
+			logger.info("Total is " + specimen.size());
 
 			numPulled.add(new BigInteger(tmp.size() + ""));
-			if (numPulled.intValue() > 10) {
-				break;
-			}
-
 			page++;
 			parameters.put("page", "" + page);
 			events = this.getEvents(parameters);
@@ -1210,12 +1269,13 @@ public class DhisLink implements Serializable {
 				} else {
 					continue;
 				}
-
+				
 				specimen.add(sp);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		
 		redcapLink.postSpecimen(specimen, labReportPID);
 		return specimen;
 	}
@@ -1455,7 +1515,11 @@ public class DhisLink implements Serializable {
 			} else if (specimen.getResults().equals("3")) {
 				results = "INCONCLUSIVE";
 			} else if (specimen.getResults().equals("4")) {
+				//if(StringUtils.isBlank(specimen.getProgramId()) || specimen.getProgramId().equals(covidProgram)) {
 				results = "PENDING";
+				//} else {
+					
+				//}
 			}
 
 			fields.add(new DDPObjectField("specimen_results", results, null));
@@ -1953,7 +2017,7 @@ public class DhisLink implements Serializable {
 			builder.append(sp.getSpecimenBarcode());
 			spMap.put(sp.getSpecimenBarcode(), sp);
 
-			if (StringUtils.isEmpty(sp.getProgramId())) {
+			if (!StringUtils.isEmpty(sp.getProgramId())) {
 				program = sp.getProgramId();
 				programStage = sp.getProgramStageId();
 				pre = sp.getProgramId() + "." + sp.getProgramStageId() + ".";
@@ -1964,7 +2028,7 @@ public class DhisLink implements Serializable {
 			pre = "HR4C8VTwGuo.nIaEdUY97YD."; /// Default is the COVID surveillance
 		}
 
-		barcodeField = env.getProperty(pre + "lab.specimen.barcode");
+		barcodeField = env.getProperty("lab.specimen.barcode");
 
 		String barcodes = builder.toString();
 
@@ -1995,7 +2059,7 @@ public class DhisLink implements Serializable {
 			// Add the result values to the event
 			DataValue val = new DataValue();
 			if (!StringUtils.isBlank(sp.getResults())) {
-				val.setDataElement(pre + env.getProperty("lab.results"));
+				val.setDataElement(env.getProperty("lab.results"));
 				if (sp.getResults().equals("1")) {
 					val.setValue("POSITIVE");
 				} else if (sp.getResults().equals("2")) {
@@ -2009,20 +2073,50 @@ public class DhisLink implements Serializable {
 						val.setValue("ORDERED");
 					}
 				}
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (!StringUtils.isBlank(sp.getResultsEnteredBy())) {
+			if (!StringUtils.isBlank(sp.getResultsEnteredBy())
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.entered.by"))) {
 				val = new DataValue();
-				val.setDataElement(pre + env.getProperty("lab.results.entered.by"));
+				val.setDataElement(env.getProperty(pre + "lab.results.entered.by"));
 				val.setValue(sp.getResultsEnteredBy());
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getResultsEnteredDate() != null) {
+			if (sp.getResultsEnteredDate() != null
+					&& !StringUtils.isBlank(env.getProperty("lab.results.date.entered"))) {
 
 				val = new DataValue();
-				val.setDataElement(pre + env.getProperty("lab.results.date.entered"));
+				val.setDataElement(env.getProperty("lab.results.date.entered"));
 
 				Instant dob = sp.getResultsEnteredDate().toInstant();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
@@ -2030,19 +2124,49 @@ public class DhisLink implements Serializable {
 				String date = formatter.format(dob);
 
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (!StringUtils.isBlank(sp.getResultsVerifiedBy())) {
+			if (!StringUtils.isBlank(sp.getResultsVerifiedBy())
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.verified.by"))) {
 				val = new DataValue();
-				val.setDataElement(pre + env.getProperty("lab.results.verified.by"));
+				val.setDataElement(env.getProperty(pre + "lab.results.verified.by"));
 				val.setValue(sp.getResultsVerifiedBy());
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getResultsVerifiedDate() != null) {
+			if (sp.getResultsVerifiedDate() != null
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.result.date.verified"))) {
 				val = new DataValue();
-				val.setDataElement(pre + env.getProperty("lab.result.date.verified"));
+				val.setDataElement(env.getProperty(pre + "lab.result.date.verified"));
 
 				Instant dob = sp.getResultsVerifiedDate().toInstant();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
@@ -2050,19 +2174,49 @@ public class DhisLink implements Serializable {
 				String date = formatter.format(dob);
 
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (!StringUtils.isBlank(sp.getResultsAuthorisedBy())) {
+			if (!StringUtils.isBlank(sp.getResultsAuthorisedBy())
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.authorised.by"))) {
 				val = new DataValue();
-				val.setDataElement(pre + env.getProperty("lab.results.authorised.by"));
+				val.setDataElement(env.getProperty(pre + "lab.results.authorised.by"));
 				val.setValue(sp.getResultsAuthorisedBy());
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getResultsAuthorisedDate() != null) {
+			if (sp.getResultsAuthorisedDate() != null
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.date.authorised"))) {
 				val = new DataValue();
-				val.setDataElement(pre + env.getProperty("lab.results.date.authorised"));
+				val.setDataElement(env.getProperty(pre + "lab.results.date.authorised"));
 
 				Instant dob = sp.getResultsAuthorisedDate().toInstant();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
@@ -2070,12 +2224,27 @@ public class DhisLink implements Serializable {
 				String date = formatter.format(dob);
 
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getReceivingDateTime() != null) {
+			if (sp.getReceivingDateTime() != null
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.specimen.date.received"))) {
 				val = new DataValue();
-				val.setDataElement(pre + env.getProperty("lab.specimen.date.received"));
+				val.setDataElement(env.getProperty(pre + "lab.specimen.date.received"));
 
 				Instant dob = sp.getReceivingDateTime().toInstant();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
@@ -2083,25 +2252,30 @@ public class DhisLink implements Serializable {
 				String date = formatter.format(dob);
 
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			/*
-			 * if(!StringUtils.isBlank(sp.getReceivingLab())) { val = new DataValue();
-			 * val.setDataElement(env.getProperty("lab.results.date.authorised"));
-			 * val.setValue(sp.getResultsAuthorisedDate().toString());
-			 * event.getDataValues().add(val); }
-			 */
-
-			val = values.get(pre + env.getProperty("lab.results"));
-			DataValue authorisedBy = values.get(pre + env.getProperty("lab.results.authorised.by"));
-			DataValue authorisedDate = values.get(pre + env.getProperty("lab.results.date.authorised"));
+			val = values.get(env.getProperty("lab.results"));
+			//logger.info(event.toString());
 
 			// Only push if the results from dhis is not the same as redcap
 			// AND the dhis results are not authorised and the authorised date is blank
 			boolean sameResults = val != null && val.getValue().equalsIgnoreCase(sp.getResults());
-			boolean synchResults = !sameResults & authorisedBy != null && !StringUtils.isBlank(authorisedBy.getValue())
-					&& authorisedDate != null && !StringUtils.isBlank(authorisedDate.getValue());
+			boolean synchResults = !sameResults;
 
 			boolean synchReceiving = sp.getReceivingDateTime() != null;
 

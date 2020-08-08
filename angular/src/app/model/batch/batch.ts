@@ -75,6 +75,12 @@ export class Batch {
     @prop()
     publishResults: boolean;
 
+    @prop()
+    a1Control: boolean;
+
+    @prop()
+    h12Control: boolean;
+
     constructor() {
         this.batchId = '';
         this.projectId = 0,
@@ -96,6 +102,8 @@ export class Batch {
         this.authorisingPersonnel = '';
         this.authorisingDateTime = null;
         this.publishResults = false;
+        this.a1Control = true;
+        this.h12Control = true;
         this.lab = new LocationVO();
         this.batchItems = [];
         this.instrument = new Instrument('', '');

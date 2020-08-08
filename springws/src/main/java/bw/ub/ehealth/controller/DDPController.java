@@ -129,13 +129,13 @@ public class DDPController {
      * @param postObject
      * @return
      */
-    @PostMapping(value = "/ddp", produces = "application/json")
+    /*@PostMapping(value = "/ddp", produces = "application/json")
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String pullSpecimen(@RequestBody DDPPostObject postObject) {
     	SpecimenVO specimen = dhisLink.getOneSpecimen(postObject.getId());
         return dhisLink.getSpecimenFieldsString(specimen);
-    }
+    }*/
     
     /**
      * Retrieve one specimen based on the barcode parameter
