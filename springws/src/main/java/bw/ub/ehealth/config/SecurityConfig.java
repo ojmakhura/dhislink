@@ -100,10 +100,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.permitAll()
 				.antMatchers("/ddpcontroller/dhissynch")
 					.permitAll()
-				.antMatchers("/ddpcontroller/ddp")
-					.permitAll()
+				//.antMatchers("/ddpcontroller/ddp")
+					//.permitAll()
 				.anyRequest()
-					.authenticated()
+					.permitAll()
 				.and()
 				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
 				//.and()

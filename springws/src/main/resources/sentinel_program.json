@@ -1,0 +1,899 @@
+{
+  "lastUpdated": "2020-08-05T08:57:01.966",
+  "id": "yVAVueRALgp",
+  "href": "https://dhis2sms.gov.bw/covid/api/programs/yVAVueRALgp",
+  "created": "2020-07-03T11:38:24.251",
+  "name": "COVID 19 Sentinel Surveillance",
+  "shortName": "COVID 19 Sentinel Surveillance",
+  "displayName": "COVID 19 Sentinel Surveillance",
+  "completeEventsExpiryDays": 0,
+  "displayShortName": "COVID 19 Sentinel Surveillance",
+  "programType": "WITH_REGISTRATION",
+  "trackedEntityType": {
+    "id": "MCPQUTHX1Ze"
+  },
+  "programIndicators": [
+    {
+      "id": "ug63Rt7qoOC"
+    }
+  ],
+  "translations": [],
+  "userGroupAccesses": [
+    {
+      "access": "rwrw----",
+      "userGroupUid": "hojdnKB1hgq",
+      "displayName": "Covid 19 - Sentinel surveillance",
+      "id": "hojdnKB1hgq"
+    }
+  ],
+  "programTrackedEntityAttributes": [
+    {
+      "lastUpdated": "2020-08-05T08:57:01.967",
+      "id": "hO5vfue6TrM",
+      "created": "2020-07-03T11:38:24.214",
+      "name": "COVID 19 Sentinel Surveillance First Name ",
+      "displayName": "COVID 19 Sentinel Surveillance First Name ",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance First Name ",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": true,
+      "displayInList": true,
+      "sortOrder": 1,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "sB1IHYu2xQT"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.967",
+      "id": "STDKIEHlnR2",
+      "created": "2020-07-03T11:38:24.214",
+      "name": "COVID 19 Sentinel Surveillance Surname",
+      "displayName": "COVID 19 Sentinel Surveillance Surname",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance surname",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": true,
+      "displayInList": true,
+      "sortOrder": 2,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "pqOgPXBwa9V"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.967",
+      "id": "IToi2mSQ8Ka",
+      "created": "2020-07-09T13:54:10.450",
+      "name": "COVID 19 Sentinel Surveillance Sampling category",
+      "displayName": "COVID 19 Sentinel Surveillance Sampling category",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Sampling category",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "LONG_TEXT",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 3,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "SLJmxfGgk95"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.967",
+      "id": "aHky2J2gkBY",
+      "created": "2020-07-04T01:34:58.719",
+      "name": "COVID 19 Sentinel Surveillance ST - Occupation",
+      "displayName": "COVID 19 Sentinel Surveillance ST - Occupation",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance ST - Occupation",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": true,
+      "sortOrder": 4,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "knu8S1Pb5f7"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.967",
+      "id": "q7UpNryNOyP",
+      "created": "2020-07-03T11:38:24.214",
+      "name": "COVID 19 Sentinel Surveillance Date of birth",
+      "displayName": "COVID 19 Sentinel Surveillance Date of birth",
+      "mandatory": false,
+      "displayShortName": "COVID 19 Sentinel Surveillance Date of birth",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "DATE",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 5,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "NI0QRzJvQ0k"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.967",
+      "id": "Xe086ZKqWDr",
+      "created": "2020-07-03T11:38:24.214",
+      "name": "COVID 19 Sentinel Surveillance Sex",
+      "displayName": "COVID 19 Sentinel Surveillance Sex",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Sex",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": true,
+      "sortOrder": 6,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "oindugucx72"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "XEh2a4z5G5G",
+      "created": "2020-07-04T01:26:24.998",
+      "name": "COVID 19 Sentinel Surveillance Nationality",
+      "displayName": "COVID 19 Sentinel Surveillance Nationality",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Nationality",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 7,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "hBcoBCZBWFb"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "er5ELNvgETb",
+      "created": "2020-07-04T01:26:24.998",
+      "name": "COVID 19 Sentinel Surveillance Identification type",
+      "displayName": "COVID 19 Sentinel Surveillance Identification type",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Identification type",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 8,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "FChtc1p7HJG"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "NPpu1cIlifR",
+      "created": "2020-07-03T11:38:24.214",
+      "name": "COVID 19 Sentinel Surveillance Identification No",
+      "displayName": "COVID 19 Sentinel Surveillance Identification No",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Identification No",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": true,
+      "sortOrder": 9,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "c0zyxnYhyHO"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "yPJGORVSBLB",
+      "created": "2020-08-04T14:34:34.541",
+      "name": "COVID 19 Sentinel Surveillance Resident",
+      "displayName": "COVID 19 Sentinel Surveillance Resident",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Resident",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "BOOLEAN",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 10,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "CTVlyKhi35S"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "KkUhr2td3zX",
+      "created": "2020-07-03T11:42:07.260",
+      "name": "COVID 19 Sentinel Surveillance Plot No.",
+      "displayName": "COVID 19 Sentinel Surveillance Plot No.",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Plot No.",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 11,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "Y8FpKMcks5g"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "Dyskok1K9Nb",
+      "created": "2020-07-03T11:42:07.260",
+      "name": "COVID 19 Sentinel Surveillance City/Village",
+      "displayName": "COVID 19 Sentinel Surveillance City/Village",
+      "mandatory": false,
+      "displayShortName": "COVID 19 Sentinel Surveillance City/Village",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 12,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "hinQTuKTCfx"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "spu5ywVtMij",
+      "created": "2020-07-03T11:42:07.260",
+      "name": "COVID 19 Sentinel Surveillance District",
+      "displayName": "COVID 19 Sentinel Surveillance District",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance District",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 13,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "jetvF0OtmN6"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "XAzwMW1hWgs",
+      "created": "2020-07-05T17:19:14.909",
+      "name": "COVID 19 Sentinel Surveillance Primary Contact No",
+      "displayName": "COVID 19 Sentinel Surveillance Primary Contact No",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Primary Contact No",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "PHONE_NUMBER",
+      "searchable": true,
+      "displayInList": true,
+      "sortOrder": 14,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "zJ0IaT0yGqj"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "UD9LnquolgG",
+      "created": "2020-07-05T17:19:14.909",
+      "name": "COVID 19 Sentinel Surveillance Secondary Contact No",
+      "displayName": "COVID 19 Sentinel Surveillance Secondary Contact No",
+      "mandatory": false,
+      "displayShortName": "COVID 19 Sentinel Surveillance Secondary Contact No",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "PHONE_NUMBER",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 15,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "op2d36tZSvY"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "yNT4z6QuIU3",
+      "created": "2020-08-04T14:38:24.253",
+      "name": "COVID 19 Sentinel Surveillance Employed? ",
+      "displayName": "COVID 19 Sentinel Surveillance Employed? ",
+      "mandatory": true,
+      "displayShortName": "COVID 19 Sentinel Surveillance Employed? ",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "BOOLEAN",
+      "searchable": false,
+      "displayInList": true,
+      "sortOrder": 16,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "uyC4kfQGjrF"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.968",
+      "id": "jkKuhqsZfpV",
+      "created": "2020-08-04T14:38:24.253",
+      "name": "COVID 19 Sentinel Surveillance Employer ",
+      "displayName": "COVID 19 Sentinel Surveillance Employer ",
+      "mandatory": false,
+      "displayShortName": "COVID 19 Sentinel Surveillance Employer ",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "TEXT",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 17,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "tsXrZbswBBo"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    },
+    {
+      "lastUpdated": "2020-08-05T08:57:01.969",
+      "id": "swXb8SPaq5k",
+      "created": "2020-08-04T14:38:24.253",
+      "name": "COVID 19 Sentinel Surveillance Employer Contact No",
+      "displayName": "COVID 19 Sentinel Surveillance Employer Contact No",
+      "mandatory": false,
+      "displayShortName": "COVID 19 Sentinel Surveillance Employer Contact No",
+      "externalAccess": false,
+      "renderOptionsAsRadio": false,
+      "valueType": "PHONE_NUMBER",
+      "searchable": false,
+      "displayInList": false,
+      "sortOrder": 18,
+      "favorite": false,
+      "access": {
+        "read": true,
+        "update": true,
+        "externalize": false,
+        "delete": true,
+        "write": true,
+        "manage": true
+      },
+      "program": {
+        "id": "yVAVueRALgp"
+      },
+      "trackedEntityAttribute": {
+        "id": "r0PslTK0FXd"
+      },
+      "favorites": [],
+      "programTrackedEntityAttributeGroups": [],
+      "translations": [],
+      "userGroupAccesses": [],
+      "attributeValues": [],
+      "userAccesses": []
+    }
+  ],
+  "organisationUnits": [
+    {
+      "id": "mdNB54oCdXw"
+    },
+    {
+      "id": "ic1Q2wqGNZN"
+    },
+    {
+      "id": "lbPc3rRzffk"
+    },
+    {
+      "id": "fYll2k3acuM"
+    },
+    {
+      "id": "n3dFQeoRyOf"
+    },
+    {
+      "id": "sQsudGeG0RM"
+    },
+    {
+      "id": "jqRlEnwTDlG"
+    },
+    {
+      "id": "LMlO0XeEJQX"
+    },
+    {
+      "id": "wMaqsktUL26"
+    },
+    {
+      "id": "LDW3iWZAgyl"
+    },
+    {
+      "id": "vjwx7TxyeT9"
+    },
+    {
+      "id": "DK8y2KoByZi"
+    },
+    {
+      "id": "GmR4yTgZiuV"
+    },
+    {
+      "id": "P33IuXOxpw5"
+    },
+    {
+      "id": "G2CNyvUpCAs"
+    },
+    {
+      "id": "ifqcQ1ZMWnB"
+    },
+    {
+      "id": "TLUzr4vx1Pv"
+    },
+    {
+      "id": "QR0Z6412PSm"
+    },
+    {
+      "id": "iY7ElCV7XFr"
+    },
+    {
+      "id": "Mmxj0YKdxPb"
+    },
+    {
+      "id": "XbvFoaC5uGm"
+    },
+    {
+      "id": "T4P22CrqWGk"
+    },
+    {
+      "id": "LTvOqZjmcFO"
+    },
+    {
+      "id": "MDyVzyVZLeD"
+    },
+    {
+      "id": "fUwwFHZMnnw"
+    },
+    {
+      "id": "ygsoewXItQP"
+    },
+    {
+      "id": "ocgBPnAWM9q"
+    },
+    {
+      "id": "iWTGXVfKwlL"
+    },
+    {
+      "id": "tLiessSviwf"
+    },
+    {
+      "id": "S1kDBZjQLpo"
+    },
+    {
+      "id": "QGCK5p7l4kN"
+    },
+    {
+      "id": "p9TI81zEDuZ"
+    },
+    {
+      "id": "I3mYZtYUm4U"
+    },
+    {
+      "id": "NM6JSfe3wEB"
+    },
+    {
+      "id": "dCOmNOg55UG"
+    },
+    {
+      "id": "azya9JGKJbY"
+    },
+    {
+      "id": "dGgWs61siJY"
+    },
+    {
+      "id": "YzsCZSQhsxC"
+    },
+    {
+      "id": "o01VpbSPvho"
+    },
+    {
+      "id": "wJ4bmSmAYyX"
+    },
+    {
+      "id": "jPfPq1MBN2e"
+    },
+    {
+      "id": "FrhrL8m46Hc"
+    },
+    {
+      "id": "Ow7rJPI96GS"
+    },
+    {
+      "id": "EmtXjMjNlJw"
+    },
+    {
+      "id": "ZvwcZ9LtESy"
+    },
+    {
+      "id": "o6CSub2MCoS"
+    },
+    {
+      "id": "KKxjOUckU5V"
+    },
+    {
+      "id": "qgpYu7Kjdu5"
+    },
+    {
+      "id": "J7hld2UWYHP"
+    },
+    {
+      "id": "Lmf8QKDfJFH"
+    },
+    {
+      "id": "GbV7yDUbmFs"
+    },
+    {
+      "id": "Arv8sb0gLDR"
+    },
+    {
+      "id": "fNY1q9RAsrJ"
+    },
+    {
+      "id": "O7pb8C2xjg4"
+    },
+    {
+      "id": "WcdEOEChplu"
+    },
+    {
+      "id": "WWsOCQbJWAU"
+    },
+    {
+      "id": "Ywjmoc1xeje"
+    },
+    {
+      "id": "u6nuCCiHwF2"
+    },
+    {
+      "id": "cf25MNPy75Z"
+    },
+    {
+      "id": "sEtzR3RzSz6"
+    },
+    {
+      "id": "pfpryrxrILA"
+    },
+    {
+      "id": "tkFbeKgwLa7"
+    },
+    {
+      "id": "LiPeOtXjjWQ"
+    },
+    {
+      "id": "HrD7HkAzsVp"
+    },
+    {
+      "id": "Oc4VZ6iBdmX"
+    },
+    {
+      "id": "jYS0yisGY1N"
+    },
+    {
+      "id": "wfKv748c0bH"
+    },
+    {
+      "id": "LoPGwwWTHru"
+    },
+    {
+      "id": "hjO0hZNNy9J"
+    },
+    {
+      "id": "CS69HtER6fp"
+    },
+    {
+      "id": "tN6bZ5PP58B"
+    }
+  ],
+  "programStages": [
+    {
+      "id": "rQeSbwNwWRJ"
+    }
+  ]
+}

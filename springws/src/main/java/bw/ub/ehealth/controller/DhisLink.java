@@ -1,11 +1,13 @@
 package bw.ub.ehealth.controller;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -13,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,6 +23,7 @@ import java.util.Set;
 
 import javax.validation.constraints.NotBlank;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -52,6 +56,7 @@ import bw.ub.ehealth.dhislink.vo.EventList;
 import bw.ub.ehealth.dhislink.vo.OrganisationUnit;
 import bw.ub.ehealth.dhislink.vo.OrganisationUnitList;
 import bw.ub.ehealth.dhislink.vo.Program;
+import bw.ub.ehealth.dhislink.vo.ProgramStage;
 import bw.ub.ehealth.dhislink.vo.Sex;
 import bw.ub.ehealth.dhislink.vo.SpecimenType;
 import bw.ub.ehealth.dhislink.vo.Symptoms;
@@ -82,33 +87,42 @@ public class DhisLink implements Serializable {
 
 	@Value("${dhis2.api.url}")
 	private String dhis2Url;
-	
-	@Value("${dhis2.api.program}")
-    private String program;
-	
-	@Value("${lab.specimen.barcode}")
-    private String barcodeField;
-	
+
 	@Value("${dhis2.mohw.org.unit}")
-    private String mohwOrgUnit;
+	private String mohwOrgUnit;
+
+	@Value("${lab.report.pid}")
+	private Long labReportPID;
+
+	@Value("${lab.reception.pid}")
+	private Long labReceptionPID;
+
+	@Value("${lab.extraction.pid}")
+	private Long labExtractionPID;
+
+	@Value("${lab.resulting.pid}")
+	private Long labResultingPID;
+
+	@Value("${app.live}")
+	private Boolean isLive;
+
+    @Value("${sentinel.id}")
+    private String sentinelId;
+
+    @Value("${sentinel.program.stage.examination}")
+    private String sentinelExaminationId;
+    
+    //@Value("${yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.barcode}")
+    //private String sentinelField;
+    
+    @Value("${dhis2.api.program}")
+    private String covidProgram;
 
     @Value("${dhis2.api.program.stage}")
-    private String programStage;
-    
-    @Value("${lab.report.pid}")
-    private Long labReportPID;
+    private String covidProgramStage;
 
-    @Value("${lab.reception.pid}")
-    private Long labReceptionPID;
-
-    @Value("${lab.extraction.pid}")
-    private Long labExtractionPID;
-
-    @Value("${lab.resulting.pid}")
-    private Long labResultingPID;
-    
-    @Value("${app.live}")
-    private Boolean isLive;
+    @Value("lab.specimen.barcode}")
+    private String barcodeField;
     
 	@Autowired
 	private PatientService patientService;
@@ -118,23 +132,23 @@ public class DhisLink implements Serializable {
 
 	@Autowired
 	private RedcapDataService redcapDataService;
-		
+
 	@Autowired
 	private RedcapLink redcapLink;
-	
+
 	private int numPulled = 0;
-	
+
 	public DhisLink() {
 
 	}
-	
+
 	public int getNumPulled() {
 		return this.numPulled;
 	}
 
 	@Bean
 	public RestTemplate restTemplate() {
-		
+
 		return builder.basicAuthentication("redcapLink", ")>Ys<+6V|DBCo81").build();
 	}
 
@@ -159,13 +173,14 @@ public class DhisLink implements Serializable {
 			}
 			builder.append(entry.getKey() + "=" + entry.getValue());
 		}
-		String finalUrl = dhis2Url + "/events?" + builder.toString();
+		String finalUrl = dhis2Url + "/events.json?" + builder.toString();
 		logger.debug(finalUrl);
 		logger.info(finalUrl);
-		
+
 		return eventQueryExecute(finalUrl);
+
 	}
-	
+
 	public List<Event> eventQueryExecute(String queryUrl) {
 		EventList eventList = restTemplate().getForObject(queryUrl, EventList.class);
 		return (List<Event>) eventList.getEvents();
@@ -173,12 +188,24 @@ public class DhisLink implements Serializable {
 
 	/**
 	 * Load a program from DHIS
+	 * 
 	 * @param program
 	 * @return
 	 */
 	public Program getProgram(String program) {
 
 		return restTemplate().getForObject(dhis2Url + "/programs/" + program, Program.class);
+	}
+
+	/**
+	 * Load a program from DHIS
+	 * 
+	 * @param program
+	 * @return
+	 */
+	public ProgramStage getProgramStage(String programStage) {
+
+		return restTemplate().getForObject(dhis2Url + "/programStages/" + programStage, ProgramStage.class);
 	}
 
 	/**
@@ -190,7 +217,7 @@ public class DhisLink implements Serializable {
 	 */
 	public TrackedEntityInstance getTrackedEntityInstance(@NotBlank String orgUnit, @NotBlank String instanceId) {
 
-		String append = "/trackedEntityInstances?ou=" + orgUnit + "&trackedEntityInstance=" + instanceId;
+		String append = "/trackedEntityInstances.json?ou=" + orgUnit + "&trackedEntityInstance=" + instanceId;
 		TrackedEntityInstanceList list = restTemplate().getForObject(dhis2Url + append,
 				TrackedEntityInstanceList.class);
 		TrackedEntityInstance instance = null;
@@ -200,11 +227,12 @@ public class DhisLink implements Serializable {
 
 		return instance;
 	}
-	
+
 	private List<TrackedEntityInstance> getTrackedEntityInstanceList(@NotBlank String instanceIds) {
-		String append = "/trackedEntityInstances?ou=" + mohwOrgUnit + "&trackedEntityInstance=" + instanceIds;
-		TrackedEntityInstanceList list = restTemplate().getForObject(dhis2Url + append, TrackedEntityInstanceList.class);
-		
+		String append = "/trackedEntityInstances.json?ou=" + mohwOrgUnit + "&trackedEntityInstance=" + instanceIds;
+		TrackedEntityInstanceList list = restTemplate().getForObject(dhis2Url + append,
+				TrackedEntityInstanceList.class);
+
 		return (List<TrackedEntityInstance>) list.getTrackedEntityInstances();
 	}
 
@@ -216,17 +244,21 @@ public class DhisLink implements Serializable {
 
 		/// Get identity number
 		patientVO = new PatientVO();
-		
+
 		patientVO.setCreated(trackedEntityInstance.getCreated());
 		patientVO.setLastUpdated(trackedEntityInstance.getLastUpdated());
 		patientVO.setTrackedEntityInstance(trackedEntityInstance.getTrackedEntityInstance());
-		
+
 		if (attrMap.get(env.getProperty("patient.omang")) != null) {
 			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.omang")).getValue());
 		}
 
 		if (attrMap.get(env.getProperty("patient.passport")) != null && patientVO.getIdentityNo() == null) {
 			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.passport")).getValue());
+		}
+		
+		if (attrMap.get(env.getProperty("patient.identification")) != null) {
+			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.identification")).getValue());
 		}
 
 		/// Get the surname
@@ -238,7 +270,7 @@ public class DhisLink implements Serializable {
 		if (attrMap.get(env.getProperty("patient.name")) != null) {
 			patientVO.setFirstName(attrMap.get(env.getProperty("patient.name")).getValue());
 		}
-
+		
 		/// Get the birth day
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -266,15 +298,15 @@ public class DhisLink implements Serializable {
 
 		/// Get sex
 		if (attrMap.get(env.getProperty("patient.sex")) != null) {
-			
+
 			String sex = attrMap.get(env.getProperty("patient.sex")).getValue();
-			
-			if(sex.equalsIgnoreCase("male")) {
+
+			if (sex.equalsIgnoreCase("male")) {
 				patientVO.setSex(Sex.MALE.getValue());
-			} else if(sex.equalsIgnoreCase("female")) {
+			} else if (sex.equalsIgnoreCase("female")) {
 				patientVO.setSex(Sex.FEMALE.getValue());
 			} else {
-			
+
 				patientVO.setSex(Sex.UNKNOWN.getValue());
 			}
 		}
@@ -282,6 +314,10 @@ public class DhisLink implements Serializable {
 		// Get patient nationality
 		if (attrMap.get(env.getProperty("patient.nationality")) != null) {
 			patientVO.setNationality(attrMap.get(env.getProperty("patient.nationality")).getValue());
+		}
+		
+		if (attrMap.get(env.getProperty("patient.identification")) != null) {
+			patientVO.setNationality(attrMap.get(env.getProperty("patient.identification")).getValue());
 		}
 
 		// Get patient phone
@@ -313,12 +349,12 @@ public class DhisLink implements Serializable {
 		if (attrMap.get(env.getProperty("patient.kin.phone")) != null) {
 			patientVO.setKinContact(attrMap.get(env.getProperty("patient.kin.phone")).getValue());
 		}
-		
-		if(StringUtils.isBlank(patientVO.getFirstName()) && !StringUtils.isBlank(patientVO.getSurname())) {
+
+		if (StringUtils.isBlank(patientVO.getFirstName()) && !StringUtils.isBlank(patientVO.getSurname())) {
 			patientVO.setFirstName(patientVO.getSurname());
 		}
-		
-		if(!StringUtils.isBlank(patientVO.getFirstName()) && StringUtils.isBlank(patientVO.getSurname())) {
+
+		if (!StringUtils.isBlank(patientVO.getFirstName()) && StringUtils.isBlank(patientVO.getSurname())) {
 			patientVO.setSurname(patientVO.getFirstName());
 		}
 
@@ -348,158 +384,190 @@ public class DhisLink implements Serializable {
 		return valueMap;
 	}
 
-	private String getSpecimenType(Map<String, DataValue> values) {
-		
+	private String getSpecimenType(Map<String, DataValue> values, String pre) {
+
 		String specimenType = "";
-		
-		if(values.get(env.getProperty("lab.specimen.type.nasal")) != null) {
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.nasal"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.nasal")) != null) {
 			specimenType = SpecimenType.NASAL.getValue();
-			
-		} else if(values.get(env.getProperty("lab.specimen.type.npa")) != null) {
+
+		} else if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.npa"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.npa")) != null) {
 			specimenType = SpecimenType.NPA.getValue();
-			
-		} else if(values.get(env.getProperty("lab.specimen.type.op")) != null) {
+
+		} else if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.op"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.op")) != null) {
 			specimenType = SpecimenType.OP.getValue();
-			
-		} else if(values.get(env.getProperty("lab.specimen.type.bal")) != null) {
+
+		} else if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.bal"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.bal")) != null) {
 			specimenType = SpecimenType.BAL.getValue();
-			
-		} else if(values.get(env.getProperty("lab.specimen.type.combined.npop")) != null) {
+
+		} else if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.combined.npop"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.combined.npop")) != null) {
 			specimenType = SpecimenType.NP_OP.getValue();
-			
-		} else if(values.get(env.getProperty("lab.specimen.type.np")) != null) {
+
+		} else if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.np"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.np")) != null) {
 			specimenType = SpecimenType.NP.getValue();
-			
-		} else if(values.get(env.getProperty("lab.specimen.type.sputum")) != null) {
+
+		} else if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.sputum"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.sputum")) != null) {
 			specimenType = SpecimenType.SPUTUM.getValue();
-			
-		} else if(values.get(env.getProperty("lab.specimen.type.other")) != null) {
-			specimenType = values.get(env.getProperty("lab.specimen.type.other")).getValue();
-			
-		} 
+
+		} else if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.type.other"))
+				&& values.get(env.getProperty(pre + "lab.specimen.type.other")) != null) {
+			specimenType = values.get(env.getProperty(pre + "lab.specimen.type.other")).getValue();
+
+		}
 
 		return specimenType;
 	}
 
-	private String getSymptoms(Map<String, DataValue> values) {
-		
+	private String getSymptoms(Map<String, DataValue> values, String pre) {
+
 		StringBuilder builder = new StringBuilder();
 
-		if(values.get(env.getProperty("lab.symptoms.apnoea")) != null) {
-			builder.append(Symptoms.APNOEA);
-			
-		}
-		
-		if(values.get(env.getProperty("lab.symptoms.cough")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.apnoea"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.apnoea")) != null) {
+				builder.append(Symptoms.APNOEA);
+
 			}
-			
-			builder.append(Symptoms.COUGH);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.diarrhoea")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.cough"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.cough")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.COUGH);
+
 			}
-			
-			builder.append(Symptoms.DIARRHOEA);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.fever")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.diarrhoea"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.diarrhoea")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.DIARRHOEA);
+
 			}
-			
-			builder.append(Symptoms.FEVER);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.none")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.fever"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.fever")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.FEVER);
+
 			}
-			
-			builder.append(Symptoms.NONE);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.paroxysmal")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.none"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.none")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.NONE);
+
 			}
-			
-			builder.append(Symptoms.PAROXYSMAL_WHOOP);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.breath.shortness")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.paroxysmal"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.paroxysmal")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.PAROXYSMAL_WHOOP);
+
 			}
-			
-			builder.append(Symptoms.SHORT_BREATH);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.sore.throat")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.breath.shortness"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.breath.shortness")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.SHORT_BREATH);
+
 			}
-			
-			builder.append(Symptoms.SORE_THROAT);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.stiff.neck")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.sore.throat"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.sore.throat")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.SORE_THROAT);
+
 			}
-			
-			builder.append(Symptoms.STIFF_NECK);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.unknown")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.stiff.neck"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.stiff.neck")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.STIFF_NECK);
+
 			}
-			
-			builder.append(Symptoms.UNKNOWN);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.vomiting")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.unknown"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.unknown")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.UNKNOWN);
+
 			}
-			
-			builder.append(Symptoms.VOMITTING);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.symptoms.other")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.vomiting"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.vomiting")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(Symptoms.VOMITTING);
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.symptoms.other")).getValue());
-			
 		}
-				
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.symptoms.other"))) {
+			if (values.get(env.getProperty(pre + "lab.symptoms.other")) != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(values.get(env.getProperty(pre + "lab.symptoms.other")).getValue());
+
+			}
+		}
+
 		return builder.toString();
 	}
 
@@ -509,105 +577,136 @@ public class DhisLink implements Serializable {
 	 * @param values
 	 * @return
 	 */
-	private String getRiskFactors(Map<String, DataValue> values) {
+	private String getRiskFactors(Map<String, DataValue> values, String pre) {
 
 		StringBuilder builder = new StringBuilder();
-		
-		if(values.get(env.getProperty("lab.underlying.asthma")) != null) {
-			builder.append(values.get(env.getProperty("lab.underlying.asthma")).getValue());
-			
-		}
-		
-		if(values.get(env.getProperty("lab.underlying.chronic.lung")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		DataValue value = null;
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.asthma"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.asthma"));
+			if (value != null) {
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.chronic.lung")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.diabetes")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.chronic.lung"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.chronic.lung"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.diabetes")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.hiv")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.diabetes"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.diabetes"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.hiv")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.none")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.hiv"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.hiv"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.none")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.stiff.neck")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.none"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.none"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.stiff.neck")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.tb")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.stiff.neck"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.stiff.neck"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.tb")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.unknown")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.tb"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.tb"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.unknown")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.pregnancy")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.unknown"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.unknown"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.pregnancy")).getValue());
-			
 		}
-		
-		if(values.get(env.getProperty("lab.underlying.other")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.pregnancy"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.pregnancy"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.underlying.other")).getValue());
-			
 		}
-		
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.underlying.other"))) {
+			value = values.get(env.getProperty(pre + "lab.underlying.other"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
+			}
+		}
+
 		return builder.toString();
 	}
 
@@ -617,65 +716,83 @@ public class DhisLink implements Serializable {
 	 * @param values
 	 * @return
 	 */
-	private String getTestType(Map<String, DataValue> values) {
+	private String getTestType(Map<String, DataValue> values, String pre) {
 
 		StringBuilder builder = new StringBuilder();
-		
-		if(values.get(env.getProperty("lab.test.avian")) != null) {
-			builder.append(TestType.AVIAN);
-			
-		}
-		
-		if(values.get(env.getProperty("lab.test.influenza.RSV")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+		DataValue value = null;
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.test.avian"))) {
+			value = values.get(env.getProperty(pre + "lab.test.avian"));
+			if (value != null) {
+				builder.append(TestType.AVIAN);
+
 			}
-			
-			builder.append(TestType.FLU_RSV);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.test.mers")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.test.influenza.RSV"))) {
+			value = values.get(env.getProperty(pre + "lab.test.influenza.RSV"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(TestType.FLU_RSV);
+
 			}
-			
-			builder.append(TestType.MERS_COV);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.test.neonatal")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.test.mers"))) {
+			value = values.get(env.getProperty(pre + "lab.test.mers"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(TestType.MERS_COV);
+
 			}
-			
-			builder.append(TestType.NEONATAL);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.test.cov2")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.test.neonatal"))) {
+			value = values.get(env.getProperty(pre + "lab.test.neonatal"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(TestType.NEONATAL);
+
 			}
-			
-			builder.append(TestType.SARS_COV2);
-			
 		}
-		
-		if(values.get(env.getProperty("lab.test.other")) != null) {
-			
-			if(builder.length() > 0) {
-				builder.append(";");
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.test.cov2"))) {
+			value = values.get(env.getProperty(pre + "lab.test.cov2"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(TestType.SARS_COV2);
+
 			}
-			
-			builder.append(values.get(env.getProperty("lab.test.other")).getValue());
-			
 		}
-		
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.test.other"))) {
+			value = values.get(env.getProperty(pre + "lab.test.other"));
+			if (value != null) {
+
+				if (builder.length() > 0) {
+					builder.append(";");
+				}
+
+				builder.append(value.getValue());
+
+			}
+		}
+
 		return builder.toString();
 	}
 
@@ -685,21 +802,23 @@ public class DhisLink implements Serializable {
 	 * @param values
 	 * @return
 	 */
-	private String getSubmitter(Map<String, DataValue> values) {
+	private String getSubmitter(Map<String, DataValue> values, String pre) {
 
 		String submitter = "";
 
-		if (values.get(env.getProperty("lab.submitter.surname")) != null) {
-			submitter = values.get(env.getProperty("lab.submitter.surname")).getValue();
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.submitter.surname"))
+				&& values.get(env.getProperty(pre + "lab.submitter.surname")) != null) {
+			submitter = values.get(env.getProperty(pre + "lab.submitter.surname")).getValue();
 		}
 
-		if (values.get(env.getProperty("lab.submitter.firstname")) != null) {
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.submitter.firstname"))
+				&& values.get(env.getProperty(pre + "lab.submitter.firstname")) != null) {
 
 			if (!StringUtils.isBlank(submitter)) {
-				submitter = submitter + " " + values.get(env.getProperty("lab.submitter.firstname")).getValue();
+				submitter = submitter + " " + values.get(env.getProperty(pre + "lab.submitter.firstname")).getValue();
 			} else {
 
-				submitter = values.get(env.getProperty("lab.submitter.firstname")).getValue();
+				submitter = values.get(env.getProperty(pre + "lab.submitter.firstname")).getValue();
 			}
 		}
 
@@ -719,127 +838,221 @@ public class DhisLink implements Serializable {
 
 		Map<String, DataValue> values = getDataValueMap((List<DataValue>) event.getDataValues());
 		/**
-		 * If the results have already been produced, no need to pull the data or the barcode does not exist,
-		 * or if the specimen has 
+		 * If the results have already been produced, no need to pull the data or the
+		 * barcode does not exist, or if the specimen has
 		 */
-		DataValue labResults = values.get(env.getProperty("lab.results").trim());		
+		DataValue labResults = values
+				.get(env.getProperty("lab.results").trim());
 		boolean resultsCheckOk = false;
-		
-		if(!skipResulted) { 
-			//logger.debug("Resulted specimen not skipped");
+
+		if (!skipResulted) {
+			// logger.debug("Resulted specimen not skipped");
 			resultsCheckOk = true;
 		} else {
-			if(labResults == null || StringUtils.isBlank(labResults.getValue()) || labResults.getValue().equals("PENDING")) {
+			if (labResults == null || StringUtils.isBlank(labResults.getValue())
+					|| labResults.getValue().equals("PENDING") || labResults.getValue().equals("ORDERED")) {
 				resultsCheckOk = true;
 			} else {
 				resultsCheckOk = false;
 			}
 		}
-		
+
+		String pre = event.getProgram() + "." + event.getProgramStage() + ".";
+
 		if (!resultsCheckOk || values.get(env.getProperty("lab.specimen.barcode").trim()) == null) {
 			//logger.debug("Results check failed");
 			//logger.debug(event.toString());
 			return null;
 		}
-
+		//logger.debug(event.toString());
 		SpecimenVO specimen = new SpecimenVO();
-		specimen.setEvent(event.getEvent());		
+		specimen.setEvent(event.getEvent());
 		specimen.setCreated(event.getCreated());
 		specimen.setLastUpdated(event.getLastUpdated());
+		specimen.setProgramId(event.getProgram());
+		specimen.setProgramStageId(event.getProgramStage());
 
-		if (values.get(env.getProperty("lab.submitter.facility").trim()) != null) {
-			specimen.setDispatchLocation(values.get(env.getProperty("lab.submitter.facility").trim()).getValue());
+		DataValue val = null;
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.submitter.facility"))) {
+			val = values.get(env.getProperty(pre + "lab.submitter.facility").trim());
+			if (val != null) {
+				specimen.setDispatchLocation(val.getValue());
+			}
 		}
-		
-		if (values.get(env.getProperty("lab.specimen.facility").trim()) != null) {
-			specimen.setPatientFacility(values.get(env.getProperty("lab.specimen.facility").trim()).getValue());
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.facility"))) {
+			val = values.get(env.getProperty(pre + "lab.specimen.facility").trim());
+			if (val != null) {
+				specimen.setPatientFacility(val.getValue());
+			}
 		}
-		
-		if (values.get(env.getProperty("lab.submitter.city").trim()) != null) {
-			
-			specimen.setDispatcherCity(values.get(env.getProperty("lab.submitter.city").trim()).getValue());
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.facility"))) {
+			val = values.get(env.getProperty(pre + "lab.specimen.facility").trim());
+			if (val != null) {
+
+				specimen.setDispatcherCity(val.getValue());
+			}
 		}
-		
-		if (values.get(env.getProperty("lab.submitter.email").trim()) != null) {
-			
-			specimen.setDispatcherEmail(values.get(env.getProperty("lab.submitter.email").trim()).getValue());
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.submitter.email"))) {
+			val = values.get(env.getProperty(pre + "lab.submitter.email").trim());
+			if (val != null) {
+
+				specimen.setDispatcherEmail(val.getValue());
+			}
 		}
-		
-		if (values.get(env.getProperty("lab.submitter.contact").trim()) != null) {
-			
-			specimen.setDispatcherContact(values.get(env.getProperty("lab.submitter.contact").trim()).getValue());
+
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.submitter.contact"))) {
+			val = values.get(env.getProperty(pre + "lab.submitter.contact").trim());
+			if (val != null) {
+
+				specimen.setDispatcherContact(val.getValue());
+			}
 		}
-		
+
 		// Get the barcode
-		if (values.get(env.getProperty("lab.specimen.barcode").trim()) != null) {
-			String barcode = values.get(env.getProperty("lab.specimen.barcode").trim()).getValue();
-			specimen.setSpecimenBarcode(barcode.toUpperCase()); // Ensure standard barcodes
+		if (!StringUtils.isBlank(env.getProperty("lab.specimen.barcode"))) {
+			val = values.get(env.getProperty("lab.specimen.barcode").trim());
+			if (val != null) {
+				String barcode = val.getValue();
+				specimen.setSpecimenBarcode(barcode.toUpperCase()); // Ensure standard barcodes
+			}
 		}
 
 		// Get the covid number
-		if (values.get(env.getProperty("lab.covid.number").trim()) != null) {
-			String covidNUmber = values.get(env.getProperty("lab.covid.number").trim()).getValue();
-			
-			specimen.setCovidNumber(covidNUmber);
-			
-			if(StringUtils.isBlank(specimen.getSpecimenBarcode())) {
-				specimen.setSpecimenBarcode(covidNUmber.replaceAll("[^a-zA-Z0-9]", ""));
-			}						
-		}
+		if (!StringUtils.isBlank(env.getProperty(pre + "lab.covid.number"))) {
+			val = values.get(env.getProperty(pre + "lab.covid.number").trim());
+			if (val != null) {
+				String covidNUmber = val.getValue();
 
-		specimen.setDispatcher(getSubmitter(values));
+				specimen.setCovidNumber(covidNUmber);
 
-		try {
-			if (values.get(env.getProperty("lab.specimen.date.collection").trim()) != null) {
-				
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
-				String date = values.get(env.getProperty("lab.specimen.date.collection").trim()) == null ? ""
-						: values.get(env.getProperty("lab.specimen.date.collection").trim()).getValue();
-
-				String time = values.get(env.getProperty("lab.specimen.collection.time").trim()) == null ? " 00:00"
-						: " " + values.get(env.getProperty("lab.specimen.collection.time").trim()).getValue();
-				if (date.trim().length() > 0) {
-					date = date + time;
-					Date dt = format.parse(date.trim());
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(dt);
-					specimen.setCollectionDateTime(cal.getTime());
+				if (StringUtils.isBlank(specimen.getSpecimenBarcode())) {
+					specimen.setSpecimenBarcode(covidNUmber.replaceAll("[^a-zA-Z0-9]", ""));
 				}
 			}
+		}
 
-			if (values.get(env.getProperty("lab.specimen.date.received")) != null) {
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+		specimen.setDispatcher(getSubmitter(values, pre));
 
-				Date dt = values.get(env.getProperty("lab.specimen.date.received").trim()) == null ? null
-						: format.parse(values.get(env.getProperty("lab.specimen.date.received").trim()).getValue());
+		try {
+			if (!StringUtils.isBlank(env.getProperty("lab.specimen.date.collection"))) {
+				val = values.get(env.getProperty("lab.specimen.date.collection").trim());
+				if (val != null) {
 
-				specimen.setReceivingDateTime(dt);
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+					String date = val == null ? "" : val.getValue();
+					
+					date.replace('T', ' ');
+
+					String time = ""; 
+					
+					if(date.length() == 10) {
+						if (!StringUtils.isBlank(env.getProperty("lab.specimen.collection.time"))) {
+							if(values.get(env.getProperty("lab.specimen.collection.time").trim()) != null) {
+								time = values.get(env.getProperty("lab.specimen.collection.time").trim()).getValue();
+							}
+						}
+						
+						if(StringUtils.isBlank(time)) {
+							time = "00:01";
+						}
+					}
+										
+					if (date.trim().length() > 0) {
+						date = date + " " + time;
+						Date dt = format.parse(date.trim());
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(dt);
+						specimen.setCollectionDateTime(cal.getTime());
+					}
+				}
 			}
 			
+			if (!StringUtils.isBlank(env.getProperty("lab.specimen.date.received"))) {
+				val = values.get(env.getProperty("lab.specimen.date.received").trim());
+				if (val != null) {
+
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+					String date = val == null ? "" : val.getValue();
+					date = date.replace('T', ' ');
+
+					String time = ""; 
+
+					if(date.length() == 10) {
+						if (!StringUtils.isBlank(env.getProperty("lab.specimen.time.received"))) {
+							if(values.get(env.getProperty("lab.specimen.time.received").trim()) != null) {
+								time = values.get(env.getProperty("lab.specimen.time.received").trim()).getValue();
+							}
+						} 
+						
+						if(StringUtils.isBlank(time)) {
+							time = "00:01";
+						}
+					}
+										
+					if (date.trim().length() > 0) {
+						date = date + " " + time;
+						Date dt = format.parse(date.trim());
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(dt);
+						specimen.setReceivingDateTime(cal.getTime());
+					}
+				}
+			}
 
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-
-		specimen.setSpecimenType(getSpecimenType(values));
-		specimen.setSymptom(this.getSymptoms(values));
 		
-		specimen.setTestType(this.getTestType(values));
-		//specimen.setRiskFacors(this.getRiskFactors(values));
+		if(StringUtils.isBlank(specimen.getProgramId()) || specimen.getProgramId().equals(covidProgram)) {
+			specimen.setSpecimenType(getSpecimenType(values, pre));
+		} else {
+			if (!StringUtils.isBlank(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.type"))) {
+				val = values.get(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.type").trim());
+				if(val != null) {
+					//logger.info(event.toString());
+					specimen.setSpecimenType(val.getValue());
+				}
+			}
+		}
+		
+		if(!StringUtils.isBlank(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.patient.receive.sms"))) {
+			val = values.get(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.patient.receive.sms").trim());
+			if(val != null) {
+				specimen.setReceiveSMS(Boolean.valueOf(val.getValue()));
+			} else {
+				specimen.setReceiveSMS(false);
+			}
+		} else {
+			specimen.setReceiveSMS(false);
+		}
+		
+		if(!StringUtils.isBlank(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.submitter"))) {
+			val = values.get(env.getProperty("yVAVueRALgp.rQeSbwNwWRJ.lab.specimen.submitter").trim());
+			if(val != null) {
+				specimen.setDispatcher(val.getValue());
+			}
+		}
+
+		specimen.setTestType(this.getTestType(values, pre));
+		// specimen.setRiskFacors(this.getRiskFactors(values));
 
 		return specimen;
 	}
-	
+
 	/**
 	 * Load data elements from DHIS2
+	 * 
 	 * @param elementId
 	 * @return
 	 */
 	public DataElement getDataElement(String elementId) {
 
-		return restTemplate().getForObject(dhis2Url + "/dataElements/" + elementId, DataElement.class);
+		return restTemplate().getForObject(dhis2Url + "/dataElements/" + elementId + ".json", DataElement.class);
 	}
-		
+
 	/**
 	 * Get bulk patients information. We call the trackedEntityInstances resource
 	 * with a list of teis separated by ;
@@ -849,164 +1062,210 @@ public class DhisLink implements Serializable {
 	 */
 	private Map<String, PatientVO> getPatientMap(Map<String, String> teis) {
 		Map<String, PatientVO> map = new HashMap<String, PatientVO>();
-		
-		
+
 		List<String> tmp = new ArrayList<String>();
 		tmp.addAll(teis.values());
-		
+
 		// TO limit the GET URL size, we only get a maximum of 100 at a time
-		for(int i = 0; i < tmp.size(); i = i + 100) {
+		for (int i = 0; i < tmp.size(); i = i + 100) {
 			StringBuilder builder = new StringBuilder();
-			for(int j = 0; (j < 100 && (i + j) < tmp.size()); j++) {
-				if(builder.length() > 0) {
+			for (int j = 0; (j < 100 && (i + j) < tmp.size()); j++) {
+				if (builder.length() > 0) {
 					builder.append(";");
 				}
-				
-				builder.append(tmp.get(i + j));	
+
+				builder.append(tmp.get(i + j));
 			}
 			List<TrackedEntityInstance> teiList = getTrackedEntityInstanceList(builder.toString());
-			
-			for(TrackedEntityInstance tei : teiList) {
+
+			for (TrackedEntityInstance tei : teiList) {
 				map.put(tei.getTrackedEntityInstance(), trackedEntityInstanceToPatientVO(tei));
 			}
 		}
-		
+
 		return map;
 	}
 
 	/**
 	 * Load specimen from DHIS2
 	 * 
-	 * Be careful not to query the dhis too many times. This happened when we were getting the 
-	 * patient information for each specimen. To avoid it, we make a call to get multiple
-	 * tracked entity instances at the same time.
+	 * Be careful not to query the dhis too many times. This happened when we were
+	 * getting the patient information for each specimen. To avoid it, we make a
+	 * call to get multiple tracked entity instances at the same time.
 	 * 
 	 * @param parameters
 	 * @return
 	 */
-	public List<SpecimenVO> getSpecimen(Map<String, String> parameters) {
+	public List<SpecimenVO> getSpecimen(String programId, String stageId) {
+		final int pageSize = 50;
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("program", programId);
+		parameters.put("programStage", stageId);
+		parameters.put("status", "COMPLETED");
+		// params.put("filter", resultsField + ":EQ:PENDING");
+		SpecimenVO last = specimenService.findLatestSpecimen(programId);
+		String date = "2020-05-20";
+
+		if (last != null) {
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH)
+					.withZone(ZoneId.systemDefault());
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(last.getLastUpdated());
+
+			Instant updated = last.getLastUpdated().toInstant();
+			updated = updated.minus(4, ChronoUnit.HOURS); /// Just backtrack in case we missed some. Also a hack to
+															/// counter
+			date = formatter.format(updated).replace(' ', 'T');
+		}
+
+		parameters.put("lastUpdatedStartDate", date);
+		parameters.put("order", "lastUpdated:asc");
+		parameters.put("pageSize", "" + pageSize);
+
+		BigInteger numPulled = new BigInteger("0");
+		int page = 1;
+		parameters.put("page", "" + page);
+		List<SpecimenVO> specimen = new ArrayList<>();
 		List<Event> events = this.getEvents(parameters);
-		return getSpecimen(events, true);
+		List<SpecimenVO> tmp = getSpecimen(events, true);
+
+		while (events.size() != 0) {
+			specimen.addAll(tmp);
+			
+			logger.info("Total is " + specimen.size());
+
+			numPulled.add(new BigInteger(tmp.size() + ""));
+			page++;
+			parameters.put("page", "" + page);
+			events = this.getEvents(parameters);
+			tmp = getSpecimen(events, true);
+		}
+
+		return specimen;
 	}
-	
+
 	public List<SpecimenVO> getSpecimen(List<Event> events, boolean skipResulted) {
-				
+
 		logger.info("Found " + events.size() + " events.");
 		this.numPulled = events.size();
-		
+
 		// Final specimen list
 		List<SpecimenVO> specimen = new ArrayList<>();
-		
+
 		// Temporary specimen list before getting the patient information
 		List<SpecimenVO> tmp = new ArrayList<SpecimenVO>();
-		
-		// A map of specimen barcode to tracked entity instance id where 
+
+		// A map of specimen barcode to tracked entity instance id where
 		// the key is the barcode and the value is the instance id
 		Map<String, String> teis = new HashMap<String, String>();
 
 		for (Event event : events) {
-		
+
 			SpecimenVO s = eventToSpecimen(event, skipResulted);
 
 			if (s == null) {
 				continue;
 			}
-			
+
 			tmp.add(s);
 			teis.put(s.getSpecimenBarcode(), event.getTrackedEntityInstance());
-			
+
 		}
-		
+
 		// Get the patient map
 		// We have to fetch a batch of organisation units
 		Map<String, PatientVO> pmap = getPatientMap(teis);
 		Map<String, OrganisationUnit> orgUnits = new HashMap<String, OrganisationUnit>();
 		Set<String> orgIds = new HashSet<>();
-		
-		for(SpecimenVO sp : tmp) {
+
+		for (SpecimenVO sp : tmp) {
 			if (specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode()) == null) {
-				if(!StringUtils.isBlank(sp.getDispatchLocation())) {
-					orgIds.add(sp.getDispatchLocation());
-				}
-				
-				if(!StringUtils.isBlank(sp.getPatientFacility())) {
-					orgIds.add(sp.getPatientFacility());					
+				if(StringUtils.isBlank(sp.getProgramId()) || sp.getProgramId().equals(covidProgram)) {
+					if (!StringUtils.isBlank(sp.getDispatchLocation())) {
+						orgIds.add(sp.getDispatchLocation());
+					}
+	
+					if (!StringUtils.isBlank(sp.getPatientFacility())) {
+						orgIds.add(sp.getPatientFacility());
+					}
 				}
 			}
 		}
-		
-		for(OrganisationUnit unit : getOrganisationUnits(orgIds)) {
+
+		for (OrganisationUnit unit : getOrganisationUnits(orgIds)) {
 			orgUnits.put(unit.getId(), unit);
 		}
-				
-		for(SpecimenVO sp : tmp) {
+
+		for (SpecimenVO sp : tmp) {
 			String barcode = sp.getSpecimenBarcode();
 			String tei = teis.get(barcode);
 			PatientVO patientVO = pmap.get(tei);
-			
+
 			if (patientVO != null && patientVO.getId() == null) {
-				if(StringUtils.isBlank(patientVO.getIdentityNo())) {
+				if (StringUtils.isBlank(patientVO.getIdentityNo())) {
 					patientVO.setIdentityNo(barcode);
 				}
-				
+
 				/// We cannot do anything if both the patient and specimen have no
 				/// identifying numbers
-				if(StringUtils.isBlank(patientVO.getIdentityNo())) {
+				if (StringUtils.isBlank(patientVO.getIdentityNo())) {
 					continue;
 				}
-								
+
 				PatientVO p = patientService.findByIdentityNo(patientVO.getIdentityNo());
 				if (p != null) {
 					patientVO = p;
 				}
 			}
-			
+
 			try {
 				if (patientVO.getId() == null) {
 
-					patientVO = patientService.savePatient(patientVO);										
-				} 
-				
+					patientVO = patientService.savePatient(patientVO);
+				}
+
 				// Should not try to save the same specimen twice
 				SpecimenVO st = specimenService.findSpecimenByBarcode(sp.getSpecimenBarcode());
-				if ( st == null || StringUtils.isBlank(st.getEvent())) {
-					
-					if(st != null && st.getId() != null) {
+				if (st == null || StringUtils.isBlank(st.getEvent())) {
+
+					if (st != null && st.getId() != null) {
 						sp.setId(st.getId());
-						
+
 					}
-					
+
 					// Only get the facilities if this is a new specimen
 					OrganisationUnit unit = null;
-					if(!StringUtils.isBlank(sp.getDispatchLocation())) {
+					if (!StringUtils.isBlank(sp.getDispatchLocation())) {
 						unit = orgUnits.get(sp.getDispatchLocation());
 						sp.setDispatchLocation(unit != null ? unit.getName() : null);
 					}
-					
-					if(!StringUtils.isBlank(sp.getPatientFacility())) {
+
+					if (!StringUtils.isBlank(sp.getPatientFacility())) {
 
 						unit = orgUnits.get(sp.getPatientFacility());
 						sp.setPatientFacility(unit != null ? unit.getName() : null);
 					}
-					
+
 					sp.setPatient(patientVO);
 					sp = specimenService.saveSpecimen(sp);
-						
+
 					// We should set the information for the lab report project
 					RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
 					criteria.setFieldName("lab_rec_barcode_%");
 					criteria.setValue(sp.getSpecimenBarcode());
 					criteria.setProjectId(labReceptionPID);
-					
+
 					Collection<RedcapDataVO> data = redcapDataService.searchByCriteria(criteria);
-					
-					if(data == null) {
+
+					if (data == null) {
 						sp.setDhis2Synched(true);
 					} else {
 						sp.setDhis2Synched(false);
 					}
 					sp = specimenService.saveSpecimen(sp);
-					
+
 				} else {
 					continue;
 				}
@@ -1015,34 +1274,38 @@ public class DhisLink implements Serializable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}		
+		}
+		
 		redcapLink.postSpecimen(specimen, labReportPID);
 		return specimen;
 	}
-		
+
 	/**
 	 * Load organisation unit from DHSI2 using the id
+	 * 
 	 * @param id
 	 * @return
 	 */
 	public List<OrganisationUnit> getOrganisationUnits(Set<String> ids) {
-		if(ids.size() == 0) {
+		if (ids.size() == 0) {
 			return new ArrayList<>();
 		}
 		StringBuilder builder = new StringBuilder();
-		for(String id : ids) {
-			if(builder.length() > 0) {
+		for (String id : ids) {
+			if (builder.length() > 0) {
 				builder.append(",");
 			}
-			
+
 			builder.append(id);
 		}
-		OrganisationUnitList orgList = restTemplate().getForObject(dhis2Url + "/organisationUnits?filter=id:in:[" + builder.toString() + "]", OrganisationUnitList.class);
+		OrganisationUnitList orgList = restTemplate().getForObject(
+				dhis2Url + "/organisationUnits.json?filter=id:in:[" + builder.toString() + "]", OrganisationUnitList.class);
 		return (List<OrganisationUnit>) orgList.getOrganisationUnits();
 	}
 
 	/**
 	 * Get one specimen from the staging area
+	 * 
 	 * @param barcode
 	 * @return
 	 */
@@ -1050,23 +1313,24 @@ public class DhisLink implements Serializable {
 
 		return specimenService.findSpecimenByBarcode(barcode);
 	}
-	
+
 	public String getSpecimenFieldsString(SpecimenVO specimen) {
 
 		StringBuilder builder = new StringBuilder();
-		for(DDPObjectField field : getSpecimenFieldList(specimen)) {
-			if(builder.length() > 0) {
+		for (DDPObjectField field : getSpecimenFieldList(specimen)) {
+			if (builder.length() > 0) {
 				builder.append(",");
 			}
 			builder.append(field.toString());
 		}
 		String str = "[" + builder.toString() + "]";
-		
+
 		return str;
 	}
 
 	/**
 	 * Convert the specimen into a JSON string
+	 * 
 	 * @param specimen
 	 * @return
 	 */
@@ -1077,89 +1341,93 @@ public class DhisLink implements Serializable {
 		if (specimen == null) {
 			return fields;
 		}
-				
+
 		/// Patient demographics
-		if(specimen.getPatient() != null ) {
+		if (specimen.getPatient() != null) {
 			if (specimen.getPatient().getDateOfBirth() != null) {
-				
+
 				Instant dob = specimen.getPatient().getDateOfBirth().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH)
+						.withZone(ZoneId.systemDefault());
 				fields.add(new DDPObjectField("date_birth", formatter.format(dob), null));
 			}
-	
-			if(!StringUtils.isBlank(specimen.getPatient().getFirstName())) { 
+
+			if (!StringUtils.isBlank(specimen.getPatient().getFirstName())) {
 				fields.add(new DDPObjectField("patient_first_name", specimen.getPatient().getFirstName(), null));
 			}
-			
-			if(specimen.getPatient().getSex() != null) {
-				if(specimen.getPatient().getSex().equals("MALE")) {
+
+			if (specimen.getPatient().getSex() != null) {
+				if (specimen.getPatient().getSex().equals("MALE")) {
 					fields.add(new DDPObjectField("sex", "1", null));
-				} else if(specimen.getPatient().getSex().equals("FEMALE")) {
+				} else if (specimen.getPatient().getSex().equals("FEMALE")) {
 					fields.add(new DDPObjectField("sex", "2", null));
 				} else {
 					fields.add(new DDPObjectField("sex", "3", null));
 				}
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getSurname())) {
+
+			if (!StringUtils.isBlank(specimen.getPatient().getSurname())) {
 				fields.add(new DDPObjectField("patient_surname", specimen.getPatient().getSurname(), null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getContactNumber())) {
+
+			if (!StringUtils.isBlank(specimen.getPatient().getContactNumber())) {
 				fields.add(new DDPObjectField("patient_contact", specimen.getPatient().getContactNumber(), null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getNationality())) {
+
+			if (!StringUtils.isBlank(specimen.getPatient().getNationality())) {
 				fields.add(new DDPObjectField("patient_nationality", specimen.getPatient().getNationality(), null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getIdentityNo())) {
+
+			if (!StringUtils.isBlank(specimen.getPatient().getIdentityNo())) {
 				fields.add(new DDPObjectField("national_id", specimen.getPatient().getIdentityNo(), null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getCity())) {
+
+			if (!StringUtils.isBlank(specimen.getPatient().getCity())) {
 				fields.add(new DDPObjectField("patient_city", specimen.getPatient().getCity(), null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getCountryDeparture())) {
-				fields.add(new DDPObjectField("patient_departure_country", specimen.getPatient().getCountryDeparture(), null));
+
+			if (!StringUtils.isBlank(specimen.getPatient().getCountryDeparture())) {
+				fields.add(new DDPObjectField("patient_departure_country", specimen.getPatient().getCountryDeparture(),
+						null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getNextOfKin())) {
+
+			if (!StringUtils.isBlank(specimen.getPatient().getNextOfKin())) {
 				fields.add(new DDPObjectField("patient_kin", specimen.getPatient().getNextOfKin(), null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getKinContact())) {
+
+			if (!StringUtils.isBlank(specimen.getPatient().getKinContact())) {
 				fields.add(new DDPObjectField("patient_kin_contact", specimen.getPatient().getKinContact(), null));
 			}
-			
-			if(!StringUtils.isBlank(specimen.getPatient().getTransportRegistration())) {
-				fields.add(new DDPObjectField("patient_transport_registration", specimen.getPatient().getTransportRegistration(), null));
+
+			if (!StringUtils.isBlank(specimen.getPatient().getTransportRegistration())) {
+				fields.add(new DDPObjectField("patient_transport_registration",
+						specimen.getPatient().getTransportRegistration(), null));
 			}
 
 			if (specimen.getPatient().getDepartureDate() != null) {
-				
+
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(specimen.getPatient().getDepartureDate());
 
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH)
+						.withZone(ZoneId.systemDefault());
 				Instant depDate = specimen.getPatient().getDepartureDate().toInstant();
 				String date = formatter.format(depDate);
-				
+
 				fields.add(new DDPObjectField("patient_departure_date", date, null));
 			}
-			
+
 		}
 		/// Specimen details
-		if(!StringUtils.isBlank(specimen.getSpecimenBarcode())) {
+		if (!StringUtils.isBlank(specimen.getSpecimenBarcode())) {
 			fields.add(new DDPObjectField("specimen_barcode", specimen.getSpecimenBarcode(), null));
 		}
-		
-		if(!StringUtils.isBlank(specimen.getCovidNumber())) {
+
+		if (!StringUtils.isBlank(specimen.getCovidNumber())) {
 			fields.add(new DDPObjectField("ipms_lab_covid_number", specimen.getCovidNumber(), null));
 		}
-		
-		if(!StringUtils.isBlank(specimen.getBatchNumber())) {
+
+		if (!StringUtils.isBlank(specimen.getBatchNumber())) {
 			fields.add(new DDPObjectField("batch_number", specimen.getBatchNumber(), null));
 		}
 
@@ -1168,21 +1436,20 @@ public class DhisLink implements Serializable {
 		}
 
 		if (specimen.getDispatchTime() != null) {
-			
+
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(specimen.getDispatchTime());
 
 			int hour = cal.get(Calendar.HOUR_OF_DAY);
 			int mins = cal.get(Calendar.MINUTE);
-			
-			//String time = (hour < 10 ? "0" + hour : hour) + ":" + (mins < 10 ? "0" + mins : mins) ;
-			
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());			
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH)
+					.withZone(ZoneId.systemDefault());
 			String time = formatter.format(specimen.getDispatchTime().toInstant());
-			
+
 			fields.add(new DDPObjectField("time_dispatched", time, null));
 		}
-		
+
 		if (!StringUtils.isBlank(specimen.getDispatcher())) {
 			fields.add(new DDPObjectField("specimen_dispatcher", specimen.getDispatcher(), null));
 		}
@@ -1198,8 +1465,7 @@ public class DhisLink implements Serializable {
 		if (!StringUtils.isBlank(specimen.getPatientFacility())) {
 			fields.add(new DDPObjectField("patient_facility", specimen.getPatientFacility(), null));
 		}
-		
-		
+
 		if (!StringUtils.isBlank(specimen.getDispatcherCity())) {
 			fields.add(new DDPObjectField("specimen_dispatcher_city", specimen.getDispatcherCity(), null));
 		}
@@ -1211,46 +1477,51 @@ public class DhisLink implements Serializable {
 		if (!StringUtils.isBlank(specimen.getDispatcherEmail())) {
 			fields.add(new DDPObjectField("specimen_dispatcher_email", specimen.getDispatcherEmail(), null));
 		}
-		
+
 		if (!StringUtils.isBlank(specimen.getReceivingPersonnel())) {
 			fields.add(new DDPObjectField("receiving_personnel", specimen.getReceivingPersonnel(), null));
 		}
 
 		if (specimen.getReceivingDateTime() != null) {
-			
+
 			Instant receivingDate = specimen.getReceivingDateTime().toInstant();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH)
+					.withZone(ZoneId.systemDefault());
 			String datetime = formatter.format(receivingDate);
 			fields.add(new DDPObjectField("receiving_datetime", datetime, null));
 		}
 
 		if (specimen.getCollectionDateTime() != null) {
-			
+
 			Instant collectionDate = specimen.getCollectionDateTime().toInstant();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH)
+					.withZone(ZoneId.systemDefault());
 			String datetime = formatter.format(collectionDate);
-			fields.add(
-					new DDPObjectField("date_specimen_collected", datetime, null));
+			fields.add(new DDPObjectField("date_specimen_collected", datetime, null));
 		}
-		
+
 		if (!StringUtils.isBlank(specimen.getReceivingConditionCode())) {
 			fields.add(new DDPObjectField("receiving_condition_code", specimen.getReceivingConditionCode(), null));
 		}
-				
+
 		if (!StringUtils.isBlank(specimen.getResults())) {
-			
+
 			String results = "";
-			
-			if(specimen.getResults().equals("1")) {
+
+			if (specimen.getResults().equals("1")) {
 				results = "POSITIVE";
-			} else if(specimen.getResults().equals("2")) {
+			} else if (specimen.getResults().equals("2")) {
 				results = "NEGATIVE";
-			} else if(specimen.getResults().equals("3")) {
+			} else if (specimen.getResults().equals("3")) {
 				results = "INCONCLUSIVE";
-			}else if(specimen.getResults().equals("4")) {
+			} else if (specimen.getResults().equals("4")) {
+				//if(StringUtils.isBlank(specimen.getProgramId()) || specimen.getProgramId().equals(covidProgram)) {
 				results = "PENDING";
+				//} else {
+					
+				//}
 			}
-			
+
 			fields.add(new DDPObjectField("specimen_results", results, null));
 		}
 
@@ -1271,9 +1542,10 @@ public class DhisLink implements Serializable {
 		}
 
 		if (specimen.getResultsEnteredDate() != null) {
-			
+
 			Instant verifiedInstant = specimen.getResultsEnteredDate().toInstant();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH)
+					.withZone(ZoneId.systemDefault());
 			String datetime = formatter.format(verifiedInstant);
 			fields.add(new DDPObjectField("results_entered_date", datetime, null));
 		}
@@ -1283,11 +1555,12 @@ public class DhisLink implements Serializable {
 		}
 
 		if (specimen.getResultsVerifiedDate() != null) {
-						
+
 			Instant collectionDate = specimen.getResultsVerifiedDate().toInstant();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH)
+					.withZone(ZoneId.systemDefault());
 			String datetime = formatter.format(collectionDate);
-			
+
 			fields.add(new DDPObjectField("results_verified_date", datetime, null));
 		}
 
@@ -1298,12 +1571,13 @@ public class DhisLink implements Serializable {
 		if (specimen.getResultsAuthorisedDate() != null) {
 
 			Instant authDate = specimen.getResultsAuthorisedDate().toInstant();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.ENGLISH)
+					.withZone(ZoneId.systemDefault());
 			String datetime = formatter.format(authDate);
 			fields.add(new DDPObjectField("authorizer_datetime", datetime, null));
 		}
-		
-		if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy()) && specimen.getResultsAuthorisedDate() != null) {
+
+		if (!StringUtils.isBlank(specimen.getResultsAuthorisedBy()) && specimen.getResultsAuthorisedDate() != null) {
 			fields.add(new DDPObjectField("result_authorised", "1", null));
 		} else {
 			fields.add(new DDPObjectField("result_authorised", "0", null));
@@ -1312,236 +1586,170 @@ public class DhisLink implements Serializable {
 		if (!StringUtils.isBlank(specimen.getNotes())) {
 			fields.add(new DDPObjectField("specimen_notes", specimen.getNotes(), null));
 		}
-		
-		// Reception project
-		List<DDPObjectField> newf = getReceptionFormFields(specimen.getSpecimenBarcode());
-		fields.addAll(newf);
 
 		// Reception TPOR form
-		newf = getTporFormFields(specimen.getSpecimenBarcode());
+		List<DDPObjectField> newf = getTporFormFields(specimen.getSpecimenBarcode());
 		fields.addAll(getTporFormFields(specimen.getSpecimenBarcode()));
-		
+
 		// Extraction form
 		newf = getExtractionFormFields(specimen.getSpecimenBarcode());
 		fields.addAll(newf);
-		
-		// Detection form
-		newf = getDetectionFormFields(specimen.getSpecimenBarcode());
-		fields.addAll(newf);
-		
+
 		// Resulting form
 		newf = getResultingFormFields(specimen.getSpecimenBarcode());
 		fields.addAll(newf);
 
-		// Verification form
-		newf = getVerificationFormFields(specimen.getSpecimenBarcode());
-		fields.addAll(newf);
+		return fields;
+	}
 
-		return fields;
-	}
-	
-	private DDPObjectField getCriteriaField(RedcapDataSearchCriteria criteria) {
-		List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-		if(redcapDataVOs != null && redcapDataVOs.size() > 0 ) {
-			RedcapDataVO rd = redcapDataVOs.get(0);
-			return new DDPObjectField(criteria.getFieldName(), rd.getValue(), null);
-		}
-		
-		return null;
-	}
-	
-	public List<DDPObjectField> getVerificationFormFields(String barcode) {
-		
-		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
-		DDPObjectField field;
-		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
-		// Reception project
-		criteria.setProjectId(labResultingPID);
-		criteria.setFieldName("test_det_barcode_%");
-		criteria.setValue(barcode);
-		
-		List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-		field = getCriteriaField(criteria);
-		if(redcapDataVOs != null && redcapDataVOs.size() > 0 ) {
-			RedcapDataVO rd = redcapDataVOs.get(0);
-			int pindex = rd.getFieldName().lastIndexOf("_");
-			String pos = rd.getFieldName().substring(pindex + 1);
-			
-			criteria = new RedcapDataSearchCriteria();
-			criteria.setProjectId(labResultingPID);
-			criteria.setRecord(rd.getRecord());
-			criteria.setEventId(rd.getEventId());
-			criteria.setFieldName("test_verify_personnel");
-			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("test_verify_datetime");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("test_verify_batchsize");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("covid_rna_results" + pos);			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				field.setField("covid_rna_results");
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("test_verify_result_" + pos);			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				field.setField("test_verify_result");
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("verification_complete");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-		}
-		return fields;
-		
-	}
-	
 	public List<DDPObjectField> getResultingFormFields(String barcode) {
-		
+
+		Map<String, RedcapDataVO> searchMap = null;
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
 		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
 		// resulting project
 		criteria.setProjectId(labResultingPID);
-		criteria.setFieldName("test_det_barcode_%");
 		criteria.setValue(barcode);
-		
+
 		List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-		field = getCriteriaField(criteria);
-		if(redcapDataVOs != null && redcapDataVOs.size() > 0 ) {
-			RedcapDataVO rd = redcapDataVOs.get(0);
-			int pindex = rd.getFieldName().lastIndexOf("_");
-			String pos = rd.getFieldName().substring(pindex + 1);
-			
+
+		if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
+
+			RedcapDataVO res = null;
+			if (redcapDataVOs.size() == 1) {
+				res = redcapDataVOs.get(0);
+			} else {
+				// TODO: what to do if the specimen was processed multiple times
+				res = redcapDataVOs.get(0);
+			}
+
+			int pindex = res.getFieldName().lastIndexOf("_");
+			String pos = res.getFieldName().substring(pindex + 1);
+
+			fields.add(new DDPObjectField("test_det_batch_id", res.getRecord(), null));
+			fields.add(new DDPObjectField("test_det_barcode", res.getValue(), null));
+			fields.add(new DDPObjectField("det_batch_pos", pos, null));
+
 			criteria = new RedcapDataSearchCriteria();
 			criteria.setProjectId(labResultingPID);
-			criteria.setRecord(rd.getRecord());
-			criteria.setEventId(rd.getEventId());
-			criteria.setFieldName("test_assay_personnel");
-			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+			criteria.setRecord(res.getRecord());
+			criteria.setEventId(res.getEventId());
+			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
+			searchMap = getRedcapDataMap(redcapDataVOs);
+
+			if (searchMap.containsKey("test_assay_personnel")) {
+				res = searchMap.get("test_assay_personnel");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_assay_datetime");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_assay_personnel")) {
+				res = searchMap.get("test_assay_personnel");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_assay_result_" + pos);			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_assay_result_" + pos)) {
+				res = searchMap.get("test_assay_result_" + pos);
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
 				field.setField("test_assay_result");
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_assay_batch_id");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_assay_batch_id")) {
+				res = searchMap.get("test_assay_batch_id");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_assay_result_why");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_assay_result_why")) {
+				res = searchMap.get("test_assay_result_why");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("resulting_complete");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("resulting_complete")) {
+				res = searchMap.get("resulting_complete");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
 				fields.add(field);
 			}
-			
+
+			if (searchMap.containsKey("test_det_personnel")) {
+				res = searchMap.get("test_det_personnel");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("test_det_datetime")) {
+				res = searchMap.get("test_det_datetime");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("test_det_batchsize")) {
+				res = searchMap.get("test_det_batchsize");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("detection_lab")) {
+				res = searchMap.get("detection_lab");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("test_det_instrument")) {
+				res = searchMap.get("test_det_instrument");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("test_verify_personnel")) {
+				res = searchMap.get("test_verify_personnel");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("test_verify_datetime")) {
+				res = searchMap.get("test_verify_datetime");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("test_verify_batchsize")) {
+				res = searchMap.get("test_verify_batchsize");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("covid_rna_results" + pos)) {
+				res = searchMap.get("covid_rna_results" + pos);
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				field.setField("covid_rna_results");
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("test_verify_result_" + pos)) {
+				res = searchMap.get("test_verify_result_" + pos);
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				field.setField("test_verify_result");
+				fields.add(field);
+			}
+
+			if (searchMap.containsKey("verification_complete")) {
+				res = searchMap.get("verification_complete");
+				field = new DDPObjectField(res.getFieldName(), res.getValue(), null);
+				fields.add(field);
+			}
+
 		}
 		return fields;
-		
+
 	}
 
-	public List<DDPObjectField> getDetectionFormFields(String barcode) {
-		
-		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
-		DDPObjectField field;
-		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
-		// Reception project
-		criteria.setProjectId(labResultingPID);
-		criteria.setFieldName("test_det_barcode_%");
-		criteria.setValue(barcode);
-		
-		List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-		field = getCriteriaField(criteria);
-		if(redcapDataVOs != null && redcapDataVOs.size() > 0 ) {
-			RedcapDataVO rd = redcapDataVOs.get(0);
-			int pindex = rd.getFieldName().lastIndexOf("_");
-			String pos = rd.getFieldName().substring(pindex + 1);
-			
-			fields.add(new DDPObjectField("test_det_batch_id", rd.getRecord(), null));
-			fields.add(new DDPObjectField("test_det_barcode", rd.getValue(), null));
-			fields.add(new DDPObjectField("det_batch_pos", pos, null));
-									
-			criteria = new RedcapDataSearchCriteria();
-			criteria.setProjectId(labResultingPID);
-			criteria.setRecord(rd.getRecord());
-			criteria.setEventId(rd.getEventId());
-			criteria.setFieldName("test_det_personnel");
-			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("test_det_datetime");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("test_det_batchsize");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("detection_lab");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-			criteria.setFieldName("test_det_instrument");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
-				fields.add(field);
-			}
-			
-		}
-		return fields;
-		
-	}
-	
 	public List<DDPObjectField> getExtractionFormFields(String barcode) {
-		
+
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
 		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
@@ -1549,63 +1757,71 @@ public class DhisLink implements Serializable {
 		criteria.setProjectId(labExtractionPID);
 		criteria.setFieldName("test_ext_barcode_%");
 		criteria.setValue(barcode);
-		
+
 		List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-		field = getCriteriaField(criteria);
-		if(redcapDataVOs != null && redcapDataVOs.size() > 0 ) {
-			RedcapDataVO rd = redcapDataVOs.get(0);
-			int pindex = rd.getFieldName().lastIndexOf("_");
-			String pos = rd.getFieldName().substring(pindex + 1);
-			
+		// field = getCriteriaField(criteria);
+		if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
+
+			RedcapDataVO ext = null;
+			if (redcapDataVOs.size() == 1) {
+				ext = redcapDataVOs.get(0);
+			} else {
+				// TODO: what to do if the specimen was processed multiple times
+				ext = redcapDataVOs.get(0);
+			}
+
+			int pindex = ext.getFieldName().lastIndexOf("_");
+			String pos = ext.getFieldName().substring(pindex + 1);
+
 			fields.add(new DDPObjectField("ext_batch_pos", pos, null));
-			fields.add(new DDPObjectField("test_ext_barcode", rd.getValue(), null));
-			fields.add(new DDPObjectField("test_ext_batch_id", rd.getRecord(), null));
-						
+			fields.add(new DDPObjectField("test_ext_barcode", ext.getValue(), null));
+			fields.add(new DDPObjectField("test_ext_batch_id", ext.getRecord(), null));
+
 			criteria = new RedcapDataSearchCriteria();
 			criteria.setProjectId(labExtractionPID);
-			criteria.setRecord(rd.getRecord());
-			criteria.setEventId(rd.getEventId());
-			criteria.setFieldName("test_ext_datetime");
-			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+			criteria.setRecord(ext.getRecord());
+			criteria.setEventId(ext.getEventId());
+			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
+			Map<String, RedcapDataVO> searchMap = getRedcapDataMap(redcapDataVOs);
+
+			if (searchMap.containsKey("test_ext_datetime")) {
+				ext = searchMap.get("test_ext_datetime");
+				field = new DDPObjectField(ext.getFieldName(), ext.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_ext_personnel");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_ext_personnel")) {
+				ext = searchMap.get("test_ext_personnel");
+				field = new DDPObjectField(ext.getFieldName(), ext.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_ext_batchsize");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_ext_batchsize")) {
+				ext = searchMap.get("test_ext_batchsize");
+				field = new DDPObjectField(ext.getFieldName(), ext.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("extraction_lab");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("extraction_lab")) {
+				ext = searchMap.get("extraction_lab");
+				field = new DDPObjectField(ext.getFieldName(), ext.getValue(), null);
 				fields.add(field);
 			}
-			
-			int instPos = ((Integer.parseInt(pos) -1)/24) + 1;
-			
-			criteria.setFieldName("test_ext_instrument" + instPos);			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_ext_instrument")) {
+				ext = searchMap.get("test_ext_instrument");
+				field = new DDPObjectField(ext.getFieldName(), ext.getValue(), null);
 				field.setField("test_ext_instrument");
 				fields.add(field);
 			}
-			
+
 		}
 		return fields;
-		
+
 	}
-	
+
 	public List<DDPObjectField> getTporFormFields(String barcode) {
-		
+
 		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
 		DDPObjectField field;
 		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
@@ -1613,189 +1829,167 @@ public class DhisLink implements Serializable {
 		criteria.setProjectId(labReceptionPID);
 		criteria.setFieldName("test_tpor_barcode_%");
 		criteria.setValue(barcode);
-		
+
 		List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-		field = getCriteriaField(criteria);
-		if(redcapDataVOs != null && redcapDataVOs.size() > 0 ) {
-			RedcapDataVO rd = redcapDataVOs.get(0);
-			int pindex = rd.getFieldName().lastIndexOf("_");
-			String pos = rd.getFieldName().substring(pindex + 1);
+		// field = getCriteriaField(criteria);
+		if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
+
+			RedcapDataVO rec = null;
+			if (redcapDataVOs.size() == 1) {
+				rec = redcapDataVOs.get(0);
+			} else {
+				// TODO: what to do if the specimen was processed multiple times
+				rec = redcapDataVOs.get(0);
+			}
+
+			// RedcapDataVO rd = redcapDataVOs.get(0);
+			int pindex = rec.getFieldName().lastIndexOf("_");
+			String pos = rec.getFieldName().substring(pindex + 1);
 			fields.add(new DDPObjectField("tpor_batch_pos", pos, null));
-			fields.add(new DDPObjectField("test_tpor_batch_id", rd.getRecord(), null));
-			
-			fields.add(new DDPObjectField("test_tpor_barcode", rd.getValue(), null));
-						
+			fields.add(new DDPObjectField("test_tpor_batch_id", rec.getRecord(), null));
+			fields.add(new DDPObjectField("test_tpor_barcode", rec.getValue(), null));
+
+			fields.add(new DDPObjectField("lab_rec_id", rec.getRecord(), null));
+
 			criteria = new RedcapDataSearchCriteria();
 			criteria.setProjectId(labReceptionPID);
-			criteria.setRecord(rd.getRecord());
-			criteria.setEventId(rd.getEventId());
-			criteria.setFieldName("test_tpor_datetime");
-						
-			field = getCriteriaField(criteria);
-			if(field != null) {
+			criteria.setRecord(rec.getRecord());
+			criteria.setEventId(rec.getEventId());
+			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
+			Map<String, RedcapDataVO> searchMap = getRedcapDataMap(redcapDataVOs);
+
+			// field = getCriteriaField(criteria);
+			if (searchMap.containsKey("test_tpor_datetime")) {
+				rec = searchMap.get("test_tpor_datetime");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_tpor_personnel");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_tpor_personnel")) {
+				rec = searchMap.get("test_tpor_personnel");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("test_tpor_batchsize");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("test_tpor_batchsize")) {
+				rec = searchMap.get("test_tpor_batchsize");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("tpor_lab");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("tpor_lab")) {
+				rec = searchMap.get("tpor_lab");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-		}
-		return fields;
-		
-	}
-	
-	/**
-	 * Get the fields from the reception form on the Reception project
-	 * 
-	 * @param barcode
-	 * @return
-	 */
-	public List<DDPObjectField> getReceptionFormFields(String barcode) {
-		
-		List<DDPObjectField> fields = new ArrayList<DDPObjectField>();
-		DDPObjectField field;
-		RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
-		// Reception project
-		criteria.setProjectId(labReceptionPID);
-		criteria.setFieldName("lab_rec_barcode_%");
-		criteria.setValue(barcode);
-		
-		List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-		field = getCriteriaField(criteria);
-		if(redcapDataVOs != null && redcapDataVOs.size() > 0 ) {
-			RedcapDataVO rd = redcapDataVOs.get(0);
-			int pindex = rd.getFieldName().lastIndexOf("_");
-			String pos = rd.getFieldName().substring(pindex + 1);
-			fields.add(new DDPObjectField("lab_rec_id", rd.getRecord(), null));
-			
-			criteria = new RedcapDataSearchCriteria();
-			criteria.setProjectId(labReceptionPID);
-			criteria.setRecord(rd.getRecord());
-			criteria.setEventId(rd.getEventId());
-			criteria.setFieldName("received_datetime");
-			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("received_datetime")) {
+				rec = searchMap.get("received_datetime");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("receiving_personnel");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("receiving_personnel")) {
+				rec = searchMap.get("receiving_personnel");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("receiving_lab");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("receiving_lab")) {
+				rec = searchMap.get("receiving_lab");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("lab_rec_batchsize");			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("lab_rec_batchsize")) {
+				rec = searchMap.get("lab_rec_batchsize");
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				fields.add(field);
 			}
-			
-			criteria.setFieldName("specimen_cond_" + pos);			
-			field = getCriteriaField(criteria);
-			if(field != null) {
+
+			if (searchMap.containsKey("specimen_cond_" + pos)) {
+				rec = searchMap.get("specimen_cond_" + pos);
+				field = new DDPObjectField(rec.getFieldName(), rec.getValue(), null);
 				field.setField("receiving_condition_code");
 				fields.add(field);
 			}
-			
 		}
 		return fields;
-		
+
 	}
-	
+
 	private Map<String, RedcapDataVO> getRedcapDataMap(List<RedcapDataVO> data) {
-		
+
 		HashMap<String, RedcapDataVO> map = new HashMap<String, RedcapDataVO>();
-		
-		for(RedcapDataVO d : data) {
-			map.put(d.getProjectId() + d.getEventId() + d.getRecord() + d.getFieldName(), d);
+
+		for (RedcapDataVO d : data) {
+			map.put(d.getFieldName(), d);
 		}
-		
+
 		return map;
-		
+
 	}
-	
+
 	/**
-	 * Generate a payload JSON string for updating an event with the results
-	 * of the specimen
+	 * Generate a payload JSON string for updating an event with the results of the
+	 * specimen
 	 * 
 	 * @param event
 	 * @param specimen
 	 * @return
 	 */
 	private String getEventPayloadString(Event event) {
-		
+
 		StringBuilder builder = new StringBuilder();
 
 		builder.append("{\n");
 		builder.append("\"program\": \"" + event.getProgram() + "\",\n");
-		builder.append("\"orgUnit\": \""+ event.getOrgUnit() + "\",\n");
-		builder.append("\"programStage\": \"" + event.getProgramStage()+ "\",\n");
-		
-		if(event.getCompletedDate() == null) {
+		builder.append("\"orgUnit\": \"" + event.getOrgUnit() + "\",\n");
+		builder.append("\"programStage\": \"" + event.getProgramStage() + "\",\n");
+
+		if (event.getCompletedDate() == null) {
 			builder.append("\"completedDate\": \"null\",\n");
 		} else {
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");						
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 			String datetime = format.format(event.getCompletedDate());
-			
+
 			builder.append("\"completedDate\": \"" + datetime + "\",\n");
 		}
-		
+
 		builder.append("\"completedBy\": \"" + event.getCompleteBy() + "\",\n");
-		if(event.getEventDate() == null) {
+		if (event.getEventDate() == null) {
 			builder.append("\"eventDate\": \"null\",\n");
 		} else {
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");						
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 			String datetime = format.format(event.getEventDate());
-			
+
 			builder.append("\"eventDate\": \"" + datetime + "\",\n");
 		}
-		
+
 		builder.append("\"status\": \"" + event.getStatus() + "\",\n");
 		builder.append("\"trackedEntityInstance\": \"" + event.getTrackedEntityInstance() + "\",\n");
 		builder.append("\"dataValues\": [\n");
-		
+
 		// Values from the the event
 		StringBuilder evbuilder = new StringBuilder();
 		int i = 0;
-		for(DataValue value : event.getDataValues()){
-			
-			if(evbuilder.length() > 0) {
+		for (DataValue value : event.getDataValues()) {
+
+			if (evbuilder.length() > 0) {
 				evbuilder.append(", ");
 			}
-			
-			evbuilder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(value.getDataElement()) + 
-					", " + JSONObject.quote("value") + ": " + JSONObject.quote(value.getValue()) + "}\n");
+
+			evbuilder.append("\t{" + JSONObject.quote("dataElement") + ": " + JSONObject.quote(value.getDataElement())
+					+ ", " + JSONObject.quote("value") + ": " + JSONObject.quote(value.getValue()) + "}\n");
 		}
-		
+
 		builder.append(evbuilder.toString());
-				
+
 		builder.append("]\n");
 		builder.append("}\n");
 		return builder.toString();
 	}
-	
+
 	/**
 	 * Creation of JSON payload for the ready results from redcap to DHIS2
 	 * 
@@ -1803,45 +1997,65 @@ public class DhisLink implements Serializable {
 	 * @return
 	 */
 	public String getDhisPayload(Collection<SpecimenVO> specimen) {
-		
+
+		if (CollectionUtils.isEmpty(specimen)) {
+			return "";
+		}
+
 		StringBuilder builder = new StringBuilder();
 		Map<String, SpecimenVO> spMap = new HashMap<String, SpecimenVO>();
-		
+
+		String barcodeField = null;
+		String programStage = null, program = null;
+		String pre = "";
+
 		// To pull all events at once we have to put the events together
-		for(SpecimenVO sp : specimen) {
-			if(builder.length() > 0) {
+		for (SpecimenVO sp : specimen) {
+			if (builder.length() > 0) {
 				builder.append(";");
 			}
 			builder.append(sp.getSpecimenBarcode());
 			spMap.put(sp.getSpecimenBarcode(), sp);
+
+			if (!StringUtils.isEmpty(sp.getProgramId())) {
+				program = sp.getProgramId();
+				programStage = sp.getProgramStageId();
+				pre = sp.getProgramId() + "." + sp.getProgramStageId() + ".";
+			}
 		}
-		
+
+		if (StringUtils.isBlank(pre)) {
+			pre = "HR4C8VTwGuo.nIaEdUY97YD."; /// Default is the COVID surveillance
+		}
+
+		barcodeField = env.getProperty("lab.specimen.barcode");
+
 		String barcodes = builder.toString();
 
 		builder = new StringBuilder();
 		builder.append(dhis2Url);
-		builder.append("/events?programStage=" + programStage);
+		builder.append("/events.json?programStage=" + programStage);
 		builder.append("&program=" + program);
 		builder.append("&filter=" + barcodeField + ":IN:" + barcodes);
-		//builder.append("&event=" + evIds);
+
 		logger.info("Final url is " + builder.toString());
-		
+
 		EventList eventList = restTemplate().getForObject(builder.toString(), EventList.class);
-		
+
 		builder = new StringBuilder();
 		builder.append("{\n");
 		builder.append("\"events\" : [\n");
-		
-		for(Event event : eventList.getEvents()) {
+
+		for (Event event : eventList.getEvents()) {
 			SpecimenVO s = eventToSpecimen(event, false);
-			if(s == null) {
+			if (s == null) {
 				logger.debug(String.format("The event could not be converted to specimen : %s\n", event.toString()));
 				continue;
 			}
 			SpecimenVO sp = spMap.get(s.getSpecimenBarcode());
 			sp.setEvent(s.getEvent());
 			Map<String, DataValue> values = getDataValueMap((List<DataValue>) event.getDataValues());
-			 
+
 			// Add the result values to the event
 			DataValue val = new DataValue();
 			if (!StringUtils.isBlank(sp.getResults())) {
@@ -1853,122 +2067,239 @@ public class DhisLink implements Serializable {
 				} else if (sp.getResults().equals("3")) {
 					val.setValue("INCONCLUSIVE");
 				} else {
-					val.setValue("PENDING");
+					if(StringUtils.isBlank(sp.getProgramId()) || sp.getProgramId().equals(covidProgram)) {
+						val.setValue("PENDING");
+					} else {
+						val.setValue("ORDERED");
+					}
 				}
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (!StringUtils.isBlank(sp.getResultsEnteredBy())) {
+			if (!StringUtils.isBlank(sp.getResultsEnteredBy())
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.entered.by"))) {
 				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.results.entered.by"));
+				val.setDataElement(env.getProperty(pre + "lab.results.entered.by"));
 				val.setValue(sp.getResultsEnteredBy());
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getResultsEnteredDate() != null) {
+			if (sp.getResultsEnteredDate() != null
+					&& !StringUtils.isBlank(env.getProperty("lab.results.date.entered"))) {
 
 				val = new DataValue();
 				val.setDataElement(env.getProperty("lab.results.date.entered"));
-				
+
 				Instant dob = sp.getResultsEnteredDate().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
+						.withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
-				
+
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (!StringUtils.isBlank(sp.getResultsVerifiedBy())) {
+			if (!StringUtils.isBlank(sp.getResultsVerifiedBy())
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.verified.by"))) {
 				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.results.verified.by"));
+				val.setDataElement(env.getProperty(pre + "lab.results.verified.by"));
 				val.setValue(sp.getResultsVerifiedBy());
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getResultsVerifiedDate() != null) {
+			if (sp.getResultsVerifiedDate() != null
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.result.date.verified"))) {
 				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.result.date.verified"));
-				
+				val.setDataElement(env.getProperty(pre + "lab.result.date.verified"));
+
 				Instant dob = sp.getResultsVerifiedDate().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
+						.withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
-				
+
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (!StringUtils.isBlank(sp.getResultsAuthorisedBy())) {
+			if (!StringUtils.isBlank(sp.getResultsAuthorisedBy())
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.authorised.by"))) {
 				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.results.authorised.by"));
+				val.setDataElement(env.getProperty(pre + "lab.results.authorised.by"));
 				val.setValue(sp.getResultsAuthorisedBy());
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getResultsAuthorisedDate() != null) {
+			if (sp.getResultsAuthorisedDate() != null
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.results.date.authorised"))) {
 				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.results.date.authorised"));
-				
+				val.setDataElement(env.getProperty(pre + "lab.results.date.authorised"));
+
 				Instant dob = sp.getResultsAuthorisedDate().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
+						.withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
-				
+
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			if (sp.getReceivingDateTime() != null) {
+			if (sp.getReceivingDateTime() != null
+					&& !StringUtils.isBlank(env.getProperty(pre + "lab.specimen.date.received"))) {
 				val = new DataValue();
-				val.setDataElement(env.getProperty("lab.specimen.date.received"));
-				
+				val.setDataElement(env.getProperty(pre + "lab.specimen.date.received"));
+
 				Instant dob = sp.getReceivingDateTime().toInstant();
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH).withZone(ZoneId.systemDefault());
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
+						.withZone(ZoneId.systemDefault());
 				String date = formatter.format(dob);
-				
+
 				val.setValue(date);
-				event.getDataValues().add(val);
+				
+				Iterator<DataValue> it = event.getDataValues().iterator();
+				boolean found = false;
+				while(it.hasNext()) {
+					DataValue v = it.next();
+					if(v.getDataElement().equals(val.getDataElement())) {
+						v.setValue(val.getValue());
+						found = true;
+						break;
+					}
+				}
+				
+				if(!found) {
+					event.getDataValues().add(val);
+				}
 			}
 
-			/*
-			 * if(!StringUtils.isBlank(sp.getReceivingLab())) { val = new DataValue();
-			 * val.setDataElement(env.getProperty("lab.results.date.authorised"));
-			 * val.setValue(sp.getResultsAuthorisedDate().toString());
-			 * event.getDataValues().add(val); }
-			 */
-			
 			val = values.get(env.getProperty("lab.results"));
-			DataValue authorisedBy = values.get(env.getProperty("lab.results.authorised.by"));
-			DataValue authorisedDate = values.get(env.getProperty("lab.results.date.authorised"));
-			
+			//logger.info(event.toString());
+
 			// Only push if the results from dhis is not the same as redcap
 			// AND the dhis results are not authorised and the authorised date is blank
 			boolean sameResults = val != null && val.getValue().equalsIgnoreCase(sp.getResults());
-			boolean synchResults = !sameResults & authorisedBy != null 
-					&& !StringUtils.isBlank(authorisedBy.getValue()) 
-					&& authorisedDate != null && !StringUtils.isBlank(authorisedDate.getValue());
-			
+			boolean synchResults = !sameResults;
+
 			boolean synchReceiving = sp.getReceivingDateTime() != null;
-			
+
 			// Only do this if we are live. This comes from the property 'app.live'
 			if ((synchResults || synchReceiving) && isLive) {
 
 				String payload = getEventPayloadString(event);
-				
+
 				if (builder.length() > 0) {
 					builder.append(", ");
 				}
-	
+
 				builder.append(payload);
-		
+
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 				HttpEntity<String> entity = new HttpEntity<String>(payload, headers);
-	
-				String url = this.dhis2Url + "/events/" + event.getEvent();
-	
+
+				String url = this.dhis2Url + "/events/" + event.getEvent() + ".json";
+
 				try {
 					this.restTemplate().put(url, entity);
-	
+
 				} catch (HttpClientErrorException e) {
 					logger.info(e.getResponseBodyAsString());
 					e.printStackTrace();
@@ -1978,11 +2309,11 @@ public class DhisLink implements Serializable {
 			sp.setDhis2Synched(true);
 			specimenService.saveSpecimen(sp);
 		}
-				
+
 		builder.append("]\n}\n");
-		
+
 		return builder.toString();
-	
+
 	}
-	
+
 }

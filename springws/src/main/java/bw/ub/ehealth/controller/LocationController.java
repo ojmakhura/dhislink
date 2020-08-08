@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import bw.ub.ehealth.dhislink.redacap.location.service.LocationService;
-import bw.ub.ehealth.dhislink.redacap.location.vo.LocationVO;
+import bw.ub.ehealth.dhislink.location.service.LocationService;
+import bw.ub.ehealth.dhislink.location.vo.LocationVO;
 
 @RestController
 @RequestMapping("/ddpcontroller/location")

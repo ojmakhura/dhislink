@@ -19,6 +19,7 @@ import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import { MatTableDataSource } from '@angular/material/table';
+import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage';
 
 @Component({
   selector: 'app-batch',
@@ -40,15 +41,16 @@ export abstract class BatchComponent implements OnInit {
   batches: MatTableDataSource<Batch>;
   selectedTab = 0;
   page = '';
+  spLoading = false;
 
   batchForm: FormGroup;
   searchForm: FormGroup;
   batchesForm: FormGroup;
 
-  @ViewChild('BatchesPaginator', { static: true }) batchesPaginator: MatPaginator;
-  @ViewChild('BatchSort', { static: true }) batchSort: MatSort;
+  @ViewChild('batchesPaginator', { static: true }) batchesPaginator: MatPaginator;
+  @ViewChild('batchSort', { static: true }) batchSort: MatSort;
 
-  @ViewChild('SpecimenPaginator', { static: true }) specimenPaginator: MatPaginator;
+  @ViewChild('specimenPaginator', { static: true }) specimenPaginator: MatPaginator;
 
   constructor(injector: Injector) {
     this.router = injector.get(Router);
@@ -79,12 +81,17 @@ export abstract class BatchComponent implements OnInit {
 
     if (localStorage.getItem(FORM_DATA)) {
       const batch = JSON.parse(localStorage.getItem(FORM_DATA));
-      this.editBatch(batch);
+      this.editBatch(batch, false);
       localStorage.removeItem(FORM_DATA);
     }
 
     window.localStorage.setItem(CURRENT_ROUTE, '/' + this.page);
     this.afterOnInit();
+  }
+
+  ngAfterViewInit() {
+    this.batches.paginator = this.batchesPaginator;
+    this.batches.sort = this.batchSort;
   }
 
   abstract afterOnInit();
@@ -108,8 +115,18 @@ export abstract class BatchComponent implements OnInit {
 
   searchBatches() {
     this.loading = true;
-    this.searchCriteria.includeSpecimen = true;
+    this.searchCriteria.includeSpecimen = false;
+
+    if (this.page === 'detection') {
+      this.searchCriteria.page = BatchAuthorityStage.DETECTION;
+    } else if (this.page === 'resulting') {
+      this.searchCriteria.page = BatchAuthorityStage.RESULTING;
+    } else {
+      this.searchCriteria.page = BatchAuthorityStage.AUTHORISATION;
+    }
+
     this.redcaDataService.search(this.searchCriteria).pipe().subscribe(results => {
+      
       //this.batchesForm = this.formBuilder.array([results]);
       this.batches.data = results;
       this.searchCriteria = new BatchSearchCriteria();
@@ -129,10 +146,38 @@ export abstract class BatchComponent implements OnInit {
     cnt.patchValue(this.authService.getCurrentUser());
   }
 
-  editBatch(batch: Batch) {
-    batch.detectionSize = batch.batchItems.length;
-    this.batchForm = this.formBuilder.group(batch);
-    this.selectedTab = 0;
+  editBatch(batch: Batch, fetchSpecimen: boolean) {
+    this.spLoading = true;
+    if (this.page === 'detection') {
+      batch.page = BatchAuthorityStage.DETECTION;
+    } else if (this.page === 'resuting') {
+      batch.page = BatchAuthorityStage.RESULTING;
+    } else {
+      batch.page = BatchAuthorityStage.AUTHORISATION;
+    }
+
+    batch.projectId = 345;
+
+    // If there are no specimen in the batch
+    if(fetchSpecimen && (!batch.batchItems || batch.batchItems.length === 0)) {
+      
+      this.redcaDataService.fetchBatchSpecimen(batch).subscribe(
+        results => {
+          batch.batchItems = results;
+          batch.detectionSize = batch.batchItems.length;
+          this.batchForm = this.formBuilder.group(batch);
+          this.spLoading = false;
+          this.selectedTab = 0;
+        }
+      );
+    } else {
+
+      batch.detectionSize = batch.batchItems.length;
+      this.batchForm = this.formBuilder.group(batch);
+      this.spLoading = false;
+      this.selectedTab = 0;
+    }
+
   }
 
   abstract preSaveBatch(): boolean;
@@ -149,9 +194,14 @@ export abstract class BatchComponent implements OnInit {
       return;
     }
 
-    let pageValue = this.page;
+    let pageValue;
+
     if (this.page === 'detection') {
-      pageValue = 'testing_detection';
+      pageValue = BatchAuthorityStage.DETECTION;
+    } else if (this.page === 'resuting') {
+      pageValue = BatchAuthorityStage.RESULTING;
+    } else {
+      pageValue = BatchAuthorityStage.AUTHORISATION;
     }
 
     this.getItemControl('page').setValue(pageValue);
@@ -172,7 +222,7 @@ export abstract class BatchComponent implements OnInit {
   abstract postSaveBatch();
 
   newBatch() {
-    this.editBatch(new Batch());
+    this.editBatch(new Batch(), false);
   }
 
   getItemGroup(name): FormGroup {
@@ -214,17 +264,20 @@ export abstract class BatchComponent implements OnInit {
     this.pulling = true;
     const batch = this.batchForm.value;
     this.redcaDataService.pullSpecimenInfo(batch.batchItems).subscribe(results => {
+      
       this.searchCriteria.includeSpecimen = true;
       this.searchCriteria.batchId = batch.batchId;
 
-      this.redcaDataService.search(this.searchCriteria).subscribe(batches => {
-        this.searchCriteria = new BatchSearchCriteria();
-        if (batches.length > 0) {
-          this.editBatch(batches[0]);
-        }
-        this.searchCriteria = new BatchSearchCriteria();
-      });
+      if (this.page === 'detection') {
+        this.searchCriteria.page = BatchAuthorityStage.DETECTION;
+      } else if (this.page === 'resuting') {
+        this.searchCriteria.page = BatchAuthorityStage.RESULTING;
+      } else {
+        this.searchCriteria.page = BatchAuthorityStage.AUTHORISATION;
+      }
 
+      batch.batchItems = results;
+      this.editBatch(batch, false);
       this.pulling = false;
     });
   }
@@ -236,38 +289,44 @@ export abstract class BatchComponent implements OnInit {
     this.searchCriteria.lab = null;
     this.searchCriteria.specimenBarcode = null;
 
-    if (!batch.detectionStatus) {
-      this.redcaDataService.search(this.searchCriteria).subscribe(results => {
-        if (results.length === 1) {
-
-          if (results[0].instrument === null) {
-            results[0].instrument = new Instrument('', '');
-          }
-
-          if (results[0].lab === null) {
-            results[0].lab = new LocationVO();
-          }
-
-          if (results[0].batchItems === null ) {
-            results[0].batchItems = [];
-          }
-
-          this.editBatch(results[0]);
-        } else {
-          this.redcaDataService.fetchExtractionSpecimen(this.getItemControl('batchId').value).subscribe(results => {
-
-            batch.batchItems = results;
-            for (let i = 0; i < results.length; i++) {
-              results[i].position = this.specimenService.encodePosition(i);
-            }
-
-            batch.instrumentBatchSize = batch.batchItems.length;
-            batch.detectionSize = batch.batchItems.length;
-            this.editBatch(batch);
-          });
-        }
-      });
+    if (this.page === 'detection') {
+      this.searchCriteria.page = BatchAuthorityStage.DETECTION;
+    } else if (this.page === 'resuting') {
+      this.searchCriteria.page = BatchAuthorityStage.RESULTING;
+    } else {
+      this.searchCriteria.page = BatchAuthorityStage.AUTHORISATION;
     }
+
+    this.redcaDataService.search(this.searchCriteria).subscribe(results => {
+      if (results.length === 1) {
+
+        if (results[0].instrument === null) {
+          results[0].instrument = new Instrument('', '');
+        }
+
+        if (results[0].lab === null) {
+          results[0].lab = new LocationVO();
+        }
+
+        if (results[0].batchItems === null) {
+          results[0].batchItems = [];
+        }
+
+        this.editBatch(results[0], true);
+      } else {
+        this.redcaDataService.fetchExtractionSpecimen(this.getItemControl('batchId').value).subscribe(results => {
+
+          batch.batchItems = results;
+          for (let i = 0; i < results.length; i++) {
+            results[i].position = this.specimenService.encodePosition(i);
+          }
+
+          batch.instrumentBatchSize = batch.batchItems.length;
+          batch.detectionSize = batch.batchItems.length;
+          this.editBatch(batch, true);
+        });
+      }
+    });
 
     this.searchCriteria = new BatchSearchCriteria();
   }
@@ -281,21 +340,22 @@ export abstract class BatchComponent implements OnInit {
    */
   publish() {
     this.loading = true;
-    const batch = this.batchForm.value;
+    const batch: Batch = this.batchForm.value;
+    batch.page = 'verification';
 
     if (batch.verificationStatus !== '2' &&
       !batch.authorisingPersonnel) {
-        alert('Could not publish results. Either verification is not complete or authorising personel is not set.')
+      alert('Could not publish results. Either verification is not complete or authorising personel is not set.')
     } else {
       batch.publishResults = true;
 
       let data: any;
       this.redcaDataService.saveBatch(batch).pipe().subscribe(results => {
-          data = results;
-        }, error => {
-          this.router.navigate(['/login']);
-          return of(new AuthenticationResponse());
-        }
+        data = results;
+      }, error => {
+        this.router.navigate(['/login']);
+        return of(new AuthenticationResponse());
+      }
       );
       this.batchForm.patchValue(batch);
       return data;
@@ -306,7 +366,7 @@ export abstract class BatchComponent implements OnInit {
   toResulting() {
     const batch = this.batchForm.value as Batch;
 
-    if ( batch.detectionStatus !== '2' ) {
+    if (batch.detectionStatus !== '2') {
       alert('The batch is not complete and cannot be sent to resulting.');
       return;
     }
@@ -317,7 +377,7 @@ export abstract class BatchComponent implements OnInit {
 
   toVerification() {
     const batch = this.batchForm.value as Batch;
-    if ( batch.resultingStatus !== '2' ) {
+    if (batch.resultingStatus !== '2') {
       alert('The batch is not complete and cannot be sent to resulting.');
       return;
     }

@@ -54,11 +54,11 @@ public class RedcapLink {
 	@Value("${dhis2.api.url}")
 	private String dhis2Url;
 	
-	@Value("${dhis2.api.program}")
-    private String program;
+	//@Value("${dhis2.api.program}")
+    //private String program;
 
-    @Value("${dhis2.api.program.stage}")
-    private String programStage;
+    //@Value("${dhis2.api.program.stage}")
+    //private String programStage;
     
     @Value("${lab.report.pid}")
     private Long labReportPID;
@@ -404,6 +404,16 @@ public class RedcapLink {
 		return data;
 		
 	}
+	
+	private HashMap<String, RedcapDataVO> getRedcapDataMap(List<RedcapDataVO> data) {
+		HashMap<String, RedcapDataVO> map = new HashMap<>();
+		
+		for(RedcapDataVO vo : data) {
+			map.put(vo.getFieldName(), vo);
+		}
+		
+		return map;
+	}
 
 	/**
 	 * Update the staging area with the data from the forms
@@ -416,16 +426,29 @@ public class RedcapLink {
 			RedcapDataSearchCriteria criteria = new RedcapDataSearchCriteria();
 			// Reception project
 			criteria.setProjectId(labReceptionPID);
-			criteria.setFieldName("lab_rec_barcode_%");
 			criteria.setValue(specimen.getSpecimenBarcode());
 			
 			List<RedcapDataVO> reportData = new ArrayList<RedcapDataVO>();
 			reportData.add(new RedcapDataVO(null, labReportPID, null, "specimen_barcode", specimen.getSpecimenBarcode()));
 			
 			List<RedcapDataVO> redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
+			HashMap<String, RedcapDataVO> searchMap = null;
+			
+			RedcapDataVO rec = null, tpor = null;
+			
+			for(RedcapDataVO r : redcapDataVOs) {
+				if(r.getFieldName().contains("lab_rec_barcode_")) {
+					rec = r;
+				}
+				
+				if(r.getFieldName().contains("test_tpor_barcode_")) {
+					tpor = r;
+				}
+			}
+			
 			// Update with information from receiving forms
-			if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-				RedcapDataVO rd = redcapDataVOs.get(0);
+			if(rec != null) {
+				RedcapDataVO rd = rec;
 				
 				int index = rd.getFieldName().lastIndexOf("_");
 				String pos = rd.getFieldName().substring(index + 1);
@@ -434,11 +457,12 @@ public class RedcapLink {
 				criteria.setEventId(rd.getEventId());
 				criteria.setProjectId(rd.getProjectId());
 				criteria.setRecord(rd.getRecord());
-				criteria.setFieldName("received_datetime");
 				
 				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				searchMap = getRedcapDataMap(redcapDataVOs);
+				String key = "received_datetime";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 					try {
 						specimen.setReceivingDateTime(format.parse(rd.getValue()));
@@ -446,56 +470,49 @@ public class RedcapLink {
 						e.printStackTrace();
 					}
 					
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "received_datetime", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);					
 				}
 				
-				criteria.setFieldName("receiving_personnel");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "receiving_personnel";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setReceivingPersonnel(rd.getValue());
 										
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "receiving_personnel", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("receiving_lab");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "receiving_lab";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setReceivingLab(rd.getValue());
 
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "receiving_lab", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("lab_rec_batch_id");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "lab_rec_id";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setReceivingLab(rd.getValue());
 					
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "lab_rec_id", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("specimen_cond_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "receiving_condition_code";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setReceivingConditionCode(rd.getValue());
 
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "receiving_condition_code", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
 				// Testing point of reception
-				criteria.setFieldName("test_tpor_barcode_%");
-				criteria.setValue(specimen.getSpecimenBarcode());
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				if(tpor != null) {
+					rd = tpor;
 
 					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_tpor_barcode", rd.getValue());
 					reportData.add(tmp);
@@ -508,39 +525,35 @@ public class RedcapLink {
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("tpor_lab");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "tpor_lab";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "tpor_lab", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_tpor_batchsize");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_tpor_batchsize";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_tpor_batchsize", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_tpor_datetime");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_tpor_datetime";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_tpor_datetime", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_tpor_personnel");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_tpor_personnel";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 
-					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_tpor_personnel", rd.getValue());
+					RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 			}
@@ -548,13 +561,19 @@ public class RedcapLink {
 			criteria = new RedcapDataSearchCriteria();
 			// Extraction project
 			criteria.setProjectId(labExtractionPID);
-			criteria.setFieldName("test_ext_barcode_%");
 			criteria.setValue(specimen.getSpecimenBarcode());
 			
 			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
+			RedcapDataVO ext = null;
+			if(redcapDataVOs.size() == 1) {
+				ext = redcapDataVOs.get(0);
+			} else {
+				// TODO: find the latest extraction
+			}
+			
 			// Update with information from receiving forms
-			if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-				RedcapDataVO rd = redcapDataVOs.get(0);
+			if(ext != null) {
+				RedcapDataVO rd = ext;
 				
 				RedcapDataVO tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_ext_barcode", rd.getValue());
 				reportData.add(tmp);
@@ -571,11 +590,13 @@ public class RedcapLink {
 				criteria.setEventId(rd.getEventId());
 				criteria.setProjectId(rd.getProjectId());
 				criteria.setRecord(rd.getRecord());
-				criteria.setFieldName("test_ext_datetime");
 				
 				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				searchMap = getRedcapDataMap(redcapDataVOs);
+				String key = "test_ext_datetime";
+				
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 					try {
 						specimen.setResultsEnteredDate(format.parse(rd.getValue()));
@@ -583,51 +604,45 @@ public class RedcapLink {
 						e.printStackTrace();
 					}
 										
-					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_ext_datetime", rd.getValue());
+					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_ext_personnel");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_ext_personnel";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setResultsEnteredBy(rd.getValue());
 					
-					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_ext_personnel", rd.getValue());
+					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				int posI = Integer.parseInt(pos);
-				int ipos = (posI/24) + 1;
-				criteria.setFieldName("test_ext_instrument" + ipos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_ext_instrument";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setResults(rd.getValue());
 										
-					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_ext_instrument", rd.getValue());
+					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 					
 				}
 				
-				criteria.setFieldName("extraction_lab");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "extraction_lab";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setResults(rd.getValue());
 										
-					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "extraction_lab", rd.getValue());
+					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 					
 				}
 				
-				criteria.setFieldName("test_ext_batchsize");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_ext_batchsize";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setResults(rd.getValue());
 										
-					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_ext_batchsize", rd.getValue());
+					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 			}
@@ -635,12 +650,18 @@ public class RedcapLink {
 			criteria = new RedcapDataSearchCriteria();
 			// Resulting project
 			criteria.setProjectId(labResultingPID);
-			criteria.setFieldName("test_det_barcode_%");
-			criteria.setValue(specimen.getSpecimenBarcode());
-			
+			criteria.setValue(specimen.getSpecimenBarcode());	
 			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-			if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-				RedcapDataVO rd = redcapDataVOs.get(0);
+			RedcapDataVO det = null;
+			
+			if(redcapDataVOs.size() == 1) {
+				det = redcapDataVOs.get(0);
+			} else {
+				// TODO: what to do if the specimen was processed multiple times
+			}
+			
+			if(det != null) {
+				RedcapDataVO rd = det;
 				int index = rd.getFieldName().lastIndexOf("_");
 				String pos = rd.getFieldName().substring(index + 1);
 				
@@ -657,11 +678,15 @@ public class RedcapLink {
 				criteria.setEventId(rd.getEventId());
 				criteria.setProjectId(rd.getProjectId());
 				criteria.setRecord(rd.getRecord());
-				criteria.setFieldName("test_assay_datetime");
+				criteria.setFieldName(null);
 				
 				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				searchMap = getRedcapDataMap(redcapDataVOs);
+				
+				String key = "test_assay_datetime";
+				
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 					try {
 						specimen.setResultsEnteredDate(format.parse(rd.getValue()));
@@ -669,24 +694,22 @@ public class RedcapLink {
 						e.printStackTrace();
 					}
 					
-					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_assay_datetime", rd.getValue());
+					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, key, rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_assay_personnel");
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_assay_personnel";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					specimen.setResultsEnteredBy(rd.getValue());
 					
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_assay_personnel", rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_assay_result_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_assay_result";
+				if(searchMap.containsKey(key + "_" + pos)) {
+					rd = searchMap.get(key + "_" + pos);
 					specimen.setResults(rd.getValue());
 										
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_assay_result", rd.getValue());
@@ -698,10 +721,9 @@ public class RedcapLink {
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_assay_result_why_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_assay_result_why";
+				if(searchMap.containsKey(key + "_" + pos)) {
+					rd = searchMap.get(key + "_" + pos);
 					specimen.setResults(rd.getValue());
 										
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_assay_result_why", rd.getValue());
@@ -712,42 +734,37 @@ public class RedcapLink {
 				/**
 				 * Detection form fields
 				 */
-				criteria.setFieldName("test_det_personnel");				
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_det_personnel";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_det_personnel", rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_det_datetime");		
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_det_datetime";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_det_datetime", rd.getValue());
 					reportData.add(tmp);
 				}	
 				
-				criteria.setFieldName("test_det_batchsize");	
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_det_batchsize";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_det_batchsize", rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("detection_lab");		
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "detection_lab";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "detection_lab", rd.getValue());
 					reportData.add(tmp);
 				}
 				
-				criteria.setFieldName("test_det_instrument");		
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				key = "test_det_instrument";
+				if(searchMap.containsKey(key)) {
+					rd = searchMap.get(key);
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_det_instrument", rd.getValue());
 					reportData.add(tmp);
 				}
@@ -755,40 +772,36 @@ public class RedcapLink {
 				/**
 				 * Find if the the results have been verified
 				 */
-				criteria.setFieldName("test_verify_result_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
-										
+				key = "test_verify_result";
+				if(searchMap.containsKey(key + "_" + pos)) {
+					rd = searchMap.get(key + "_" + pos);
+
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_verify_result", rd.getValue());
 					reportData.add(tmp);
 					
-					if(rd.getValue().contentEquals("5")) {
+					if(rd.getValue().equals("5")) {
 						// Replace with the verified results
-						criteria.setFieldName("covid_rna_results" + pos);
-						redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-						if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-							rd = redcapDataVOs.get(0);
+						key = "covid_rna_results";
+						if(searchMap.containsKey(key + pos)) {
+							rd = searchMap.get(key + pos);
 							specimen.setResults(rd.getValue());
 														
 							tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "covid_rna_results", rd.getValue());
 							reportData.add(tmp);
 						}
 						
-						criteria.setFieldName("test_verify_personnel");
-						redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-						if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-							rd = redcapDataVOs.get(0);
+						key = "test_verify_personnel";
+						if(searchMap.containsKey(key)) {
+							rd = searchMap.get(key);
 														
 							tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_verify_personnel", rd.getValue());
 							reportData.add(tmp);
 							specimen.setResultsVerifiedBy(rd.getValue());
 						}
 						
-						criteria.setFieldName("test_verify_datetime");
-						redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-						if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-							rd = redcapDataVOs.get(0);
+						key = "test_verify_datetime";
+						if(searchMap.containsKey(key)) {
+							rd = searchMap.get(key);
 														
 							tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_verify_datetime", rd.getValue());
 							reportData.add(tmp);
@@ -803,10 +816,11 @@ public class RedcapLink {
 					}
 				}
 				
-				criteria.setFieldName("test_assay_result_why_" + pos);
-				redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-				if(redcapDataVOs != null && redcapDataVOs.size() > 0) {
-					rd = redcapDataVOs.get(0);
+				//criteria.setFieldName("test_assay_result_why_" + pos);
+				//redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
+				key = "test_assay_result_why";
+				if(searchMap.containsKey(key + "_" + pos)) {
+					rd = searchMap.get(key + "_" + pos);
 					specimen.setResults(rd.getValue());
 										
 					tmp = getRedcapDataObjet(specimen.getSpecimenBarcode(), labReportPID, "test_assay_result_why", rd.getValue());
@@ -819,24 +833,21 @@ public class RedcapLink {
 			// Reporting project
 			criteria.setProjectId(labReportPID);
 			criteria.setRecord(specimen.getSpecimenBarcode());
-			criteria.setFieldName("result_authorised");
+			//criteria.setFieldName("result_authorised");
 			redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-			if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-				RedcapDataVO rd = redcapDataVOs.get(0);
+			searchMap = getRedcapDataMap(redcapDataVOs);
+			if (searchMap.containsKey("result_authorised")) {
+				RedcapDataVO rd = searchMap.get("result_authorised");
 
 				if (rd.getValue().equals("1")) { // Results have been authorised
-					criteria.setFieldName("covid_rna_results");
-					redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-					if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-						rd = redcapDataVOs.get(0);
+					if (searchMap.containsKey("covid_rna_results")) {
+						rd = searchMap.get("covid_rna_results");
 						specimen.setResults(rd.getValue());
 					}
 					
 					// Who authorised
-					criteria.setFieldName("authorizer_personnel");
-					redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-					if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-						rd = redcapDataVOs.get(0);
+					if (searchMap.containsKey("authorizer_personnel")) {
+						rd = searchMap.get("authorizer_personnel");
 						specimen.setResultsAuthorisedBy(rd.getValue());
 					} else {
 						if(!StringUtils.isBlank(specimen.getResultsAuthorisedBy())) {
@@ -845,10 +856,8 @@ public class RedcapLink {
 					}
 					
 					// When was the results authorised
-					criteria.setFieldName("authorizer_datetime");
-					redcapDataVOs = (List<RedcapDataVO>) redcapDataService.searchByCriteria(criteria);
-					if (redcapDataVOs != null && redcapDataVOs.size() > 0) {
-						rd = redcapDataVOs.get(0);
+					if (searchMap.containsKey("authorizer_datetime")) {
+						rd = searchMap.get("authorizer_datetime");
 						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 						try {
 							specimen.setResultsAuthorisedDate(format.parse(rd.getValue()));
@@ -879,6 +888,7 @@ public class RedcapLink {
 			}
 			
 			specimenService.saveSpecimen(specimen);
+			//logger.info(specimen.toString());
 			
 			String status = "0";
 			

@@ -56,10 +56,7 @@ public class DDPController {
 
     @Value("${dhis2.api.program.stage}")
     private String programStage;
-    
-    @Value("${lab.results}")
-    private String resultsField;
-    
+        
     @Value("${lab.report.pid}")
     private Long labReportPID;
 
@@ -99,14 +96,13 @@ public class DDPController {
     	Map<String, String> params = new HashMap<>();
         params.put("program", program);
         params.put("programStage", programStage);
-        SpecimenVO last = specimenService.findLatestSpecimen();
+        SpecimenVO last = specimenService.findLatestSpecimen(program);
         String date = "2020-05-20";
         
         if(last != null) {
         	
         	Calendar cal = Calendar.getInstance();
         	cal.setTime(last.getCreated());
-        	//date = cal.get(Calendar.YEAR) + "-" + cal.get(Calendar.MONTH) + "-" + cal.get(Calendar.DAY_OF_MONTH);
         	
         } 
         params.put("startDate", date);
@@ -133,13 +129,13 @@ public class DDPController {
      * @param postObject
      * @return
      */
-    @PostMapping(value = "/ddp", produces = "application/json")
+    /*@PostMapping(value = "/ddp", produces = "application/json")
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     public String pullSpecimen(@RequestBody DDPPostObject postObject) {
     	SpecimenVO specimen = dhisLink.getOneSpecimen(postObject.getId());
         return dhisLink.getSpecimenFieldsString(specimen);
-    }
+    }*/
     
     /**
      * Retrieve one specimen based on the barcode parameter
@@ -164,53 +160,8 @@ public class DDPController {
     @GetMapping(value = "/newspecimen", produces = "application/json")
     @ResponseBody
     @ResponseStatus(value = HttpStatus.OK)
-    public List<SpecimenVO> getSpecimen() {
-    	
-    	final int pageSize = 2000;
-        Map<String, String> params = new HashMap<>();
-        params.put("program", program);
-        params.put("programStage", programStage);
-        params.put("status", "COMPLETED");
-        //params.put("filter", resultsField + ":EQ:PENDING");
-        SpecimenVO last = specimenService.findLatestSpecimen();
-        String date = "2020-05-20";
-
-        if(last != null) {
-        	
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH).withZone(ZoneId.systemDefault());
-			
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(last.getLastUpdated());
-			
-			Instant updated = last.getLastUpdated().toInstant();
-			updated = updated.minus(4, ChronoUnit.HOURS); /// Just backtrack in case we missed some. Also a hack to counter 
-			date = formatter.format(updated).replace(' ', 'T');
-        }
-        	
-        params.put("lastUpdatedStartDate", date);        
-        params.put("order", "lastUpdated:asc");
-        params.put("pageSize", "" + pageSize);
-        
-        BigInteger numPulled = new BigInteger("0");
-		int page = 1;
-		params.put("page", "" + page);
-		List<SpecimenVO> specimen = new ArrayList<>();
-		List<SpecimenVO> tmp = dhisLink.getSpecimen(params);
-
-		while (dhisLink.getNumPulled() != 0) {
-			specimen.addAll(tmp);
-			
-			numPulled.add(new BigInteger(tmp.size() + ""));
-			if(numPulled.intValue() > 10) {
-				break;
-			}
-			
-			page++;
-            tmp = dhisLink.getSpecimen(params);
-    		params.put("page", "" + page);
-		}
-				
-		return specimen;
+    public List<SpecimenVO> getSpecimen() {			
+		return dhisLink.getSpecimen(program, programStage);
     }
 
     @GetMapping(value = "/program", produces = "application/json")

@@ -180,15 +180,20 @@
         </button>
         <button type="button" class="btn btn-success" (click)="clearSearch()">Clear</button>
       </div>
-      <div class="form-group">
-        <mat-table matSort [dataSource]="batches" #BatchesSort="matSort" class="table table-bordered table-striped"
+      <div class="mat-elevation-z8 form-group">
+        <div class="overlay">
+          <div class="center">
+            <mat-progress-bar [mode]="'indeterminate'" *ngIf="spLoading"></mat-progress-bar>
+          </div>
+        </div>
+        <mat-table matSort [dataSource]="batches" #batchesSort="matSort" class="table table-bordered table-striped"
           style="width: 100%;">
 
           <ng-container matColumnDef=" ">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let row">
               <div class="form-group">
-                <button class="btn btn-info" (click)="editBatch(row)">
+                <button class="btn btn-info" (click)="editBatch(row, true)">
                   <mat-icon>edit</mat-icon>
                 </button>
               </div>
@@ -205,6 +210,10 @@
           <ng-container matColumnDef="resultingDateTime">
             <mat-header-cell *matHeaderCellDef>Resulting Datetime</mat-header-cell>
             <mat-cell *matCellDef="let row"> {{ row.resultingDateTime }} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="instrumentBatchSize">
+            <mat-header-cell *matHeaderCellDef>Batch Size</mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.instrumentBatchSize }} </mat-cell>
           </ng-container>
           <ng-container matColumnDef="resultingStatus">
             <mat-header-cell *matHeaderCellDef>Resulting Status</mat-header-cell>
@@ -225,7 +234,7 @@
           <mat-row *matRowDef="let row; columns: searchColumns;"></mat-row>
 
         </mat-table>
-        <mat-paginator #BatchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"
+        <mat-paginator #batchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"
           showFirstLastButtons></mat-paginator>
       </div>
     </mat-tab>

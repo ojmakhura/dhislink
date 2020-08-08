@@ -14,6 +14,7 @@ import bw.ub.ehealth.dhislink.specimen.vo.SpecimenVO;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -73,8 +74,8 @@ public class SpecimenServiceImpl
 	}
 
 	@Override
-	protected SpecimenVO handleFindLatestSpecimen() throws Exception {
-		return getSpecimenDao().toSpecimenVO(getSpecimenDao().findLatestSpecimen());
+	protected SpecimenVO handleFindLatestSpecimen(String programId) throws Exception {
+		return getSpecimenDao().toSpecimenVO(getSpecimenDao().findLatestSpecimen(programId));
 	}
 
 	@Override
@@ -89,4 +90,37 @@ public class SpecimenServiceImpl
 		return vos;
 	}
 
+	@Override
+	protected Collection<SpecimenVO> handleSaveSpecimen(Set<SpecimenVO> specimens) throws Exception {
+		
+		Collection<Specimen> create = new ArrayList<Specimen>();
+		Collection<Specimen> update = new ArrayList<Specimen>();
+		
+		for(SpecimenVO sp : specimens) {
+			Specimen specimen = getSpecimenDao().specimenVOToEntity(sp);
+	    		    	
+	    	if(specimen.getId() == null) {
+	    		create.add(specimen);
+	    	} else {
+	    		update.add(specimen);
+	    	}
+		}
+		
+		
+		create = getSpecimenDao().create(create);
+		getSpecimenDao().update(update);
+		
+		Collection<SpecimenVO> specimenVos = new ArrayList();
+		
+		for(Specimen sp : create) {
+			specimenVos.add(getSpecimenDao().toSpecimenVO(sp));
+		}
+		
+		for(Specimen sp : update) {
+			specimenVos.add(getSpecimenDao().toSpecimenVO(sp));
+		}
+				
+		// TODO Auto-generated method stub
+		return specimenVos;
+	}
 }
