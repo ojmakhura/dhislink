@@ -132,7 +132,12 @@ public class PatientDaoImpl
     	if(patientVO.getId() != null) {
     		patient = this.load(patientVO.getId());
     	} else {
-    		patient = Patient.Factory.newInstance();
+    		
+    		patient = this.handleGetPatientByIdentityNo(patientVO.getIdentityNo());
+    		
+    		if(patient == null) {
+    			patient = Patient.Factory.newInstance();
+    		}
     	}
     	
     	return patient;

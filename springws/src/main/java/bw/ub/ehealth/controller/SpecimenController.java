@@ -1,6 +1,7 @@
 package bw.ub.ehealth.controller;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -92,7 +93,7 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findByEvent(event)
      * bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findLatestSpecimen
      * @return SpecimenVO
      */
-    @GetMapping("/latest{programId}")
+    @GetMapping("/latest/{programId}")
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
     public SpecimenVO findLatestSpecimen(@PathVariable String programId) {

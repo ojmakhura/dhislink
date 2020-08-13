@@ -37,7 +37,7 @@ public class SpecimenServiceImpl
     protected  SpecimenVO handleFindSpecimenByBarcode(String barcode)
         throws Exception
     {
-    	
+    
     	return getSpecimenDao().toSpecimenVO(getSpecimenDao().findByBarcode(barcode));
     }
 
@@ -91,7 +91,7 @@ public class SpecimenServiceImpl
 	}
 
 	@Override
-	protected Collection<SpecimenVO> handleSaveSpecimen(Set<SpecimenVO> specimens) throws Exception {
+	protected Collection<SpecimenVO> handleSaveSpecimen(Collection<SpecimenVO> specimens) throws Exception {
 		
 		Collection<Specimen> create = new ArrayList<Specimen>();
 		Collection<Specimen> update = new ArrayList<Specimen>();

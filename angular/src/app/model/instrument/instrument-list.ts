@@ -10,6 +10,7 @@ export class InstrumentList {
             new Instrument('321', 'UB ABI 7500 (321)'),
             new Instrument('421', 'BNVL ABI 7500 FAST (421)'),
             new Instrument('521', 'BVI ABI 7500 (521)'),
+            new Instrument('600', 'BIOER Line Gene (600))'),
             new Instrument('999', 'Other detection machine(specify) (999))')
         ];
     }

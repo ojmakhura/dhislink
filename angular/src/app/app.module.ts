@@ -46,7 +46,6 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { DialogBoxComponent } from './view/dialog-box/dialog-box.component';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { BatchComponent } from './view/batch/batch.component';
-import { Lab } from './view/lab.report/lab.report.component';
 import { LabReportComponent } from './view/lab-report/lab-report.component';
 
 @NgModule({
@@ -58,7 +57,6 @@ import { LabReportComponent } from './view/lab-report/lab-report.component';
     LocationComponent,
     TestingDetectionComponent,
     DialogBoxComponent,
-    Lab.ReportComponent,
     LabReportComponent
   ],
   imports: [

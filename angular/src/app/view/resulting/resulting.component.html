@@ -123,7 +123,7 @@
                   <mat-cell *matCellDef="let row" [formGroup]="row">
                     <mat-form-field>
                       <mat-select formControlName="testAssayResults" id="testAssayResults" required="true"
-                        value="row.testAssayResults">
+                        value="row.testAssayResults" (selectionChange)="onResultSelectionChange(row, $event)">
                         <mat-option value=""></mat-option>
                         <mat-option value="1" selected>Positive</mat-option>
                         <mat-option value="2" selected>Negative</mat-option>
@@ -174,7 +174,7 @@
         </form>
       </div>
       <div class="form-group">
-        <button class="btn btn-success" (click)="searchBatches()">
+        <button class="btn btn-success" (click)="doSearch()">
           <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
           Search
         </button>
@@ -193,7 +193,7 @@
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let row">
               <div class="form-group">
-                <button class="btn btn-info" (click)="editBatch(row, true)">
+                <button class="btn btn-info" (click)="doEditBatch(row)">
                   <mat-icon>edit</mat-icon>
                 </button>
               </div>

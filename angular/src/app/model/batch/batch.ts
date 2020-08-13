@@ -28,13 +28,13 @@ export class Batch {
     verificationPersonnel: string;
 
     @prop()
-    detectionDateTime: Date;
+    detectionDateTime: any;
 
     @prop()
-    resultingDateTime: Date;
+    resultingDateTime: any;
 
     @prop()
-    verificationDateTime: Date;
+    verificationDateTime: any;
 
     @prop()
     detectionSize: number;
@@ -70,7 +70,7 @@ export class Batch {
     authorisingPersonnel: string;
 
     @prop()
-    authorisingDateTime: Date;
+    authorisingDateTime: any;
 
     @prop()
     publishResults: boolean;
@@ -102,8 +102,8 @@ export class Batch {
         this.authorisingPersonnel = '';
         this.authorisingDateTime = null;
         this.publishResults = false;
-        this.a1Control = true;
-        this.h12Control = true;
+        this.a1Control = false;
+        this.h12Control = false;
         this.lab = new LocationVO();
         this.batchItems = [];
         this.instrument = new Instrument('', '');

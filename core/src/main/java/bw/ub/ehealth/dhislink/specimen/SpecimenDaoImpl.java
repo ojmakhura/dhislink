@@ -66,7 +66,7 @@ public class SpecimenDaoImpl
         	target.setDispatchTime(source.getDispatchDateTime());
         }
         // WARNING! No conversion for target.patient (can't convert source.getPatient():bw.ub.ehealth.dhislink.patient.Patient to bw.ub.ehealth.dhislink.patient.vo.PatientVO
-        
+
         if(source.getPatient() != null) {
         	PatientVO p = new PatientVO();
         	getPatientDao().toPatientVO(source.getPatient(), p);
@@ -85,7 +85,7 @@ public class SpecimenDaoImpl
         if(source.getResultsVerifiedDate() != null) {
         	target.setResultsVerifiedDate(source.getResultsVerifiedDate());
         }
-        
+
         if(source.getResultsAuthorisedDate() != null) {
         	target.setResultsAuthorisedDate(source.getResultsAuthorisedDate());
         }
@@ -111,11 +111,16 @@ public class SpecimenDaoImpl
      */
     private Specimen loadSpecimenFromSpecimenVO(SpecimenVO specimenVO)
     {
+    	Specimen specimen = this.findByBarcode(specimenVO.getSpecimenBarcode());
     	
-    	Specimen specimen = Specimen.Factory.newInstance();
-    	
-    	if(specimenVO.getId() != null) {
-    		specimen = this.load(specimenVO.getId());
+    	if(specimen == null || specimen.getId() == null) {
+    		if(specimenVO.getId() != null) {
+    			specimen = this.load(specimenVO.getId());
+    		} else {
+
+    	    	specimen = Specimen.Factory.newInstance();
+    	    	
+    		}
     	}
     	
     	return specimen;
@@ -134,8 +139,14 @@ public class SpecimenDaoImpl
         
         		entity.setPatient(getPatientDao().load(specimenVO.getPatient().getId()));
         	} else {
-        		Patient p = getPatientDao().patientVOToEntity(specimenVO.getPatient());
-        		entity.setPatient(getPatientDao().create(p));
+        		Patient p = getPatientDao().getPatientByIdentityNo(specimenVO.getPatient().getIdentityNo());
+        		
+        		if(p == null) {
+        			p = getPatientDao().patientVOToEntity(specimenVO.getPatient());
+        			p = getPatientDao().create(p);
+        		}
+        		
+        		entity.setPatient(p);
         	}
         } 
         

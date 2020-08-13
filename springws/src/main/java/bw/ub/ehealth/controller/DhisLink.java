@@ -864,7 +864,7 @@ public class DhisLink implements Serializable {
 			//logger.debug(event.toString());
 			return null;
 		}
-		//logger.debug(event.toString());
+		
 		SpecimenVO specimen = new SpecimenVO();
 		specimen.setEvent(event.getEvent());
 		specimen.setCreated(event.getCreated());
@@ -873,18 +873,27 @@ public class DhisLink implements Serializable {
 		specimen.setProgramStageId(event.getProgramStage());
 
 		DataValue val = null;
-		if (!StringUtils.isBlank(env.getProperty(pre + "lab.submitter.facility"))) {
-			val = values.get(env.getProperty(pre + "lab.submitter.facility").trim());
-			if (val != null) {
-				specimen.setDispatchLocation(val.getValue());
+		
+		if(event.getProgram().equals(covidProgram)) {
+			if (!StringUtils.isBlank(env.getProperty(pre + "lab.submitter.facility"))) {
+				val = values.get(env.getProperty(pre + "lab.submitter.facility").trim());
+				if (val != null) {
+					specimen.setDispatchLocation(val.getValue());
+				}
 			}
+		} else {
+			specimen.setDispatchLocation(event.getOrgUnitName());
 		}
 
-		if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.facility"))) {
-			val = values.get(env.getProperty(pre + "lab.specimen.facility").trim());
-			if (val != null) {
-				specimen.setPatientFacility(val.getValue());
+		if(event.getProgram().equals(covidProgram)) {
+			if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.facility"))) {
+				val = values.get(env.getProperty(pre + "lab.specimen.facility").trim());
+				if (val != null) {
+					specimen.setPatientFacility(val.getValue());
+				}
 			}
+		} else {
+			specimen.setPatientFacility(event.getOrgUnitName());
 		}
 
 		if (!StringUtils.isBlank(env.getProperty(pre + "lab.specimen.facility"))) {
@@ -1097,7 +1106,7 @@ public class DhisLink implements Serializable {
 	 * @return
 	 */
 	public List<SpecimenVO> getSpecimen(String programId, String stageId) {
-		final int pageSize = 50;
+		final int pageSize = 2000;
 		Map<String, String> parameters = new HashMap<>();
 		parameters.put("program", programId);
 		parameters.put("programStage", stageId);
