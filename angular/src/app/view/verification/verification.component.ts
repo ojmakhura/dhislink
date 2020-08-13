@@ -5,6 +5,9 @@ import { of } from 'rxjs';
 import { AuthenticationResponse } from 'src/app/model/authentication/authentication-response';
 import { FORM_DATA } from 'src/app/helpers/dhis-link-constants';
 import { BatchComponent } from '../batch/batch.component';
+import { Batch } from 'src/app/model/batch/batch';
+import { RedcapData } from 'src/app/model/data/redcap-data';
+import { Specimen } from 'src/app/model/specimen/specimen';
 
 @Component({
   selector: 'app-verification',
@@ -44,17 +47,31 @@ export class VerificationComponent extends BatchComponent {
   afterOnInit() {
   }
 
-  preSaveBatch() {
-    if (this.authService.getCurrentUser() === this.batchForm.value.resultingPersonnel) {
+  preSaveBatch(batch: Batch) {
+    if (this.authService.getCurrentUser() === batch.resultingPersonnel) {
       alert('You entered the results so you cannot verify them.');
       this.loading = false;
       return false;
-    } else {
-
-      if (!this.batchForm.value.verificationPersonnel || this.batchForm.value.verificationPersonnel.length === 0) {
-        this.now();
-      }
     }
+
+    batch.batchItems.forEach(
+      sp => {
+
+        if(batch.verificationDateTime && batch.verificationPersonnel) {
+          sp.test_verify_datetime = batch.verificationDateTime;
+          sp.test_verify_personnel = batch.verificationPersonnel;
+          
+          if(sp.testVerifyResults === '5') {
+            sp.covidRnaResults = sp.testAssayResults;
+          }
+        }
+
+        if(batch.authorisingDateTime && batch.authorisingPersonnel) {
+          sp.authorizer_datetime = batch.authorisingDateTime;
+          sp.authorizer_personnel = batch.authorisingPersonnel;
+        }
+      }
+    );
 
     return true;
   }
@@ -71,5 +88,9 @@ export class VerificationComponent extends BatchComponent {
     }
 
     return true;
+  }
+
+  onVerifySelectionChange(specimen: Specimen, event) {
+    
   }
 }

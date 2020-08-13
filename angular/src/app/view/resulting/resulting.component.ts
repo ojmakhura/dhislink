@@ -3,6 +3,11 @@ import { Batch } from 'src/app/model/batch/batch';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
 import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
 import { BatchComponent } from '../batch/batch.component';
+import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage';
+import { RedcapAuth } from 'src/app/model/authentication/redcap-auth';
+import { RedcapData } from 'src/app/model/data/redcap-data';
+import { Specimen } from 'src/app/model/specimen/specimen';
+import { RxFormGroup } from '@rxweb/reactive-form-validators';
 
 @Component({
   selector: 'app-resulting',
@@ -21,13 +26,21 @@ export class ResultingComponent extends BatchComponent {
   afterOnInit() {
   }
 
-  preSaveBatch() {
+  preSaveBatch(batch: Batch) {
     const cnt = this.getItemControl('resultingPersonnel');
 
     if (!cnt && cnt.value.length === 0) {
       this.now();
     }
-    this.getItemControl('assayBatchId').setValue(this.getItemControl('detectionBatchId').value);
+    batch.assayBatchId = batch.detectionBatchId;
+
+    batch.batchItems.forEach(
+      sp => {
+        sp.test_assay_personnel = batch.resultingPersonnel;
+        sp.test_assay_datetime = batch.resultingDateTime;
+        sp.covidRnaResults = sp.testAssayResults;
+      }
+    );
 
     return true;
   }
@@ -38,11 +51,12 @@ export class ResultingComponent extends BatchComponent {
     this.redcaDataService.pullSpecimenInfo(batch.batchItems).subscribe(results => {
       this.searchCriteria.includeSpecimen = true;
       this.searchCriteria.batchId = batch.batchId;
+      this.searchCriteria.page = BatchAuthorityStage.RESULTING
 
       this.redcaDataService.search(this.searchCriteria).subscribe(batches => {
         this.searchCriteria = new BatchSearchCriteria();
         if (batches.length > 0) {
-          this.editBatch(batches[0]);
+          this.editBatch(batches[0], false);
         }
         this.searchCriteria = new BatchSearchCriteria();
       });
@@ -56,5 +70,8 @@ export class ResultingComponent extends BatchComponent {
   }
 
   postSaveBatch() {
+  }
+
+  onResultSelectionChange(row: RxFormGroup, event) {
   }
 }

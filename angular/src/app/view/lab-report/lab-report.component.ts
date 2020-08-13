@@ -1,25 +1,32 @@
-import { Component, Injector } from '@angular/core';
-import { Batch } from 'src/app/model/batch/batch';
+import { Component, OnInit, Injector, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthenticationService } from 'src/app/service/authentication/authentication.service';
+import { LocationService } from 'src/app/service/location/location.service';
+import { RedcapDataService } from 'src/app/service/data/redcap-data.service';
+import { SpecimenService } from 'src/app/service/specimen/specimen.service';
+import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { Specimen } from 'src/app/model/specimen/specimen';
-import { FORM_DATA, CURRENT_ROUTE } from 'src/app/helpers/dhis-link-constants';
-import { Patient } from 'src/app/model/patient/patient';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
-import { BatchComponent } from '../batch/batch.component';
-import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage';
-import { RxFormGroup } from '@rxweb/reactive-form-validators';
+import { FormGroup } from '@angular/forms';
 import { RedcapData } from 'src/app/model/data/redcap-data';
+import { BatchComponent } from '../batch/batch.component';
+import { MatDialog } from '@angular/material/dialog';
+import { Patient } from 'src/app/model/patient/patient';
+import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage';
+import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
+import { Batch } from 'src/app/model/batch/batch';
+import { formatDate } from '@angular/common';
 
 @Component({
-  selector: 'app-testing-detection',
-  templateUrl: './testing-detection.component.html',
-  styleUrls: ['./testing-detection.component.css']
+  selector: 'app-lab-report',
+  templateUrl: './lab-report.component.html',
+  styleUrls: ['./lab-report.component.css']
 })
-export class TestingDetectionComponent extends BatchComponent {
+export class LabReportComponent extends BatchComponent {
 
   barcode = '';
   adding = false;
   removing = false;
+  private redcapData: Array<RedcapData>;
 
   searchColumns: string[] = [' ', 'batchId', 'detectionPersonnel', 'detectionDateTime', 'instrumentBatchSize', 'detectionStatus'];
   specimenColumns: string[] = [' ', 'position', 'specimen_barcode', 'patient_first_name', 'patient_surname', 'identity_no', 'add_control'];
@@ -39,20 +46,13 @@ export class TestingDetectionComponent extends BatchComponent {
   postSaveBatch() {
   }
 
-  preSaveBatch(batch: Batch) {
+  preSaveBatch() {
 
     const cnt = this.getItemControl('detectionPersonnel');
     if (!cnt && cnt.value.length === 0) {
       this.now();
     }
-
     this.getItemControl('detectionBatchId').setValue(this.getItemControl('detectionBatchId').value);
-
-    batch.batchItems.forEach(
-      sp => {
-        sp.batch_number = batch.batchId;
-      }
-    );
 
     return true;
   }
@@ -159,16 +159,15 @@ export class TestingDetectionComponent extends BatchComponent {
     batch.batchItems.forEach((element, index) => {
       element.position = this.specimenService.encodePosition(index);
     });
-
     batch.instrumentBatchSize = batch.batchItems.length;
     this.editBatch(batch, false);
   }
 
-  addControl(row: string, barcode: string, controlBarcode: string) {
+  addControl(row: string, barcode: string) {
     console.log(this.getItemControl('detectionStatus').value);
 
     if (this.getItemControl('detectionStatus').value !== '2') {
-      if (barcode === 'C0000000001' || barcode === 'C0000000002') {
+      if (barcode === 'C000000000') {
         alert('The location ' + row + ' is already a control.');
         return;
       }
@@ -183,7 +182,7 @@ export class TestingDetectionComponent extends BatchComponent {
       const items: Array<Specimen> = [];
       let position: number = this.specimenService.decodePosition(row);
       let idx = position - 1;
-      let control = this.createControl(controlBarcode);
+      let control = this.createControl();
       control.position = this.specimenService.encodePosition(idx);
 
       batch.batchItems.splice(idx, 0, control);
@@ -204,21 +203,17 @@ export class TestingDetectionComponent extends BatchComponent {
   }
 
   isControl(barcode) {
-    return barcode === 'C0000000001' || barcode === 'C0000000002';
+    return barcode === 'C000000000';
   }
 
-  private createControl(controlBarcode: string) {
+  private createControl() {
 
     const control: Specimen = new Specimen();
     control.patient = new Patient();
-    if(controlBarcode === 'C0000000001') {
-      control.patient.patient_first_name = 'Positive';
-    } else {
-      control.patient.patient_first_name = 'Negative';
-    }
+    control.patient.patient_first_name = 'Control';
     control.patient.patient_surname = 'Control';
-    control.patient.identity_no = controlBarcode.substring(1);
-    control.specimen_barcode = controlBarcode;
+    control.patient.identity_no = '000000000';
+    control.specimen_barcode = 'C000000000';
     return control;
   }
 

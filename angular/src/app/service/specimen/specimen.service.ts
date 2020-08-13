@@ -108,4 +108,41 @@ bw.ub.ehealth.dhislink.specimen.service.SpecimenService.findByEvent(event)
       return position;
     }
 
+    decodePosition(encoded: string): number {
+      
+      let q, r;
+      r = +encoded.substring(1);
+
+      let ch = encoded.charAt(0);
+
+      if (ch == 'A') {
+
+        q = 0;
+
+      } else if (ch == 'B') {
+
+        q = 1;
+
+      } else if (ch == 'C') {
+
+        q = 2;
+      } else if (ch == 'D') {
+
+        q = 3;
+      } else if (ch == 'E') {
+
+        q = 4;
+      } else if (ch == 'F') {
+
+        q = 5;
+      } else if (ch == 'G') {
+
+        q = 6;
+      } else {
+        q = 7;
+      }
+
+      return q * 12 + r;
+    }
+
 }

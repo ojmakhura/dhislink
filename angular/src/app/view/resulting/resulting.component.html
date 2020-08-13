@@ -123,7 +123,7 @@
                   <mat-cell *matCellDef="let row" [formGroup]="row">
                     <mat-form-field>
                       <mat-select formControlName="testAssayResults" id="testAssayResults" required="true"
-                        value="row.testAssayResults">
+                        value="row.testAssayResults" (selectionChange)="onResultSelectionChange(row, $event)">
                         <mat-option value=""></mat-option>
                         <mat-option value="1" selected>Positive</mat-option>
                         <mat-option value="2" selected>Negative</mat-option>
@@ -174,21 +174,26 @@
         </form>
       </div>
       <div class="form-group">
-        <button class="btn btn-success" (click)="searchBatches()">
+        <button class="btn btn-success" (click)="doSearch()">
           <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
           Search
         </button>
         <button type="button" class="btn btn-success" (click)="clearSearch()">Clear</button>
       </div>
-      <div class="form-group">
-        <mat-table matSort [dataSource]="batches" #BatchesSort="matSort" class="table table-bordered table-striped"
+      <div class="mat-elevation-z8 form-group">
+        <div class="overlay">
+          <div class="center">
+            <mat-progress-bar [mode]="'indeterminate'" *ngIf="spLoading"></mat-progress-bar>
+          </div>
+        </div>
+        <mat-table matSort [dataSource]="batches" #batchesSort="matSort" class="table table-bordered table-striped"
           style="width: 100%;">
 
           <ng-container matColumnDef=" ">
             <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let row">
               <div class="form-group">
-                <button class="btn btn-info" (click)="editBatch(row)">
+                <button class="btn btn-info" (click)="doEditBatch(row)">
                   <mat-icon>edit</mat-icon>
                 </button>
               </div>
@@ -229,7 +234,7 @@
           <mat-row *matRowDef="let row; columns: searchColumns;"></mat-row>
 
         </mat-table>
-        <mat-paginator #BatchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"
+        <mat-paginator #batchesPaginator="matPaginator" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]"
           showFirstLastButtons></mat-paginator>
       </div>
     </mat-tab>

@@ -7,6 +7,7 @@ import { ResultingComponent } from './view/resulting/resulting.component';
 import { VerificationComponent } from './view/verification/verification.component';
 import { AuthGuard } from './helpers/auth-guard';
 import { LoginComponent } from './view/login/login.component';
+import { LabReportComponent } from './view/lab-report/lab-report.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/detection', pathMatch: 'full', canActivate: [AuthGuard]},
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'location', component: LocationComponent, canActivate: [AuthGuard]},
   {path: 'detection', component: TestingDetectionComponent, canActivate: [AuthGuard]},
   {path: 'resulting', component: ResultingComponent, canActivate: [AuthGuard]},
-  {path: 'verification', component: VerificationComponent, canActivate: [AuthGuard]}
+  {path: 'verification', component: VerificationComponent, canActivate: [AuthGuard]},
+  {path: 'report', component: LabReportComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

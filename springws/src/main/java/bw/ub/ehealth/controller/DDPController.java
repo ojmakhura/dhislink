@@ -107,7 +107,7 @@ public class DDPController {
         } 
         params.put("startDate", date);
         params.put("order", "eventDate:asc");
-        params.put("pageSize", "50");
+        params.put("pageSize", "2000");
 
         int page = 1;
         params.put("page", "" + page);
@@ -121,20 +121,6 @@ public class DDPController {
         }
 
         return allEvents;
-    }
-
-    /**
-     * 
-     * 
-     * @param postObject
-     * @return
-     */
-    @PostMapping(value = "/ddp", produces = "application/json")
-    @ResponseStatus(value = HttpStatus.OK)
-    @ResponseBody
-    public String pullSpecimen(@RequestBody DDPPostObject postObject) {
-    	SpecimenVO specimen = dhisLink.getOneSpecimen(postObject.getId());
-        return dhisLink.getSpecimenFieldsString(specimen);
     }
     
     /**

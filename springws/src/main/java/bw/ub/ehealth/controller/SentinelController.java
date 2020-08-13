@@ -101,7 +101,7 @@ public class SentinelController {
         } 
         params.put("startDate", date);
         params.put("order", "eventDate:asc");
-        params.put("pageSize", "50");
+        params.put("pageSize", "2000");
 
         int page = 1;
         params.put("page", "" + page);

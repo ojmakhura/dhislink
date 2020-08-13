@@ -9,6 +9,8 @@ import { RedcapData } from 'src/app/model/data/redcap-data';
 import { BASE_URL } from 'src/app/helpers/dhis-link-constants';
 import { FormArray, FormGroup } from '@angular/forms';
 import { map } from 'rxjs/operators';
+import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage';
+import { URLSearchParams } from "@angular/http"
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +20,9 @@ export class RedcapDataService {
   private url = BASE_URL + 'data/';
   constructor(private http: HttpClient) { }
 
-  search(criteria: BatchSearchCriteria): Observable<Batch[]> {
+  search(searchCriteria: BatchSearchCriteria): Observable<Batch[]> {
 
-    return this.http.post<Batch[]>(this.url + 'search/batch', criteria);
+    return this.http.post<Batch[]>(this.url + 'search/batch', searchCriteria);
   }
 
   fetchExtractionSpecimen(batchId: string): Observable<Specimen[]> {
@@ -28,9 +30,9 @@ export class RedcapDataService {
     return this.http.get<Specimen[]>(this.url + 'extraction/specimen/' + batchId);
   }
 
-  fetchBatchSpecimen(criteria: DataSearchCriteria): Observable<Specimen[]> {
+  fetchBatchSpecimen(batch: Batch): Observable<Specimen[]> {
 
-    return this.http.post<Specimen[]>(this.url + 'batch/specimen', criteria);
+    return this.http.post<Specimen[]>(this.url + 'batch/specimen', batch);
   }
 
   saveBatch(batch: Batch): Observable<Specimen[]> {
@@ -61,6 +63,19 @@ export class RedcapDataService {
 
     //return of([]);
     return this.http.post<Specimen[]>(this.url + 'savebatch', batch);
+  }
+
+  saveRawBatch(batch: RedcapData[], projectId: number): Observable<boolean> {
+
+    let data = new URLSearchParams();
+    data.append('data', JSON.stringify(batch));
+    data.append('projectId', '' + projectId);
+
+    return this.http.post<boolean>(this.url + 'save', batch);
+  }
+
+  dataSearch(searchCriteria: BatchSearchCriteria): Observable<any> {
+    return this.http.post<any>(this.url + 'search/raw', searchCriteria);
   }
 
   pullSpecimenInfo(specimens: Specimen): Observable<Specimen[]> {

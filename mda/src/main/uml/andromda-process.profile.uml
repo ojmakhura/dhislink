@@ -1,84 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <uml:Profile xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_9_0_2_12ab03bf_1120853175671_502460_0" name="andromda-process" visibility="public" URI="" metamodelReference="_0metamodelReferenceandromda-process">
-  <eAnnotations xmi:id="_XNV-4de8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-    <contents xmi:type="ecore:EPackage" xmi:id="_XNV-4te8Eeq_leupplLYAw" name="andromdaprocess" nsURI="http:///schemas/andromdaprocess/_XBpqgNe8Eeq_leupplLYAw/0" nsPrefix="andromdaprocess">
-      <eAnnotations xmi:id="_XNV-49e8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML">
-        <details xmi:id="_XNV-5Ne8Eeq_leupplLYAw" key="originalName" value="andromda-process"/>
+  <eAnnotations xmi:id="__FL8jNruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <contents xmi:type="ecore:EPackage" xmi:id="__FL8jdruEeqDlMfy2mDc5A" name="andromdaprocess" nsURI="http:///schemas/andromdaprocess/_-8It4NruEeqDlMfy2mDc5A/0" nsPrefix="andromdaprocess">
+      <eAnnotations xmi:id="__FL8jtruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <details xmi:id="__FL8j9ruEeqDlMfy2mDc5A" key="originalName" value="andromda-process"/>
       </eAnnotations>
-      <eClassifiers xmi:type="ecore:EEnum" xmi:id="_XNV-5de8Eeq_leupplLYAw" name="TernaryBoolean">
-        <eAnnotations xmi:id="_XNV-5te8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_5_1_2090114_1235194696284_686103_0"/>
-        <eLiterals xmi:id="_XNV-59e8Eeq_leupplLYAw" name="default"/>
-        <eLiterals xmi:id="_XNV-6Ne8Eeq_leupplLYAw" name="false" value="1"/>
-        <eLiterals xmi:id="_XNV-6de8Eeq_leupplLYAw" name="true" value="2"/>
+      <eClassifiers xmi:type="ecore:EEnum" xmi:id="__FL8kNruEeqDlMfy2mDc5A" name="TernaryBoolean">
+        <eAnnotations xmi:id="__FL8kdruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_5_1_2090114_1235194696284_686103_0"/>
+        <eLiterals xmi:id="__FL8ktruEeqDlMfy2mDc5A" name="default"/>
+        <eLiterals xmi:id="__FL8k9ruEeqDlMfy2mDc5A" name="false" value="1"/>
+        <eLiterals xmi:id="__FL8lNruEeqDlMfy2mDc5A" name="true" value="2"/>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV-6te8Eeq_leupplLYAw" name="NodeLeave">
-        <eAnnotations xmi:id="_XNV-69e8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129568393_539365_7">
-          <details xmi:id="_XNV-7Ne8Eeq_leupplLYAw" key="originalName" value="Node Leave"/>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8ldruEeqDlMfy2mDc5A" name="NodeLeave">
+        <eAnnotations xmi:id="__FL8ltruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129568393_539365_7">
+          <details xmi:id="__FL8l9ruEeqDlMfy2mDc5A" key="originalName" value="Node Leave"/>
         </eAnnotations>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV-7de8Eeq_leupplLYAw" name="base_CallEvent" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8mNruEeqDlMfy2mDc5A" name="base_CallEvent" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//CallEvent"/>
         </eStructuralFeatures>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV-79e8Eeq_leupplLYAw" name="Timer">
-        <eAnnotations xmi:id="_XNV-8Ne8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1120030836093_315389_0"/>
-        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_XNV-8de8Eeq_leupplLYAw" name="andromda_process_jbpm_timer_repeat" ordered="false" lowerBound="1">
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8mtruEeqDlMfy2mDc5A" name="Timer">
+        <eAnnotations xmi:id="__FL8m9ruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1120030836093_315389_0"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="__FL8nNruEeqDlMfy2mDc5A" name="andromda_process_jbpm_timer_repeat" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
         </eStructuralFeatures>
-        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_XNV-89e8Eeq_leupplLYAw" name="andromda_process_jbpm_timer_duedate" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="__FL8ntruEeqDlMfy2mDc5A" name="andromda_process_jbpm_timer_duedate" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
         </eStructuralFeatures>
-        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_XNV-9de8Eeq_leupplLYAw" name="andromda_process_jbpm_timer_transition" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="__FL8oNruEeqDlMfy2mDc5A" name="andromda_process_jbpm_timer_transition" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
         </eStructuralFeatures>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV-99e8Eeq_leupplLYAw" name="base_CallEvent" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8otruEeqDlMfy2mDc5A" name="base_CallEvent" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//CallEvent"/>
         </eStructuralFeatures>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV--de8Eeq_leupplLYAw" name="BusinessProcess">
-        <eAnnotations xmi:id="_XNV--te8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129568518_911545_8">
-          <details xmi:id="_XNV--9e8Eeq_leupplLYAw" key="originalName" value="Business Process"/>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8pNruEeqDlMfy2mDc5A" name="BusinessProcess">
+        <eAnnotations xmi:id="__FL8pdruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129568518_911545_8">
+          <details xmi:id="__FL8ptruEeqDlMfy2mDc5A" key="originalName" value="Business Process"/>
         </eAnnotations>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV-_Ne8Eeq_leupplLYAw" name="base_UseCase" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8p9ruEeqDlMfy2mDc5A" name="base_UseCase" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//UseCase"/>
         </eStructuralFeatures>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV-_te8Eeq_leupplLYAw" name="BeforeSignal">
-        <eAnnotations xmi:id="_XNV-_9e8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129567612_128908_4">
-          <details xmi:id="_XNV_ANe8Eeq_leupplLYAw" key="originalName" value="Before Signal"/>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8qdruEeqDlMfy2mDc5A" name="BeforeSignal">
+        <eAnnotations xmi:id="__FL8qtruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129567612_128908_4">
+          <details xmi:id="__FL8q9ruEeqDlMfy2mDc5A" key="originalName" value="Before Signal"/>
         </eAnnotations>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV_Ade8Eeq_leupplLYAw" name="base_CallEvent" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8rNruEeqDlMfy2mDc5A" name="base_CallEvent" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//CallEvent"/>
         </eStructuralFeatures>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV_A9e8Eeq_leupplLYAw" name="Task">
-        <eAnnotations xmi:id="_XNV_BNe8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129548521_871830_1"/>
-        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_XNV_Bde8Eeq_leupplLYAw" name="andromda_process_jbpm_task_blocking" ordered="false" lowerBound="1" eType="_XNV-5de8Eeq_leupplLYAw" defaultValueLiteral="default"/>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV_B9e8Eeq_leupplLYAw" name="base_CallEvent" ordered="false" lowerBound="1">
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8rtruEeqDlMfy2mDc5A" name="Task">
+        <eAnnotations xmi:id="__FL8r9ruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129548521_871830_1"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="__FL8sNruEeqDlMfy2mDc5A" name="andromda_process_jbpm_task_blocking" ordered="false" lowerBound="1" eType="__FL8kNruEeqDlMfy2mDc5A" defaultValueLiteral="default"/>
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8struEeqDlMfy2mDc5A" name="base_CallEvent" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//CallEvent"/>
         </eStructuralFeatures>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV_Cde8Eeq_leupplLYAw" name="NodeEnter">
-        <eAnnotations xmi:id="_XNV_Cte8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129568378_575653_6">
-          <details xmi:id="_XNV_C9e8Eeq_leupplLYAw" key="originalName" value="Node Enter"/>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8tNruEeqDlMfy2mDc5A" name="NodeEnter">
+        <eAnnotations xmi:id="__FL8tdruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129568378_575653_6">
+          <details xmi:id="__FL8ttruEeqDlMfy2mDc5A" key="originalName" value="Node Enter"/>
         </eAnnotations>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV_DNe8Eeq_leupplLYAw" name="base_CallEvent" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8t9ruEeqDlMfy2mDc5A" name="base_CallEvent" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//CallEvent"/>
         </eStructuralFeatures>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV_Dte8Eeq_leupplLYAw" name="AfterSignal">
-        <eAnnotations xmi:id="_XNV_D9e8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129567784_936874_5">
-          <details xmi:id="_XNV_ENe8Eeq_leupplLYAw" key="originalName" value="After Signal"/>
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8udruEeqDlMfy2mDc5A" name="AfterSignal">
+        <eAnnotations xmi:id="__FL8utruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_0_1fe00f9_1119129567784_936874_5">
+          <details xmi:id="__FL8u9ruEeqDlMfy2mDc5A" key="originalName" value="After Signal"/>
         </eAnnotations>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV_Ede8Eeq_leupplLYAw" name="base_CallEvent" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8vNruEeqDlMfy2mDc5A" name="base_CallEvent" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//CallEvent"/>
         </eStructuralFeatures>
       </eClassifiers>
-      <eClassifiers xmi:type="ecore:EClass" xmi:id="_XNV_E9e8Eeq_leupplLYAw" name="AssignmentExpression">
-        <eAnnotations xmi:id="_XNV_FNe8Eeq_leupplLYAw" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_5_1_2090114_1229893341122_937864_0"/>
-        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="_XNV_Fde8Eeq_leupplLYAw" name="andromda_process_jbpm_assignment_expression" ordered="false" upperBound="-1">
+      <eClassifiers xmi:type="ecore:EClass" xmi:id="__FL8vtruEeqDlMfy2mDc5A" name="AssignmentExpression">
+        <eAnnotations xmi:id="__FL8v9ruEeqDlMfy2mDc5A" source="http://www.eclipse.org/uml2/2.0.0/UML" references="_9_5_1_2090114_1229893341122_937864_0"/>
+        <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="__FL8wNruEeqDlMfy2mDc5A" name="andromda_process_jbpm_assignment_expression" ordered="false" upperBound="-1">
           <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/uml2/5.0.0/Types#//String"/>
         </eStructuralFeatures>
-        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="_XNV_F9e8Eeq_leupplLYAw" name="base_ActivityPartition" ordered="false" lowerBound="1">
+        <eStructuralFeatures xmi:type="ecore:EReference" xmi:id="__FL8wtruEeqDlMfy2mDc5A" name="base_ActivityPartition" ordered="false" lowerBound="1">
           <eType xmi:type="ecore:EClass" href="http://www.eclipse.org/uml2/5.0.0/UML#//ActivityPartition"/>
         </eStructuralFeatures>
       </eClassifiers>

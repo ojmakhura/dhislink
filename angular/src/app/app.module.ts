@@ -17,7 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthenticationResponse } from './model/authentication/authentication-response';
@@ -46,6 +46,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { DialogBoxComponent } from './view/dialog-box/dialog-box.component';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { BatchComponent } from './view/batch/batch.component';
+import { LabReportComponent } from './view/lab-report/lab-report.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { BatchComponent } from './view/batch/batch.component';
     ResultingComponent,
     LocationComponent,
     TestingDetectionComponent,
-    DialogBoxComponent
+    DialogBoxComponent,
+    LabReportComponent
   ],
   imports: [
     MatButtonModule,
@@ -76,6 +78,7 @@ import { BatchComponent } from './view/batch/batch.component';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatProgressBarModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
