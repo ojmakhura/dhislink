@@ -139,6 +139,8 @@ public class RedcapLink {
 			}
 			data.put(specimen.getSpecimenBarcode(), list);
 		}
+		
+		logger.info(data.toString());
 		doPostRedcapData(data, projectId);
 		
 	}

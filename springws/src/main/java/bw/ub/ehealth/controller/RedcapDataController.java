@@ -135,10 +135,53 @@ public class RedcapDataController {
 		return data;
 	}
 
-	@PostMapping("/publishresults")
+	@PostMapping("/publish")
 	@ResponseStatus(code = HttpStatus.OK)
 	public void publishResults(@RequestBody BatchVO batch) {
+		
+		List<RedcapDataVO> reportData = new ArrayList<RedcapDataVO>();
+		List<SpecimenVO> verifiedSpecimen = new ArrayList<SpecimenVO>();
 
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_id", batch.getBatchId()));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_batch_id", batch.getBatchId()));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "detection_lab", batch.getLab().getCode()));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_instrument", batch.getInstrument().getCode()));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_batchsize", batch.getInstrumentBatchSize() + ""));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_personnel", batch.getDetectionPersonnel() + ""));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_datetime", batch.getDetectionDateTime() + ""));
+
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_id", batch.getBatchId()));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_assay_batch_id", batch.getBatchId()));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_assay_batchsize", batch.getInstrumentBatchSize() + ""));
+
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_det_id", batch.getBatchId()));
+		reportData.add(getRedcapDataObjet(null, labReportPID, "test_verify_batch_id", batch.getBatchId()));
+
+		for (SpecimenVO specimen : batch.getBatchItems()) {
+			if (batch.getPublishResults() && isLive) {
+				specimen.setDhis2Synched(true);
+			}
+
+			if (!StringUtils.isBlank(specimen.getTestVerifyResults()) && specimen.getTestVerifyResults().equals("5")) {
+
+				specimen.setResults(specimen.getCovidRnaResults());
+				if (specimen.getId() != null) {
+					verifiedSpecimen.add(specimen);
+				}
+			}
+		}
+
+		// Update the staging area.
+		Collection<SpecimenVO> sps = specimenService.saveSpecimen(batch.getBatchItems());
+
+		// redcapLink.postRedcapData(redcapData, batch.getProjectId());
+
+		// Update the lab report
+		redcapLink.postSpecimen(batch.getBatchItems(), reportData, labReportPID);
+
+		if (batch.getPage() == BatchAuthorityStage.AUTHORISATION && batch.getPublishResults() && isLive) {
+			dhisLink.getDhisPayload(verifiedSpecimen);
+		}
 	}
 
 	private Map<String, SpecimenVO> getSpecimenMap(List<SpecimenVO> specimen) {
@@ -492,6 +535,9 @@ public class RedcapDataController {
 		} else if (code.equals("521")) {
 
 			name = "BVI ABI 7500 (521)";
+		} else if(code.equals("600")) {
+
+			name = "BIOER Line Gene (600)";
 		} else if (code.equals("999")) {
 
 			name = "Other detection machine(specify) (999))";

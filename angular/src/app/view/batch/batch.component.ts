@@ -226,17 +226,7 @@ export abstract class BatchComponent implements OnInit {
       alert('The batch cannot be saved. Please check the data.');
       return;
     }
-
-    let pageValue;
-
-    if (this.page === 'detection') {
-      pageValue = BatchAuthorityStage.DETECTION;
-    } else if (this.page === 'resulting') {
-      pageValue = BatchAuthorityStage.RESULTING;
-    } else {
-      pageValue = BatchAuthorityStage.AUTHORISATION;
-    }
-
+    
     this.redcaDataService.saveRawBatch(this.toRawBatch(this.batchForm.value), 345).subscribe(
       results => {
         this.loading = false;
@@ -415,11 +405,12 @@ export abstract class BatchComponent implements OnInit {
   publish() {
     this.publishing = true;
     const batch: Batch = this.batchForm.value;
-    batch.page = 'verification';
+
+    batch.page = BatchAuthorityStage.AUTHORISATION;
 
     if (batch.verificationStatus !== '2' &&
       !batch.authorisingPersonnel) {
-      alert('Could not publish results. Either verification is not complete or authorising personel is not set.')
+      alert('Could not publish results. Either verification is not complete or authorising personel is not set.');
     } else {
       batch.publishResults = true;
 
@@ -428,7 +419,7 @@ export abstract class BatchComponent implements OnInit {
         data = results;
         this.publishing = false;
       }, error => {
-        this.publishing = false
+        this.publishing = false;
         this.router.navigate(['/login']);
         return of(new AuthenticationResponse());
       }
