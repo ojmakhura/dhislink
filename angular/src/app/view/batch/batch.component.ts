@@ -23,6 +23,7 @@ import { BatchAuthorityStage } from 'src/app/model/batch/BatchAuthorisationStage
 import { Specimen } from 'src/app/model/specimen/specimen';
 import { Patient } from 'src/app/model/patient/patient';
 import { RedcapData } from 'src/app/model/data/redcap-data';
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-batch',
@@ -47,13 +48,11 @@ export abstract class BatchComponent implements OnInit {
   spLoading = false;
   isNewBatch = true;
   publishing = false;
+  printing = false;
 
   batchForm: FormGroup;
   searchForm: FormGroup;
   batchesForm: FormGroup;
-
-  //openedBatch: Array<RedcapData>;
-  //protected rawBatches: any;
 
   @ViewChild('batchesPaginator', { static: true }) batchesPaginator: MatPaginator;
   @ViewChild('batchSort', { static: true }) batchSort: MatSort;
@@ -583,7 +582,6 @@ export abstract class BatchComponent implements OnInit {
     return bt;
   }
 
-
   doSearch() {
     
     this.loading = true;
@@ -899,4 +897,37 @@ export abstract class BatchComponent implements OnInit {
     return raw;
   }
 
+  createReport() {
+    this.printing = true;
+    const batch: Batch = this.batchForm.value;
+
+    batch.batchItems.forEach((element) => {
+
+      if(element.specimen_barcode == 'C0000000001') {
+        element.specimen_barcode = '1'
+      } else if(element.specimen_barcode == 'C0000000002') {
+        element.specimen_barcode = '2'
+      }
+    });
+
+    this.redcaDataService.createReport(batch).subscribe(
+      (data: Blob) => {
+        const file = new Blob([data], { type: 'application/pdf' });
+        const downloadURL = window.URL.createObjectURL(file);
+        const link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = batch.batchId + ".pdf";
+        link.click();
+        this.printing = false;
+      },
+      (error) => {
+        console.log('getPDF error: ',error);
+        this.printing = false;
+      }
+    );
+  }
+
+  isControl(barcode) {
+    return barcode === 'C0000000001' || barcode === 'C0000000002';
+  }
 }

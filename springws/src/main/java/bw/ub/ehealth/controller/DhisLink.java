@@ -252,13 +252,13 @@ public class DhisLink implements Serializable {
 		if (attrMap.get(env.getProperty("patient.omang")) != null) {
 			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.omang")).getValue());
 		}
+		
+		if (attrMap.get(env.getProperty("patient.identification")) != null && patientVO.getIdentityNo() == null) {
+			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.identification")).getValue());
+		}
 
 		if (attrMap.get(env.getProperty("patient.passport")) != null && patientVO.getIdentityNo() == null) {
 			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.passport")).getValue());
-		}
-		
-		if (attrMap.get(env.getProperty("patient.identification")) != null) {
-			patientVO.setIdentityNo(attrMap.get(env.getProperty("patient.identification")).getValue());
 		}
 
 		/// Get the surname
@@ -314,10 +314,6 @@ public class DhisLink implements Serializable {
 		// Get patient nationality
 		if (attrMap.get(env.getProperty("patient.nationality")) != null) {
 			patientVO.setNationality(attrMap.get(env.getProperty("patient.nationality")).getValue());
-		}
-		
-		if (attrMap.get(env.getProperty("patient.identification")) != null) {
-			patientVO.setNationality(attrMap.get(env.getProperty("patient.identification")).getValue());
 		}
 
 		// Get patient phone

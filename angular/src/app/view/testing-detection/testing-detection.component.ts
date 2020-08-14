@@ -203,10 +203,6 @@ export class TestingDetectionComponent extends BatchComponent {
     }
   }
 
-  isControl(barcode) {
-    return barcode === 'C0000000001' || barcode === 'C0000000002';
-  }
-
   private createControl(controlBarcode: string) {
 
     const control: Specimen = new Specimen();
@@ -226,23 +222,5 @@ export class TestingDetectionComponent extends BatchComponent {
     this.getItemControl('detectionPersonnel').disable({ onlySelf: true });
     this.getItemControl('detectionDateTime').disable({ onlySelf: true });
     this.getItemControl('instrumentBatchSize').disable({ onlySelf: true });
-  }
-
-  createReport() {
-    const batch: Batch = this.batchForm.value;
-    this.redcaDataService.createReport(batch).subscribe(
-      (data: Blob) => {
-        var file = new Blob([data], { type: 'application/pdf' })
-        var downloadURL = window.URL.createObjectURL(data);
-        var link = document.createElement('a');
-        link.href = downloadURL;
-        link.download = batch.batchId + ".pdf";
-        link.click();
-
-      },
-      (error) => {
-        console.log('getPDF error: ',error);
-      }
-    );
   }
 }
