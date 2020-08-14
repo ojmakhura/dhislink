@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { BatchSearchCriteria } from 'src/app/model/batch/batch-search-criteria';
 import { DataSearchCriteria } from 'src/app/model/data/data-search-criteria';
 import { Observable, of } from 'rxjs';
@@ -80,6 +80,13 @@ export class RedcapDataService {
 
   pullSpecimenInfo(specimens: Specimen): Observable<Specimen[]> {
     return this.http.post<Specimen[]>(this.url + 'pullspecimen', specimens);
+  }
+
+  createReport(batch: Batch): Observable<Blob> {
+    const httpOptions = {
+      responseType: 'blob' as 'json'
+    };
+    return this.http.post<Blob>(this.url + 'batch/report', batch, httpOptions);
   }
 
   getDescription(code: string): string {

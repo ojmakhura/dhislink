@@ -1,6 +1,7 @@
 package bw.ub.ehealth;
 
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -27,18 +28,10 @@ import java.util.List;
 @Service
 public class LabReport {
 
-
-    private MessageSource messageSource;
-
     Logger logger = LoggerFactory.getLogger(LabReport.class);
 
     public LabReport() {
 
-    }
-
-    @Autowired
-    public LabReport(MessageSource messageSource) {
-        this.messageSource = messageSource;
     }
 
     public JasperReport compileReport(String templateName) {
@@ -53,8 +46,8 @@ public class LabReport {
         }
         return null;
     }
-    /*
-    public Window createReport(JasperReport report, Object bean, String reportName, String messageSourceCode) {
+    
+    public byte[] createReport(JasperReport report, Object bean, String reportName) {
         try {
             List list = new ArrayList<>();
             list.add(bean);
@@ -71,45 +64,14 @@ public class LabReport {
             SimplePdfExporterConfiguration exportConfig = new SimplePdfExporterConfiguration();
             exporter.getExporterOutput().getOutputStream();
             exporter.setConfiguration(exportConfig);
-            exporter.exportReport();
-            return getPdfViewer(reportName, messageSourceCode);
+            
+            byte[] data = JasperExportManager.exportReportToPdf(print);
+            return data;
+            //exporter.exportReport();
 
         } catch(Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
-    }*/
-
-    /*
-    private Window getPdfViewer(String reportName, String messageSourceCode) {
-
-        Embedded pdf = new Embedded(reportName,
-                new StreamResource(new StreamResource.StreamSource() {
-                    @Override
-                    public InputStream getStream() {
-                        FileInputStream is = null;
-                        try {
-                            is = new FileInputStream(new File(reportName));
-                        } catch(FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        return is;
-                    }
-                }, reportName));
-
-        pdf.setType(Embedded.TYPE_BROWSER);
-        pdf.setMimeType("application/pdf");
-
-        pdf.setSizeFull();
-        logger.info(String.format("Message for %s is %s", messageSourceCode, messageSource.getMessage(messageSourceCode, null, VaadinSession.getCurrent().getLocale())));
-        Window window = new Window(messageSource.getMessage(messageSourceCode, null, VaadinSession.getCurrent().getLocale()));
-
-        window.setWidth("800px");
-        window.setHeight("900px");
-        Responsive.makeResponsive(window);
-        window.setContent(new VerticalLayout(pdf));
-        ((VerticalLayout) window.getContent()).setSizeFull();
-
-        return window;
-    }*/
+    }
 }

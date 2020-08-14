@@ -28,6 +28,12 @@
                 Pull
               </button>
             </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-success" (click)="createReport()">
+                <span *ngIf="pulling" class="spinner-border spinner-border-sm mr-1"></span>
+                Print
+              </button>
+            </div>
           </div>
           <div class="row">
             <div class="form-group">

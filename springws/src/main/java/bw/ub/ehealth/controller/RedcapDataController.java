@@ -1,5 +1,6 @@
 package bw.ub.ehealth.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -25,7 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +46,7 @@ import bw.ub.ehealth.dhislink.redacap.data.RedcapData;
 import bw.ub.ehealth.dhislink.redacap.data.service.RedcapDataService;
 import bw.ub.ehealth.dhislink.redacap.data.vo.BatchVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RecordExport;
+import bw.ub.ehealth.LabReport;
 import bw.ub.ehealth.dhislink.batch.BatchAuthorityStage;
 import bw.ub.ehealth.dhislink.instrument.vo.InstrumentVO;
 import bw.ub.ehealth.dhislink.redacap.data.vo.RedcapDataSearchCriteria;
@@ -54,6 +59,7 @@ import bw.ub.ehealth.dhislink.vo.BatchSearchCriteria;
 import bw.ub.ehealth.dhislink.vo.DDPObjectField;
 import bw.ub.ehealth.dhislink.vo.Event;
 import io.jsonwebtoken.lang.Collections;
+import net.sf.jasperreports.engine.JasperReport;
 
 @RestController
 @RequestMapping("/ddpcontroller/data")
@@ -1006,5 +1012,28 @@ public class RedcapDataController {
 		}
 		
 		return map;
+	}
+	
+	@PostMapping(value = "/batch/report",
+			  produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	@ResponseBody
+	@ResponseStatus(code = HttpStatus.OK)
+	public ResponseEntity<byte[]> createReport(@RequestBody BatchVO batch) {
+		
+		LabReport labReport = new LabReport();
+		labReport.compileReport("detection_batch_barcodes");
+		JasperReport report = labReport.compileReport("lab_detection_batch");
+		
+		byte[] bytes = labReport.createReport(report, batch, batch.getBatchId());
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        String filename = "output.pdf";
+        headers.setContentDispositionFormData(filename, filename);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        ResponseEntity<byte[]> response = null;
+		
+        response = new org.springframework.http.ResponseEntity<>(bytes, headers, org.springframework.http.HttpStatus.OK);
+        
+        return response;
 	}
 }

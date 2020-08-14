@@ -12,29 +12,44 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch">
+		<band height="67" splitType="Stretch">
 			<staticText>
-				<reportElement x="260" y="0" width="159" height="66" uuid="2761b14f-def9-4360-9420-ffc274044f65"/>
+				<reportElement x="4" y="0" width="320" height="60" uuid="2761b14f-def9-4360-9420-ffc274044f65"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="33" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Batch]]></text>
+				<text><![CDATA[Detection Batch]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="324" y="0" width="126" height="60" uuid="ee433716-028f-4f6f-a126-124889965d96"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="33" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{batchId}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="570" y="0" width="100" height="60" uuid="909c5a7f-e354-4e09-873a-3152e3e23192"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="35" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Size:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="670" y="0" width="80" height="60" uuid="02706068-63f3-41b8-b2dc-ccaa8fb2a868"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="27" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{detectionSize}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
-	<pageHeader>
-		<band height="65" splitType="Stretch"/>
-	</pageHeader>
 	<detail>
-		<band height="125" splitType="Stretch"/>
+		<band height="73" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="5" width="110" height="65" uuid="42fc6d56-7d6d-46f8-a370-3c7407f5bcdc"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{batchItems})]]></dataSourceExpression>
+				<subreportExpression><![CDATA["detection_batch_barcodes.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
 	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch"/>
-	</columnFooter>
-	<pageFooter>
-		<band height="54" splitType="Stretch"/>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
 </jasperReport>
