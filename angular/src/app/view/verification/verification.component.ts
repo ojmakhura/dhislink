@@ -37,6 +37,13 @@ export class VerificationComponent extends BatchComponent {
 
   authorise() {
 
+    const batch: Batch = this.batchForm.value;
+
+    if (this.authService.getCurrentUser() === batch.resultingPersonnel) {
+      alert('You entered the results so you cannot verify them.');
+      return;
+    }
+
     this.batchForm.controls.authorisingDateTime.setValue(formatDate(new Date(), 'yyyy-MM-ddTHH:mm', 'en-US'));
     if (!this.batchForm.value.authorisingPersonnel || this.batchForm.value.authorisingPersonnel.length === 0) {
 
@@ -48,11 +55,6 @@ export class VerificationComponent extends BatchComponent {
   }
 
   preSaveBatch(batch: Batch) {
-    if (this.authService.getCurrentUser() === batch.resultingPersonnel) {
-      alert('You entered the results so you cannot verify them.');
-      this.loading = false;
-      return false;
-    }
 
     batch.batchItems.forEach(
       sp => {
@@ -60,7 +62,7 @@ export class VerificationComponent extends BatchComponent {
         if(batch.verificationDateTime && batch.verificationPersonnel) {
           sp.test_verify_datetime = batch.verificationDateTime;
           sp.test_verify_personnel = batch.verificationPersonnel;
-          
+
           if(sp.testVerifyResults === '5') {
             sp.covidRnaResults = sp.testAssayResults;
           }

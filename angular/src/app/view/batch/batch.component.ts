@@ -141,7 +141,6 @@ export abstract class BatchComponent implements OnInit {
 
     this.redcaDataService.search(this.searchCriteria).pipe().subscribe(
       results => {
-        //this.batchesForm = this.formBuilder.array([results]);
         this.batches.data = results;
         this.searchCriteria = new BatchSearchCriteria();
         this.loading = false;
@@ -213,18 +212,20 @@ export abstract class BatchComponent implements OnInit {
 
   abstract preSaveBatch(batch: Batch): boolean;
 
-  saveBatch() {
+  async saveBatch() {
 
     const batch: Batch = this.batchForm.value;
-
+    console.log("************");
+    
     this.loading = true;
-    if (!this.preSaveBatch(batch)) {
-      return;
+    if (await !this.preSaveBatch(batch)) {
+      this.loading = false;
+      return false;
     }
 
     if (this.batchForm.invalid) {
       alert('The batch cannot be saved. Please check the data.');
-      return;
+      return false;
     }
     
     this.redcaDataService.saveRawBatch(this.toRawBatch(this.batchForm.value), 345).subscribe(
@@ -299,7 +300,13 @@ export abstract class BatchComponent implements OnInit {
           this.searchCriteria.page = BatchAuthorityStage.AUTHORISATION;
         }
 
-        batch.batchItems = results;
+        batch.batchItems.array.forEach(element => {
+          const spe = results.find(sp => sp.specimen_barcode === element.specimen_barcode);
+          if(spe.patient) {
+            element.patient = spe.patient;
+          }
+        });
+
         this.doEditBatch(batch);
         this.pulling = false;
       }, error => {
@@ -403,9 +410,16 @@ export abstract class BatchComponent implements OnInit {
    * This publishes the verified results to DHIS2
    */
   publish() {
+
     this.publishing = true;
     const batch: Batch = this.batchForm.value;
 
+    if(!this.preSaveBatch(batch)) {
+      this.publishing = false;
+
+      return;
+    }
+    console.log('contiue');
     batch.page = BatchAuthorityStage.AUTHORISATION;
 
     if (batch.verificationStatus !== '2' &&
@@ -424,7 +438,7 @@ export abstract class BatchComponent implements OnInit {
         return of(new AuthenticationResponse());
       }
       );
-      this.batchForm.patchValue(batch);
+      
       return data;
     }
   }
@@ -648,8 +662,7 @@ export abstract class BatchComponent implements OnInit {
             //(<FormGroup>control).setControl('program', this.formBuilder.control(found.));
 
             if(found.authorizer_datetime && !this.batchForm.value.authorisingDateTime) {
-              console.log(new Date(found.authorizer_datetime).toLocaleString());
-              
+
               this.batchForm.setControl('authorisingDateTime', this.formBuilder.control(formatDate(found.authorizer_datetime, 'yyyy-MM-ddTHH:mm', 'en-US')))
             }
 

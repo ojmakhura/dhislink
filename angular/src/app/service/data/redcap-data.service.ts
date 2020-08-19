@@ -78,7 +78,7 @@ export class RedcapDataService {
     return this.http.post<any>(this.url + 'search/raw', searchCriteria);
   }
 
-  pullSpecimenInfo(specimens: Specimen): Observable<Specimen[]> {
+  pullSpecimenInfo(specimens: Specimen[]): Observable<Specimen[]> {
     return this.http.post<Specimen[]>(this.url + 'pullspecimen', specimens);
   }
 
