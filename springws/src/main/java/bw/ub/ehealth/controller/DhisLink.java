@@ -2025,13 +2025,15 @@ public class DhisLink implements Serializable {
 			if (!StringUtils.isEmpty(sp.getProgramId())) {
 				program = sp.getProgramId();
 				programStage = sp.getProgramStageId();
-				pre = sp.getProgramId() + "." + sp.getProgramStageId() + ".";
 			}
 		}
 
 		if (StringUtils.isBlank(pre)) {
 			pre = "HR4C8VTwGuo.nIaEdUY97YD."; /// Default is the COVID surveillance
+			program = "HR4C8VTwGuo";
+			programStage = "nIaEdUY97YD";
 		}
+		pre = program + "." + programStage + ".";
 
 		barcodeField = env.getProperty("lab.specimen.barcode");
 
